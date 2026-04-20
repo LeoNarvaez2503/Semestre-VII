@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bufete Legal Elite</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">Bufete Legal Elite</div>
+        <nav>
+            <ul>
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#servicios">Servicios</a></li>
+                <li><a href="#equipo">Equipo</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="hero" id="inicio">
+        <h1>Defendemos tus derechos</h1>
+        <p>Asesoría legal profesional y personalizada para ti y tu empresa.</p>
+        <button onclick="mostrarAlerta()">Solicita una consulta</button>
+    </section>
+    <section class="servicios" id="servicios">
+        <h2>Nuestros Servicios</h2>
+        <div class="cards">
+            <div class="card">
+                <h3>Derecho Civil</h3>
+                <p>Soluciones en contratos, herencias y más.</p>
+            </div>
+            <div class="card">
+                <h3>Derecho Penal</h3>
+                <p>Defensa y representación en procesos penales.</p>
+            </div>
+            <div class="card">
+                <h3>Derecho Laboral</h3>
+                <p>Asesoría en despidos, contratos y conflictos laborales.</p>
+            </div>
+        </div>
+    </section>
+    <section class="equipo" id="equipo">
+        <h2>Nuestro Equipo</h2>
+        <div class="miembros">
+            <div class="miembro">
+                <img src="abogado1.jpg" alt="Abogado 1">
+                <h4>Lic. Juan Pérez</h4>
+                <p>Especialista en Derecho Civil</p>
+            </div>
+            <div class="miembro">
+                <img src="abogado2.jpg" alt="Abogado 2">
+                <h4>Dra. María López</h4>
+                <p>Especialista en Derecho Penal</p>
+            </div>
+            <div class="miembro">
+                <img src="abogado3.jpg" alt="Abogado 3">
+                <h4>Lic. Carlos Ruiz</h4>
+                <p>Especialista en Derecho Laboral</p>
+            </div>
+        </div>
+    </section>
+    <section class="contacto" id="contacto">
+        <h2>Contacto</h2>
+        <form>
+            <input type="text" placeholder="Nombre">
+            <input type="email" placeholder="Correo electrónico">
+            <textarea placeholder="Mensaje"></textarea>
+            <button type="button" onclick="enviarFormulario()">Enviar</button>
+        </form>
+    </section>
+    <footer>
+        <p>&copy; 2026 Bufete Legal Elite. Todos los derechos reservados.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    color: #222;
+}
+header {
+    background: #1a237e;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+}
+.logo {
+    font-size: 2em;
+    font-weight: bold;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1em;
+}
+.hero {
+    background: url('law-bg.jpg') center/cover no-repeat;
+    color: #fff;
+    text-align: center;
+    padding: 100px 20px 80px 20px;
+}
+.hero h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+.hero p {
+    font-size: 1.3em;
+    margin-bottom: 30px;
+}
+.hero button {
+    background: #3949ab;
+    color: #fff;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1em;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.servicios {
+    background: #fff;
+    padding: 60px 20px;
+    text-align: center;
+}
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 30px;
+}
+.card {
+    background: #e8eaf6;
+    padding: 30px 20px;
+    border-radius: 8px;
+    width: 250px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.equipo {
+    background: #f4f4f4;
+    padding: 60px 20px;
+    text-align: center;
+}
+.miembros {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 30px;
+}
+.miembro {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.miembro img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+.contacto {
+    background: #fff;
+    padding: 60px 20px;
+    text-align: center;
+}
+.contacto form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+.contacto input, .contacto textarea {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 1em;
+}
+.contacto textarea {
+    height: 80px;
+    resize: none;
+}
+.contacto button {
+    background: #3949ab;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 4px;
+}
+footer {
+    background: #1a237e;
+    color: #fff;
+    text-align: center;
+    padding: 18px 0;
+    font-size: 1em;
+    margin-top: 40px;
+}
