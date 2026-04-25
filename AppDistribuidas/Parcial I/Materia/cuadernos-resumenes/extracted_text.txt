@@ -1,0 +1,1444 @@
+Departamento de Ciencias de la
+Computación
+Ingeniería en Software
+Aplicaciones Distribuidas
+Unidad 1 
+FUNDAMENT OS DE APLICA CIONES DISTR IBUID AS 
+Profesor: Geo vanny Cudco Sílabo
+Unidad I: FUNDAMENTOS DE APLICACIONES DISTRIBUIDAS 
+•
+Introducción 
+•
+Conceptos de Aplicaciones Distribuidas 
+•
+Evolución de las aplicaciones distribuidas 
+•
+Principales desafíos y ventajas 
+•
+Falacias de las aplicaciones Distribuidas 
+•
+Teorema CAP 
+•
+Gestión de concurrencia 
+•
+Concurrencia en aplicaciones distribuidas 
+•
+Hilos de ejecución en la programación distribuida 
+•
+Sockets 
+•
+Introducción 
+•
+Comunicación en aplicaciones distribuidas 
+•
+Protocolos de la Capa de Aplicación 
+•
+Fundamentos de WebSockets 
+•
+Conceptos y definiciones 
+•
+Desarrollo e implementación de WebSockets 
+•
+Comunicación en Tiempo Real 
+Unidad II: TECNOLOGÍAS PARA EL DESARROLLO DE APLICACIONES DISTRIBUIDAS 
+•
+Implementación de servicios 
+•
+Principios SOLID 
+•
+Patrones de Diseño 
+•
+Manejo de Transacciones ACID
+29/10/2025
+2 TÉCNICAS Y PONDERACION  DE LA
+EVALUACIÓN
+Técnica de e valuación
+1er Parcial
+2do Parcial
+3er Parcial
+Tareas o guías/Pr uebas or al/
+escrita
+4
+4
+4
+Labor atorios/Inf ormes
+4
+4
+4
+Proyectos
+5
+5
+5
+Exame n Parcial
+7
+7
+7
+ TOTAL
+20
+20
+20
+29/10/2025
+3
+ACTUACIONES EN CLASE 0,10/c aporte Unidad I: FUNDAMENTOS DE
+APLICACION ES DISTRIBUIDAS
+Introducción
+29/10/2025
+4 Introducción a las Aplicaciones
+Distribuidas
+1 Introducción 
+1.1 Conceptos de Aplicaciones Distribuidas 
+1.2 
+Evolución de las aplicaciones distribuidas 
+1.3 
+Principales desafí os y ventajas 
+1.4 
+Falacias de las aplicaciones Distribuidas 
+1.5 
+Teorema  CAP
+29/10/2025
+5 1.1 Conceptos de Aplicaciones Distribuidas
+Sistema
+Aplicación
+29/10/2025
+6 1.1 Conceptos de Aplicaciones Distribuidas
+❖
+Conju nto de elementos int errelacionados que funcionan como un todo
+organizado par a alcanza r un objetiv o común. Puede ser físico , biológico ,
+social o inf ormático . (ej. e l cuerpo humano , una empresa, un ecosistema,
+un sistema inf ormático .) 
+❖
+Conju nto de elementos 
+(hardware, softw are, procesos , personas) 
+que
+interactúan entr e sí par a cumplir objetiv os comunes .
+Sistema
+❖
+Progr ama
+ o conjunto de 
+progr amas
+ 
+diseñados par a realizar tar eas
+espec íficas que sa tisfacen necesidades concr etas 
+de usuarios o de
+negocio.
+Aplicación
+29/10/2025
+7 1.1 Conceptos de Aplicaciones Distribuidas
+•
+Incluye el 
+hardware
+ (servidores, ordenadores, dispositivos de red), el 
+sistema
+operativo
+ (Linux, Windows), y el 
+middleware
+ (servidores de aplicaciones, gestores
+de mensajería) que proveen las bases sobre las que se ejecuta el software. 
+•
+Gestiona recursos 
+(CPU, memoria, disco, red), ofrece servicios de bajo nivel
+(comunicación, seguridad, persistencia), y garantiza propiedades como tolerancia
+a fallos, escalabilidad o consistencia de datos.
+Sistema
+•
+Se apoya en el sistema (hardware, OS y middleware) para ejecutar la 
+lógica de
+negocio
+, presentar interfaces al usuario y acceder a datos. 
+•
+Suele componerse de módulos o servicios (backend, frontend, base de datos) que
+colaboran entre sí.
+Aplicación
+29/10/2025
+8 1.1 Conceptos de Aplicaciones Distribuidas
+¿Qué es Distribución?
+29/10/2025
+9 ¿Qué es Distribución?
+❖
+Técnica
+de
+dividir
+componentes
+de
+un
+sistema
+o
+aplicación
+en
+varias
+ubicaciones
+físicas o lógicas
+. 
+❖
+Estos
+componentes
+pueden
+estar
+en
+diferentes
+máquinas
+conectadas
+en
+red,
+trabajando
+juntas
+para
+lograr
+un
+objetivo
+común.
+29/10/2025
+10
+1.1 Conceptos de Aplicaciones Distribuidas Sistemas distribuidos
+29/10/2025
+11
+1.1 Conceptos de Aplicaciones Distribuidas Sistemas distribuidos
+❖
+Conjunto
+de
+computadoras
+independientes
+que
+se
+presentan
+a
+los
+usuarios
+como
+un
+sistema único y coherente. 
+❖
+Estas
+computadoras
+colaboran
+mediante
+una
+red
+para
+compartir
+recursos,
+procesamiento y almacenamiento.
+29/10/2025
+12
+1.1 Conceptos de Aplicaciones Distribuidas «Un sistema distribuido 
+es una colección de
+computadoras independientes que aparecen
+ante los usuarios del sistema como una única
+computadora
+» Tanenbaum.
+«Sistemas Distribuidos 
+son aquellos en los cuales
+los componentes de hardware y software están
+ubicados en computadoras de una red y se
+comunican y coordinan sus acciones solamente
+por medio de mensajes
+» Coulouris.
+29/10/2025
+13
+1.1 Conceptos de Aplicaciones Distribuidas 1.1 Conceptos de Aplicaciones Distribuidas Es aquella en la que todos los procesos, datos y control se gestionan
+desde un único servidor central. 
+Los usuarios acceden a esta aplicación
+a través de terminales o dispositivos cliente, pero toda la lógica de
+negocio y almacenamiento se encuentra en un solo lugar.
+1.1 Conceptos de Aplicaciones Distribuidas 1.1 Conceptos de Aplicaciones Distribuidas Sistemas de Gestión Académica Local (ej. SAE - Sistema Académico Escolar)
+Explicación:
+Toda
+la
+información
+sobre
+estudiantes,
+docen tes,
+calificaciones
+y
+asistencia
+se
+almacen a
+y
+gestiona
+desde
+un
+único
+servidor
+en
+la
+institución
+educativa.
+Los
+usuarios
+(docen tes
+y
+administrativos)
+acceden
+desde
+sus
+compu tadoras,
+pero
+si
+el
+servidor
+central
+falla,
+no
+pueden
+acceder al sistema.
+1.1 Conceptos de Aplicaciones Distribuidas Aplicaciones de Punto de V enta (POS) Locales
+Explicación:
+ En pequeños comercios , los sistemas de v entas y factur ación están
+conectados a un ser vidor en la tienda, donde se almacena la inf ormación de
+productos y v entas . 
+No fun cionan fuer a de ese entor no.
+1.1 Conceptos de Aplicaciones Distribuidas En resumen 
+Todos los clientes acceden a un único
+servidor
+.
+Toda la lógica de negocio  y base de datos
+está en ese ser vidor.
+La caída del servidor implica pérdida de
+servicio para todos.
+1.1 Conceptos de Aplicaciones Distribuidas Las 
+APLIC ACIONES DISTRIBUID AS 
+son sistemas cuy os
+compon entes de softwar e se ejecutan en múlti ples
+máqui nas (nodos) interco nectadas por una r ed, cooper ando
+entre sí par a ofrecer una funcionalidad unificada a l usuario
+final.
+Es una 
+aplicación
+ con 
+distintos componentes 
+que se
+ejecutan 
+en entor nos separ ados
+, normalmente en
+diferentes pla taformas conectadas a tr avés de una r ed.
+1.1 Conceptos de Aplicaciones Distribuidas Las 
+APLIC ACIONES DISTRIBUID AS 
+son sistemas cuy os
+compon entes de softwar e se ejecutan en múlti ples
+máqui nas (nodos) interco nectadas por una r ed, cooper ando
+entre sí par a ofrecer una funcionalidad unificada a l usuario
+final.
+Es una 
+aplicación
+ con 
+distintos componentes 
+que se
+ejecutan 
+en entor nos separ ados
+, normalmente en
+diferentes pla taformas conectadas a tr avés de una r ed.
+1.1 Conceptos de Aplicaciones Distribuidas 1.1 Conceptos de Aplicaciones Distribuidas 1.1 Conceptos de Aplicaciones Distribuidas Labor atorio 1: Implementación de un Ser vidor
+DNS y R esolución de Nombr e de Dominio en
+entor no vir tualizado
+1. Objetivo
+Diseñar
+y
+desplegar
+un
+entorno
+de
+red
+práctico
+que
+permita
+comprender
+el
+funcionamiento
+de
+un
+servidor
+DNS,
+configurarlo
+en
+una
+máquina
+virtual,
+apuntar
+registros
+a
+un
+servidor
+web
+en
+otra
+VM
+y
+verificar
+la
+resolución
+de dominio desde un cliente en una tercera VM.
+29/10/2025
+24 2. Descripción 
+En este taller los estudiantes crearán tres máquinas virtuales (VM1, VM2 y
+VM3) interconectadas en una red privada: 
+•
+VM1 (DNS Server): Instalación y configuración de un servicio DNS (por
+ejemplo BIND9) para gestionar la zona tudominio.local. 
+•
+VM2 (Web Server): Despliegue de un servidor web (por ejemplo
+Apache o Nginx) que sirva una página de prueba en HTTP. 
+•
+VM3 (Cliente DNS): Configuración para que resuelva el nombre www.
+tudominio.local mediante la VM1 y acceda al contenido servido por
+VM2.
+29/10/2025
+25
+Labor atorio 1: Implementación de un Ser vidor
+DNS y R esolución de Nombr e de Dominio en
+entor no vir tualizado VM1 (DNS Server): 
+Atiende consultas DNS
+(tanto de VM3 como de VM2 para service
+discovery). 
+VM2 (Web Server): 
+Realiza una consulta DNS
+inicial a VM1 y atiende peticiones HTTP de
+VM3.
+VM3 (Client): 
+•
+Envía DNS query a VM1 
+→
+ recibe DNS
+response 
+•
+Envía HTTP request a VM2 
+→
+ recibe HTTP
+response
+29/10/2025
+26
+Labor atorio 1: Implementación de un Ser vidor
+DNS y R esolución de Nombr e de Dominio en
+entor no vir tualizado 3. Entregables 
+•
+Demostración en vivo del funcionamiento del Sistema Distribuido. 
+•
+Informe con las siguientes secciones: Introducción, Objetivos, Metodología,
+Resultados obtenidos, Conclusiones y Bibliografía.
+29/10/2025
+27
+Labor atorio 1: Implementación de un Ser vidor
+DNS y R esolución de Nombr e de Dominio en
+entor no vir tualizado Labor atorio 1: Implementación de un Ser vidor DNS y
+Resolución de Nombr e de Dominio en entor no vir tualizado
+¿POR QUÉ ESTE TALLER CONSTITUYE UN SISTEMA DISTRIBUIDO?
+Múltiples nodos autónomos 
+•
+Cada máquina virtual (VM1, VM2 y VM3) funciona de manera independiente, con su propio sistema
+operativo, servicios y configuraciones. 
+•
+No existe un único “equipo central”; cada nodo aporta recursos de computación y storage. 
+Cooperación vía red 
+•
+VM3 (cliente) envía consultas DNS sobre red interna a VM1, que responde con datos necesarios para
+conectarse a VM2. 
+•
+VM2 publica su servicio web en IP interna, y VM3 lo consume usando el nombre de dominio resuelto por
+VM1. 
+Separa responsabilidades 
+•
+VM1 se encarga exclusivamente de la resolución de nombres (servicio de directorio distribuido). 
+•
+VM2 se dedica al servicio HTTP (servidor web). 
+•
+VM3 actúa como consumidor y validador, usando ambos servicios.
+29/10/2025
+28 Labor atorio 1: Implementación de un Ser vidor DNS y
+Resolución de Nombr e de Dominio en entor no vir tualizado
+¿POR QUÉ ESTE T ALLER CONSTITUYE UN SISTEMA DISTRIBUIDO?
+Escalabilidad y flexibilidad 
+•
+Se pueden añadir más servidores web (más VMs como VM2) y apuntar con nuevos registros DNS
+en VM1 sin cambi ar la configuración del cliente. 
+•
+Si el servicio crece, basta desplegar instancias adicionales de cada rol y balancear la carga. 
+Transparencia de ubicación 
+•
+VM3 accede a “www .tudominio.local” sin impor tar la IP física de VM2; el cliente no necesita
+conocer la ubicación real del servidor web, sólo el nombre de dominio.
+29/10/2025
+29 Introducción a las Aplicaciones
+Distribuidas
+1 Introducción 
+1.1 
+Conceptos de Aplicaciones Distribuidas 
+1.2 Evolución de las aplicaciones distribuidas 
+1.3 
+Principales desafí os y ventajas 
+1.4 
+Falacias de las aplicaciones Distribuidas 
+1.5 
+Teorema  CAP
+29/10/2025
+30 Evolución de las Aplicaciones Distribuidas
+29/10/2025
+31 Evolución de las Aplicaciones Distribuidas
+Décadas 1960–1970: Orígenes y Primeros Sistemas 
+•
+1960
+: 
+•
+Se desarrollan los primeros sistemas operativos multiusuario y multitarea como 
+CTSS
+(MIT, 1961) y 
+UNIX
+ (AT&T Bell Labs, 1969). 
+•
+Surge la necesidad de compartir recursos computacionales entre usuarios remotos. 
+•
+1969
+: 
+•
+Se crea 
+ARPANET
+, la precursora de Internet, lo que permite la interconexión de
+computadoras a gran escala. 
+•
+Se considera el punto de partida de la 
+computación distribuida
+. 
+•
+1972
+: 
+•
+Se desarrolla el 
+correo electrónico en ARPANET
+, considerada la 
+primera
+aplicación distribuida a gran escala
+.
+29/10/2025
+32 Evolución de las Aplicaciones Distribuidas
+Década 1980: Redes Locales y Cliente-Servidor 
+•
+1980
+: 
+•
+Surgen
+las
+redes
+de
+área
+local
+(LAN)
+como
+Ethernet,
+permitiendo
+la
+conexión
+de
+computadoras dentro de una misma organización. 
+•
+Se
+consolida
+el
+modelo
+cliente-servidor
+como
+arquitectura
+estándar
+para
+aplicaciones distribuidas. 
+•
+1982
+: 
+•
+Se
+celebra
+la
+primera
+conferencia
+académica
+especializada:
+Symposium
+on
+Principles of Distributed Computing (PODC)
+. 
+•
+1985
+: 
+•
+Se
+inicia
+el
+proyecto
+ANSA
+,
+uno
+de
+los
+primeros
+intentos
+por
+crear
+una
+arquitectura
+de objetos distribuidos. 
+•
+1989
+: 
+•
+Se
+funda
+el
+Object
+Management
+Group
+(OMG)
+,
+que
+más
+tarde
+desarrollará
+CORBA
+.
+29/10/2025
+33 Evolución de las Aplicaciones Distribuidas
+Década 1990: Objetos Distrib uidos y Middle ware 
+•
+1990
+: 
+•
+Se publica la primera especificación de 
+CORBA
+ (Common Object Request Broker
+Architecture), un estándar para objetos distribuidos multiplataforma. 
+•
+1992
+: 
+•
+Aparecen las 
+primeras implementaciones comerciales de CORBA
+. 
+•
+1993
+: 
+•
+Se introduce 
+CGI
+ (Common Gateway Interface), permitiendo la creación de páginas web
+dinámicas y la interacción entre aplicaciones web y servidores. 
+•
+1995
+: 
+•
+Java introduce 
+RMI
+ (Remote Method Invocation), permitiendo la invocación de métodos entre
+objetos Java en diferentes máquinas. 
+•
+1999
+: 
+•
+Se popularizan las 
+aplicaciones cliente-servidor
+ en entornos empresariales, con
+herramientas como 
+DCOM
+ (Microsoft) y 
+CORBA
+ en diversas industrias.
+29/10/2025
+34 Evolución de las Aplicaciones Distribuidas
+Década 2000: Web Services y SOA 
+•
+2000
+: 
+•
+Roy Fielding introduce 
+REST
+ (Representational State Transfer) en su tesis doctoral,
+sentando las bases para los 
+servicios web modernos
+. 
+•
+2001–2003
+: 
+•
+Se consolida 
+SOAP
+ (Simple Object Access Protocol) como estándar para servicios
+web basados en XML. 
+•
+2005
+: 
+•
+Se populariza la 
+Arquitectura Orientada a Servicios (SOA)
+, promoviendo la
+reutilización de servicios distribuidos. 
+•
+2007
+: 
+•
+Surgen las primeras 
+plataformas de computación en la nube
+, como 
+Google App
+Engine
+ (2008), sentando las bases para el despliegue de aplicaciones distribuidas
+en la nube.
+29/10/2025
+35 Evolución de las Aplicaciones Distribuidas
+Década 2010: Cloud, Microser vicios y Contenedor es 
+•
+2013
+: 
+•
+Se presenta 
+Docker
+, revolucionando la forma de empaquetar y desplegar aplicaciones
+distribuidas con 
+contenedores
+. 
+•
+2014
+: 
+•
+Amazon lanza 
+AWS Lambda
+, marcando el inicio de la 
+computación serverless
+. 
+•
+2015
+: 
+•
+Se lanza 
+Kubernetes
+, una plataforma de 
+orquestación de contenedores
+ que se convierte
+en estándar para aplicaciones distribuidas en la nube. 
+•
+2016
+: 
+•
+Google y Microsoft lanzan 
+Google Cloud Functions
+ y 
+Azure Functions
+, respectivamente,
+consolidando el modelo 
+serverless
+. 
+•
+2017
+: 
+•
+Se consolida la 
+arquitectura de microservicios
+ como enfoque dominante para aplicaciones
+empresariales distribuidas.
+29/10/2025
+36 Evolución de las Aplicaciones Distribuidas
+Década 2020: Nativo en la Nube y Automatización 
+•
+2020
+: 
+•
+Se populariza el concepto de 
+aplicaciones na tivas de la nube (cloud-na tive)
+,
+combinando micr oservicios , contenedores , Kubernetes y DevOps . 
+•
+2021–2025
+: 
+•
+Se adoptan ampliamente 
+plataformas ser verless
+ y 
+arquitectur as event-
+driven
+. 
+•
+Se integr an tecnologías como 
+mallas de ser vicio (Ser vice Mesh)
+ e
+infraestructur a inmutable
+. 
+•
+Se promueve la 
+autom atización total
+ del ciclo de vida de aplicaciones
+distribuidas con 
+GitOp s
+, 
+CI/CD
+ y 
+obser vabilidad av anzada
+.
+29/10/2025
+37 Introducción a las Aplicaciones
+Distribuidas
+1 Introducción 
+1.1 
+Conceptos de Aplicaciones Distribuidas 
+1.2 
+Evolución de las aplicaciones distribuidas 
+1.3 Principales desafíos y ventajas 
+1.4 
+Falacias de las aplicaciones Distribuidas 
+1.5 
+Teorema  CAP
+29/10/2025
+38 1.3 Principales desafíos y ventajas
+29/10/2025
+39
+Ventaja
+Descripción
+Escalabilidad
+horizontal
+❖
+Permite añadir más no dos (servidores, contenedores,
+dispositivos) para man ejar mayor carga, en lugar de
+depender de hardware  más potente. 
+❖
+Esto es clave en ento rnos cloud y para aplicaciones con
+tráfico variable (ej. e-c ommerce en temporadas altas).
+Alta
+disponibilidad
+y tolerancia a
+fallos
+❖
+Al distribuir la carga y  replicar servicios en múltiples
+nodos o regiones, el s istema puede seguir funcionando,
+aunque uno o varios c omponentes fallen. 
+❖
+Esto se logra mediant e redundancia y patrones como el
+“disyuntor” (circuit bre aker). 1.3 Principales desafíos y ventajas
+29/10/2025
+40
+Ventaja
+Descripción
+Mejor
+rendimiento
+mediante
+procesamiento
+paralelo
+Las tareas complejas pueden dividirse y ejecutarse
+simultáneamente en distintos nodos, acelerando su
+resolución (ej. análisis de big data con Spark, IA
+distribuida).
+Compartición
+eficiente de
+recursos
+Permite el uso compartido de hardware costoso
+(almacenamiento, GPUs, impresoras) y datos entre
+múltiples usuarios o sistemas, optimizando costos y
+acceso.
+Flexibilidad
+tecnológica
+Cada componente (microservicio, nodo) puede usar la
+tecnología más adecuada para su función (lenguaje,
+base de datos, framework), facilitando la innovación y el
+mantenimiento. 1.3 Principales desafíos y ventajas
+29/10/2025
+41
+Desventaja
+Descripción
+Mayor
+complejidad de
+desarrollo y
+mantenimiento
+❖
+Coordinar múltiples se rvicios, gestionar la comunicación
+asíncrona, depurar fal los distribuidos y manejar
+versiones compatibles  requiere herramientas y
+conocimientos avanza dos.
+Costos
+operativos más
+altos
+❖
+Aunque el hardware p uede ser más económico, los
+costos de red, monito reo, orquestación (Kubernetes),
+seguridad, y personal  especializado suelen ser
+significativos.
+Sobrecarga de
+red y
+procesamiento
+❖
+La comunicación cons tante entre nodos consume ancho
+de banda, CPU y mem oria. 
+❖
+Protocolos, serializaci ón, autenticación y reintentos
+añaden latencia y con sumo innecesario si no se
+optimizan 1.3 Principales desafíos y ventajas
+29/10/2025
+42
+Desventaja
+Descripción
+Superficie de
+ataque ampliada
+❖
+Cada nodo, API o con exión es un posible punto de
+entrada para atacante s. 
+❖
+La seguridad debe im plementarse en múltiples capas (red,
+aplicación, datos), lo q ue es más difícil que en sistemas
+centralizados.
+Dificultad para
+garantizar la
+coherencia fuerte
+❖
+Mantener todos los da tos sincronizados en tiempo real
+entre nodos es costos o y a menudo inviable. 
+❖
+Muchos sistemas opta n por coherencia eventual, lo que
+puede generar incons istencias temporales. 1.3 Principales desafíos y ventajas
+29/10/2025
+43
+Desafíos
+Descripción
+Gestión de la
+latencia de red
+❖
+La comunicación entre  nodos introduce retrasos
+impredecibles. 
+❖
+Esto afecta la experie ncia del usuario y la lógica de
+negocio, especialmen te en llamadas encadenadas
+(problema del “chatty API”).
+Observabilidad y
+monitoreo
+integral
+❖
+Es difícil rastrear una transacción que atraviesa decenas
+de servicios. 
+❖
+Se requieren herramie ntas avanzadas de logging,
+métricas y trazado dis tribuido (como OpenT elemetry) para
+diagnosticar problema s. 1.3 Principales desafíos y ventajas
+29/10/2025
+44
+Desafíos
+Descripción
+Coordinación de
+transacciones
+distrib uidas
+❖
+Las transacciones A CID tradicionales no se aplican fácilmente . 
+❖
+Se deben usar patr ones alternativos como Sag a, transacciones
+compensatorias o CQRS , que son más complejos de implementar .
+Gestión de la
+heterogeneidad
+❖
+Integr ar dispositiv os, protocolos , lenguajes y sistemas oper ativos
+diversos (especialmente en IoT o edg e) requiere estándares
+abiertos y middle ware robusto par a garantizar
+interoperabilidad. 
+Actualización y
+desplie gue
+continuo se guro
+❖
+Despleg ar cambios en ci entos de micr oservicios sin interr umpir el
+servicio e xige estr ategia s como canary releases , blue-green
+deployments y pr uebas automatizadas e xhaustiv as. Introducción a las Aplicaciones
+Distribuidas
+1 Introducción 
+1.1 
+Conceptos de Aplicaciones Distribuidas 
+1.2 
+Evolución de las aplicaciones distribuidas 
+1.3 
+Principales desafí os y ventajas 
+1.4 Falacias de las aplicaciones Distribuidas 
+1.5 
+Teorema  CAP
+29/10/2025
+45 1.4 Falacias de las aplicaciones Distribuidas
+❖
+Son una lista clásica de suposiciones errón eas que los
+desarrolladores suelen hacer al diseñar aplicaciones distribuidas. 
+❖
+Fueron formuladas originalmente por L. Peter Deutsch y otros
+ingenieros de Sun Microsystems en la década de 1990. 
+❖
+Siguen siendo profundamen te relevantes hoy en día, especi almente
+con la proliferación de microservicios, nube, IoT y edge compu ting.
+29/10/2025
+46 1.4 Falacias de las aplicaciones Distribuidas
+29/10/2025
+47
+Falacias
+La red es fiable
+La latencia es cero
+El ancho de banda es infinito
+La red es segura
+La topología de la red no cambia
+Hay un solo administrador de la red
+El costo del transporte es cero
+La red es homogénea
+ 1.4 Falacias de las aplicaciones Distribuidas
+29/10/2025
+48
+❖
+Las redes fallan constantemente: cortes de fibra, errores de hardware, congestión,
+problemas de ISP, etc. 
+❖
+La red nunca es 100% confiable.
+¿Por qué es una falacia?
+❖
+Aplicaciones que no manejan reintentos, timeouts o caídas de red se bloquean o pierden
+datos. 
+❖
+Ejemplo: una llamada a un microservicio sin manejo de errores puede colapsar todo el flujo.
+Consecuencias prácticas si se cree verdadera
+LA RED ES FIABLE
+ 29/10/2025
+49
+❖
+La comunicación a través de la red siempre tiene retraso (latencia), que varía
+según la distancia, congestión y protocolo. 
+❖
+Incluso en la misma región cloud, puede haber decenas de milisegundos.
+¿Por qué es una f alacia?
+❖
+Diseños que asumen respuestas instantáneas (ej. llamadas síncronas
+encadenadas) generan interfaces lentas, timeouts y mala experiencia de usuario.
+Consecuencias prácticas si se cr ee verdader a
+LA LATENCIA ES CERO
+1.4 Falacias de las aplicaciones Distribuidas
+ 29/10/2025
+50
+❖
+El ancho de banda es limitado y compartido. 
+❖
+En entornos móviles, IoT o redes congestionadas, puede ser muy bajo..
+¿Por qué es una f alacia?
+❖
+Transferir grandes volúmenes de datos sin compresión o paginación satura la
+red, ralentiza otros servicios y aumenta costos (especialmente en la nube).
+Consecuencias prácticas si se cr ee verdader a
+EL ANCHO DE BANDA ES
+INFINITO
+1.4 Falacias de las aplicaciones Distribuidas
+ 29/10/2025
+51
+❖
+Las redes, especialmente las públicas o inalámbricas, están expuestas a
+sniffing, MITM (hombre en el medio), DDoS, inyecciones, etc..
+¿Por qué es una f alacia?
+❖
+Transmitir datos sin cifrado (TLS), usar credenciales débiles o confiar
+ciegamente en la red expone información sensible y permite ataques.
+Consecuencias prácticas si se cr ee verdader a
+LA RED ES SEGURA
+1.4 Falacias de las aplicaciones Distribuidas
+ 29/10/2025
+52
+❖
+Los nodos se mueven (dispositivos móviles), se agreg an
+o eliminan (escalado automático), y las rutas de red
+cambi an constantemen te (balanceo de carga, fallos).
+¿Por qué es una f alacia?
+❖
+Aplicaciones que almacen an direcciones IP fijas o
+asumen rutas estáticas fallan al migrar a la nube, usar
+contenedores o implemen tar edge compu ting.
+Consecuencias prácticas si se cr ee
+verdader a
+LA TOPOLOGÍA DE LA RED NO CAMBIA
+1.4 Falacias de las aplicaciones Distribuidas
+ 29/10/2025
+53
+❖
+En entornos modernos (nube híbrida, multi-nube, IoT), múltiples equipos,
+proveedores y organizaciones gestionan partes de la infraestructura.
+¿Por qué es una f alacia?
+❖
+Falta de coordinación en políticas de seguridad, monitoreo o configuración
+lleva a brechas operativas, conflictos de IP o problemas de cumplimiento
+normativo.
+Consecuencias prácticas si se cr ee verdader a
+HAY UN SOLO ADMIN ISTRADOR
+1.4 Falacias de las aplicaciones Distribuidas
+ 29/10/2025
+54
+❖
+Cada byte transmitido tiene un costo: monetario (en
+la nube o móviles), energético (en dispositivos IoT) y
+de rendimiento (procesamiento de protocolos).
+¿Por qué es una f alacia?
+❖
+Arquitecturas "chatty" (muchas llamadas pequeñas)
+o transferencias innecesarias elevan facturas de
+nube, agotan baterías y saturan CPUs.
+Consecuencias prácticas si se cr ee
+verdader a
+EL COSTO DEL TRANSPORTE ES CERO
+1.4 Falacias de las aplicaciones Distribuidas
+ 29/10/2025
+55
+❖
+Coexisten múltiples pr otocolos (HTTP , gRPC, MQ TT), sistemas oper ativos,
+lengu ajes, firewalls, NATs, proxies y dispositiv os con capacidades m uy
+distintas.
+¿Por qué es una f alacia?
+❖
+Suponer que todos los no dos se com unican igual causa fallos de
+interoperabilidad, especi almente en ecosistemas IoT o integr aciones leg acy.
+Consecuencias prácticas si se cr ee verdader a
+LA RED ES HOMOG ÉNEA
+1.4 Falacias de las aplicaciones Distribuidas
+ Introducción a las Aplicaciones
+Distribuidas
+1 Introducción 
+1.1 
+Conceptos de Aplicaciones Distribuidas 
+1.2 
+Evolución de las aplicaciones distribuidas 
+1.3 
+Principales desafí os y ventajas 
+1.4 
+Falacias de las aplicaciones Distribuidas 
+1.5 Teorema CAP
+29/10/2025
+56 1.5 Teorema CAP
+❖ElteoremaCAP,propuestoporEricBreweren
+el
+año
+2000,
+define
+el
+comportamiento
+de
+un
+sistema distribuido. 
+❖
+Está
+formado
+por
+la
+primera
+letra
+de
+cada
+atributo:
+C
+onsistency,
+A
+vailability
+y
+P
+artition
+tolerance. 
+❖
+Un
+sistema
+distribuido
+es
+un
+grupo
+de
+nodos
+conectados que comparten información entre sí. 
+❖
+Un
+cliente
+puede
+escribir
+un
+dato
+interactuando
+con
+cualquier
+nodo
+y
+puede
+leerlo
+del
+mismo
+nodo o de uno diferente.
+29/10/2025
+57
+ 1.5 Teorema CAP
+29/10/2025
+58
+El teor ema establece que , 
+para una oper ación de escritur a seguida
+de una lectur a, el sistema solo puede gar antizar  dos de tr es
+atributos simultáneam ente, debiendo sacrificar el tercero . 1.5 Teorema CAP
+29/10/2025
+59
+Consistency (Consistencia):
+ Todos los nodos v en los m ismos datos al
+mismo tiempo , garantiza que no se devuelv a data desactualizada.
+ 1.5 Teorema CAP
+29/10/2025
+60
+Availability
+(Disponibilidad):
+ Si
+un
+nodo
+se
+encuentra
+abajo ,
+el
+sistema tiene que responder a las peticiones enviadas . 
+Un
+nodo
+activo
+debe
+devolver una
+respuesta
+razonable
+en
+un
+periodo de tiempo r azonable (sin err ores o timeout).
+ 1.5 Teorema CAP
+29/10/2025
+61
+Partition toler ance (T olerancia al par ticionado):
+ Un sistema de be
+seguir funcionando aun cuando los nodos no se puedan com unicar
+entre sí (tempor al o per manentemente).
+ 1.5 Teorema CAP
+29/10/2025
+62
+Teorema 
+CAP
+ solo
+podem os
+cumplir
+2 de
+estos
+3
+atributos ,
+así
+que
+según
+el escenario debemos decidir que a tributos necesitamos gar antizar .
+Debemos
+tener
+en
+cuenta
+que
+en
+la
+computación
+distribuida la
+red
+nunca
+es
+confiable
+las
+caídas
+de
+red
+ocurren
+siempre
+y
+no
+las
+podemos
+controlar,
+por
+lo
+tanto, nos queda escog er entre mantener la consistencia o la accesibilidad 1.5 Teorema CAP
+29/10/2025
+63
+ 1.5 Teorema CAP
+29/10/2025
+64
+ Unidad I: FUNDAMENTOS DE
+APLICACION ES DISTRIBUIDAS
+Gestión de concur rencia
+29/10/2025
+65 Gestión de concurrencia
+•
+Concurrencia en aplicaciones distribuidas 
+•
+Hilos de ejecución en la programación distribuida
+29/10/2025
+66 Introducción
+29/10/2025
+67
+¿Qué es
+concur rencia?
+ Introducción
+•
+La
+concurrencia
+permite
+manejar
+múltiples
+tareas
+simultáneamen te
+en
+nodos remot os. 
+•
+Mejora
+el
+rendimiento
+y
+la
+escalabilidad
+en
+entornos
+como
+la
+nube
+o
+microservicios. 
+•
+Sin
+emba rgo,
+introduce
+desafí os
+únicos:
+latencia
+de
+red,
+fallos
+parciales y problemas de consistencia de datos.
+29/10/2025
+68 Concurrencia en aplicaciones distribuidas
+•
+La
+concurrencia
+distribuida
+crea
+una
+ilusión
+de
+simu ltaneidad
+entre
+nodos
+que
+no
+ejecutan
+en
+paralelo
+real
+.
+Se
+basa
+en
+comunicación
+asíncrona, como HTTP o mensajería. 
+•
+Los
+problemas
+comunes
+incluyen
+condiciones
+de
+carrera
+,
+donde
+dos
+nodos
+modifican
+el
+mismo
+recurso
+al
+mismo
+tiempo ,
+generando
+inconsistencias. 
+•
+Otros
+riesgos:
+dead locks,
+que
+bloquean
+procesos
+mutuamen te,
+y
+starvation, donde tareas se ignoran indefinidamen te. 
+•
+En
+bases
+de
+datos
+como
+Cassan dra,
+se
+elige
+consistencia
+eventual
+sobre fuerte para priorizar disponibilidad.
+29/10/2025
+69 Concurrencia en aplicaciones distribuidas
+Paradigmas para Manejar Concurrencia 
+•
+El modelo de Actores
+, en frameworks como Akka, encapsu la estado
+en actores que se comunican por mensajes inmutables, evitando
+comp artición directa. 
+•
+El modelo de Flujos Reactivos
+, con RxJava, gestiona streams de
+datos asíncronos para procesar eventos en tiempo real.
+29/10/2025
+70 Concurrencia en aplicaciones distribuidas
+Paradigmas para Manejar Concurrencia 
+•
+El modelo de Actores
+, en frameworks como Akka, encapsu la estado
+en actores que se comunican por mensajes inmutables, evitando
+comp artición directa. 
+•
+El modelo de Flujos Reactivos
+, con RxJava, gestiona streams de
+datos asíncronos para procesar eventos en tiempo real.
+29/10/2025
+71 Hilos de ejecución en la programación
+distribuida
+29/10/2025
+72
+¿Qué son l os
+HILOS?
+ Hilos de ejecución en la programación
+distribuida
+•
+Los
+hilos
+son
+unidades
+básicas
+de
+concurrencia
+,
+pero
+en
+distribuidos,
+pausan
+para
+esper ar
+respu estas
+remot as,
+agreg ando
+overhead
+de
+red.
+•
+En
+Java
+o
+Go,
+se
+crean
+con
+Thread
+o
+goroutines,
+integrados
+en
+pools
+para escalabilidad horizontal. 
+•
+Frameworks
+como
+Kubernetes
+orquestan
+contenedores
+con
+pools
+de
+hilos distribuidos.
+29/10/2025
+73
