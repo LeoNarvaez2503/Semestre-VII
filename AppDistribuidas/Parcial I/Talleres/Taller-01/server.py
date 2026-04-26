@@ -24,7 +24,7 @@ try:
 
         data = client_socket.recv(1024).decode('utf-8')
         if data:
-            partes = data.split(',')
+            partes = data.replace(',', ' ').split()
             if len(partes) == 3:
                 op ,num1_str, num2_str = partes
                 try:
@@ -34,6 +34,8 @@ try:
                     client_socket.send(str(resultado).encode('utf-8'))
                 except ValueError:
                     client_socket.send(b'Error: Numeros invalidos')
+                finally:
+                    client_socket.close()
             else:
                 client_socket.send(b'Error: Formato de datos incorrecto')
                 client_socket.close()

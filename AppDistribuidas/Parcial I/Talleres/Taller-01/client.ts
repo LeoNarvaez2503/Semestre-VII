@@ -5,19 +5,11 @@ const HOST = 'localhost';
 const PORT = 12345;
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+const client = net.connect({ port: PORT, host: HOST });
 
-rl.question("Ingrese la operacion (ej: 'suma 5 3' o 'suma,5,3'): ", (answer: string) => {
-  let msg = answer.trim();
-  if (!msg.includes(',')) {
-    const parts = msg.split(/\s+/);
-    if (parts.length === 3) {
-      msg = parts.join(',');
-    }
-  }
-
-  const client = net.createConnection({ port: PORT, host: HOST }, () => {
-    client.write(msg);
-  });
+rl.question("\nIngrese la operacion (ej: suma 5 3): ", (answer: string) => {
+  const msg = answer.trim();
+  client.write(msg);
 
   client.on('data', (data: { toString: () => any; }) => {
     console.log(`Resultado: ${data.toString()}`);
