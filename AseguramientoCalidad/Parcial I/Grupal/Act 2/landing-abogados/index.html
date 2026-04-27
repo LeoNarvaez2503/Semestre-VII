@@ -2,13 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bufete Legal Elite</title>
+    <!-- Agregando fuente de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <div class="logo">Bufete Legal Elite</div>
-        <nav>
+        <nav aria-label="Navegación principal">
             <ul>
                 <li><a href="#inicio">Inicio</a></li>
                 <li><a href="#servicios">Servicios</a></li>
@@ -17,59 +20,82 @@
             </ul>
         </nav>
     </header>
-    <section class="hero" id="inicio">
-        <h1>Defendemos tus derechos</h1>
-        <p>Asesoría legal profesional y personalizada para ti y tu empresa.</p>
-        <button onclick="mostrarAlerta()">Solicita una consulta</button>
-    </section>
-    <section class="servicios" id="servicios">
-        <h2>Nuestros Servicios</h2>
-        <div class="cards">
-            <div class="card">
-                <h3>Derecho Civil</h3>
-                <p>Soluciones en contratos, herencias y más.</p>
+    <main>
+        <section class="hero" id="inicio">
+            <h1>Defendemos tus derechos con pasión y ética</h1>
+            <p>Asesoría legal profesional y personalizada para ti y tu empresa, respaldada por años de experiencia.</p>
+            <button class="btn-primary" onclick="mostrarAlerta()" aria-label="Solicitar una consulta legal gratuita">Solicita una consulta gratuita</button>
+        </section>
+        <section class="servicios" id="servicios" aria-labelledby="titulo-servicios">
+            <h2 id="titulo-servicios">Nuestros Servicios Especializados</h2>
+            <div class="cards">
+                <div class="card" tabindex="0">
+                    <div class="icon" aria-hidden="true">⚖️</div>
+                    <h3>Derecho Civil</h3>
+                    <p>Soluciones efectivas en contratos, herencias, litigios de propiedad y asuntos de familia.</p>
+                </div>
+                <div class="card" tabindex="0">
+                    <div class="icon" aria-hidden="true">🏛️</div>
+                    <h3>Derecho Penal</h3>
+                    <p>Defensa técnica y representación vigorosa en todo tipo de procesos penales e investigaciones.</p>
+                </div>
+                <div class="card" tabindex="0">
+                    <div class="icon" aria-hidden="true">💼</div>
+                    <h3>Derecho Laboral</h3>
+                    <p>Asesoría integral en despidos, negociaciones de contratos, indemnizaciones y conflictos laborales.</p>
+                </div>
             </div>
-            <div class="card">
-                <h3>Derecho Penal</h3>
-                <p>Defensa y representación en procesos penales.</p>
+        </section>
+        <section class="equipo" id="equipo" aria-labelledby="titulo-equipo">
+            <h2 id="titulo-equipo">Conoce a Nuestro Equipo</h2>
+            <div class="miembros">
+                <div class="miembro" tabindex="0">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80" alt="Retrato del Abogado Juan Pérez, Socio Fundador">
+                    <div class="miembro-info">
+                        <h4>Lic. Juan Pérez</h4>
+                        <p>Socio Fundador / Especialista en Derecho Civil</p>
+                    </div>
+                </div>
+                <div class="miembro" tabindex="0">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80" alt="Retrato de la Abogada María López, Socia Principal">
+                    <div class="miembro-info">
+                        <h4>Dra. María López</h4>
+                        <p>Socia Principal / Especialista en Derecho Penal</p>
+                    </div>
+                </div>
+                <div class="miembro" tabindex="0">
+                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=80" alt="Retrato del Abogado Carlos Ruiz, Asociado Senior">
+                    <div class="miembro-info">
+                        <h4>Lic. Carlos Ruiz</h4>
+                        <p>Asociado Senior / Especialista en Derecho Laboral</p>
+                    </div>
+                </div>
             </div>
-            <div class="card">
-                <h3>Derecho Laboral</h3>
-                <p>Asesoría en despidos, contratos y conflictos laborales.</p>
-            </div>
-        </div>
-    </section>
-    <section class="equipo" id="equipo">
-        <h2>Nuestro Equipo</h2>
-        <div class="miembros">
-            <div class="miembro">
-                <img src="abogado1.jpg" alt="Abogado 1">
-                <h4>Lic. Juan Pérez</h4>
-                <p>Especialista en Derecho Civil</p>
-            </div>
-            <div class="miembro">
-                <img src="abogado2.jpg" alt="Abogado 2">
-                <h4>Dra. María López</h4>
-                <p>Especialista en Derecho Penal</p>
-            </div>
-            <div class="miembro">
-                <img src="abogado3.jpg" alt="Abogado 3">
-                <h4>Lic. Carlos Ruiz</h4>
-                <p>Especialista en Derecho Laboral</p>
-            </div>
-        </div>
-    </section>
-    <section class="contacto" id="contacto">
-        <h2>Contacto</h2>
-        <form>
-            <input type="text" placeholder="Nombre">
-            <input type="email" placeholder="Correo electrónico">
-            <textarea placeholder="Mensaje"></textarea>
-            <button type="button" onclick="enviarFormulario()">Enviar</button>
-        </form>
-    </section>
+        </section>
+        <section class="contacto" id="contacto" aria-labelledby="titulo-contacto">
+            <h2 id="titulo-contacto">¿Necesitas Ayuda Legal? Contáctanos</h2>
+            <p>Completa el formulario y nuestros especialistas se pondrán en contacto contigo a la brevedad.</p>
+            <form>
+                <div class="form-group">
+                    <label for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" placeholder="Ej. Juan Pérez" required aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" placeholder="ejemplo@correo.com" required aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="mensaje">Mensaje o caso</label>
+                    <textarea id="mensaje" placeholder="Cuéntanos sobre tu caso..." required aria-required="true"></textarea>
+                </div>
+                <button class="btn-primary" type="button" onclick="enviarFormulario()">Enviar Mensaje</button>
+            </form>
+        </section>
+    </main>
     <footer>
-        <p>&copy; 2026 Bufete Legal Elite. Todos los derechos reservados.</p>
+        <div class="footer-content">
+            <p>&copy; 2026 Bufete Legal Elite. Todos los derechos reservados.</p>
+        </div>
     </footer>
     <script src="script.js"></script>
 </body>
