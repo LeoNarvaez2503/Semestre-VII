@@ -21,7 +21,7 @@ def gestionar_cliente(client_socket, addr):
     try:
         data = client_socket.recv(1024).decode('utf-8')
         if data:
-            partes = data.strip.split()
+            partes = data.strip().split()
             if len(partes) == 3:
                 op,n1,n2 = partes
                 try:
@@ -29,10 +29,12 @@ def gestionar_cliente(client_socket, addr):
                     num2 = float(n2)
                     resultado = calculadora(op, num1, num2)
                     client_socket.send(str(resultado).encode('utf-8'))
-                except:
-                    client_socket.send("Error: numeros invalidos")
+                except ValueError:
+                    client_socket.send(b"Error: numeros invalidos")
+            else:
+                client_socket.send(b"Error: Formato de datos incorrecto")
         else:
-            client_socket.send("Error: Datos invalidos")
+            client_socket.send(b"Error: Datos invalidos")
     except Exception as e:
         print(f'Error en hilo: {e}')
     finally:
@@ -43,7 +45,7 @@ server_socket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 PORT = 12346
 server_socket.bind(('localhost',PORT))
 server_socket.listen(5)
-print("Servidor concurrente escando en el puerto 1234")
+print(f"Servidor concurrente escuchando en el puerto {PORT}")
 
 try:
     while True:
