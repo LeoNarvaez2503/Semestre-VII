@@ -1,0 +1,16 @@
+services:
+  mysql:
+    image: mysql:8.1
+    container_name: chatseguro-mysql
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - '${MYSQL_PORT}:3306'
+    volumes:
+      - chatseguro-mysql-data:/var/lib/mysql
+
+volumes:
+  chatseguro-mysql-data:

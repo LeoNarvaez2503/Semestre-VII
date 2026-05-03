@@ -1,0 +1,13 @@
+ec/espe/chatsegurospring/service/RoomService.class
+ec/espe/chatsegurospring/model/SharedFile.class
+ec/espe/chatsegurospring/model/RoomType.class
+ec/espe/chatsegurospring/config/WebSocketConfig.class
+ec/espe/chatsegurospring/config/SecurityConfig.class
+ec/espe/chatsegurospring/controller/ChatWebSocketController.class
+ec/espe/chatsegurospring/controller/AdminController.class
+ec/espe/chatsegurospring/ChatSeguroSpringApplication.class
+ec/espe/chatsegurospring/config/AsyncConfig.class
+ec/espe/chatsegurospring/config/AdminTokenFilter.class
+ec/espe/chatsegurospring/service/AdminTokenService.class
+ec/espe/chatsegurospring/controller/RoomController.class
+ec/espe/chatsegurospring/model/Room.class
