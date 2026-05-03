@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -24,6 +25,8 @@ import java.util.NoSuchElementException;
 public class RoomController {
 
     private final RoomService roomService;
+    private static final String ERROR_STRING="error";
+    private static final String MESSAGE_STRING="Sala no encontrada";
 
     public RoomController(RoomService roomService) {
         this.roomService = roomService;
@@ -35,26 +38,26 @@ public class RoomController {
         try {
             type = RoomType.valueOf(payload.getType().toUpperCase());
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Tipo de sala inválido"));
+            return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, "Tipo de sala inválido"));
         }
 
         try {
             Room room = roomService.createRoom(payload.getPin(), type);
             return ResponseEntity.ok(Map.of("roomId", room.getId(), "type", room.getType()));
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, ex.getMessage()));
         }
     }
 
     @PostMapping("/join")
     public ResponseEntity<?> joinRoom(@Valid @RequestBody JoinRoomRequestDTO payload, HttpServletResponse response) {
         try {
-            java.util.Optional<ec.espe.chatsegurospring.model.Room> roomOpt = roomService.findRoomByPin(payload.getPin());
+            Optional<Room> roomOpt = roomService.findRoomByPin(payload.getPin());
             if (roomOpt.isEmpty()) {
-                return ResponseEntity.status(404).body(Map.of("error", "Sala no encontrada"));
+                return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
             }
 
-            ec.espe.chatsegurospring.model.Room room = roomOpt.get();
+            Room room = roomOpt.get();
             String deviceId = payload.getDeviceId();
             if (deviceId == null || deviceId.isBlank()) {
                 deviceId = java.util.UUID.randomUUID().toString();
@@ -74,9 +77,9 @@ public class RoomController {
                     "deviceId", deviceId
             ));
         } catch (NoSuchElementException ex) {
-            return ResponseEntity.status(404).body(Map.of("error", "Sala no encontrada"));
+            return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
         } catch (IllegalStateException ex) {
-            return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+            return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, ex.getMessage()));
         }
     }
 
@@ -88,9 +91,9 @@ public class RoomController {
             roomService.saveFile(roomId, nickname, file).join();
             return ResponseEntity.ok(Map.of("ok", true));
         } catch (NoSuchElementException ex) {
-            return ResponseEntity.status(404).body(Map.of("error", "Sala no encontrada"));
+            return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
         } catch (IOException ex) {
-            return ResponseEntity.status(500).body(Map.of("error", "Error al guardar el archivo"));
+            return ResponseEntity.status(500).body(Map.of(ERROR_STRING, "Error al guardar el archivo"));
         }
     }
 
@@ -98,7 +101,7 @@ public class RoomController {
     public ResponseEntity<?> roomInfo(@PathVariable String roomId) {
         Room room = roomService.getRoom(roomId);
         if (room == null) {
-            return ResponseEntity.status(404).body(Map.of("error", "Sala no encontrada"));
+            return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
         }
         return ResponseEntity.ok(Map.of(
                 "id", room.getId(),

@@ -33,7 +33,8 @@ public class RoomService {
         this.roomRepository = roomRepository;
         try {
             Files.createDirectories(uploadsRoot);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo crear el directorio de uploads", e);
         }
     }
 
