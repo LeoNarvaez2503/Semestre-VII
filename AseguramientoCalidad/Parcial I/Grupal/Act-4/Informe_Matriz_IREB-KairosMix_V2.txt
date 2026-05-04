@@ -1,0 +1,854 @@
+Universidad de las Fuerzas Armadas ESPE
+
+Departamento: Ciencias de la Computación
+
+Carrera: Ingeniería de Software
+
+Asignatura: Análisis y Diseño de Software
+
+Apellidos y nombres de los estudiantes:
+● Flores Maya Alejandro Caetano
+● Guamán Alcivar Jordán Alexander
+● Morales Carvajal Anthony Alain
+● Narváez Criollo Leonardo Vinicio
+
+NRC: 27837
+
+Fecha de realización: 20/10/2025
+
+Informe de Matriz IREB
+
+1. Análisis
+Breve Contexto del proyecto
+KairosMix, un aplicativo orientado a la digitalización de procesos de venta y
+personalización de productos en una tienda de frutos secos.
+Este aplicativo busca automatizar y mejorar el proceso de gestión de ventas, productos,
+clientes y mezclas personalizadas de frutos secos, incluyendo funcionalidades clave como
+la generación de reportes, control del estado del pedido y cálculo de datos nutricionales
+de los productos seleccionados.
+Propósito
+
+del
+
+análisis
+
+Evaluar la calidad de los requisitos funcionales del proyecto KairosMix (Sistema de Gestión de
+Ventas y Mezclas Personalizadas) bajo el enfoque del International Requirements Engineering
+Board (IREB). El análisis busca identificar debilidades o inconsistencias en los criterios de
+calidad, documentación y nivel de acuerdo para garantizar que los requisitos sean comprensibles,
+completos, correctos y relevantes para el desarrollo.
+En este análisis se ha trabajado exclusivamente con requisitos funcionales, los cuales describen
+las funciones específicas que debe realizar el sistema para cumplir con las necesidades del
+usuario.
+
+Los criterios de calidad se agruparon en tres categorías principales para su evaluación:
+•
+
+Contenido: Acordado, Priorizado, Válido y Actualizado, Correcto, Consistente,
+Verificable, Realizable, Trazable, Completo.
+
+•
+
+Documentación: Aplica un Estándar, Cumple Estructura, Utiliza Glosario, No
+Ambiguo, Cumple Sintaxis.
+
+•
+
+Nivel de Acuerdo: Acordados con Interesados, Modificados Acordados,
+Conflictos Resueltos.
+
+2. Desarrollo
+Objetivo:
+Realizar una evaluación de la calidad de los requisitos funcionales de la Gestión de
+Productos del sistema KairosMix, aplicando los criterios de la matriz IREB, para
+identificar las debilidades y fortalezas de la especificación, y proponer recomendaciones
+
+concretas que aseguren la comprensión, consistencia y aceptación de los requisitos por
+parte de todos los interesados.
+Checklist
+RF- KAIROSMIX-1.1-Registrar Producto
+
+CONTENIDO
+No.
+
+Pregunta
+
+SI
+
+1
+
+Todos los requerimientos relevantes se
+han documentado?
+
+X
+
+2
+
+3
+
+4
+5
+6
+7
+
+8
+
+9
+
+Se han implementado las funciones
+requeridas?
+Existe algún mecanismo que permita
+seguir el impacto de dicho
+requerimiento a lo largo del resto de
+las actividades del ciclo productivo.?
+El origen de cada requerimento
+individual está claro ?
+Que tan facil es devolverse a los
+requerimientos?
+Los requerimientos reflejan las
+necesidades y deseos del cliente?
+No hay contradicciones entre los
+requerimientos?
+El requerimiento que se esta
+especificando contribuye a alcanzar un
+objetivo definido ?
+Existe un proceso acotado (en plazo y
+presupuesto) que permita determinar
+que el sistema construido satisface lo
+descrito en el propio requerimiento?
+
+NO
+
+X
+
+X
+
+X
+X
+X
+X
+
+X
+
+X
+
+SUMATORIA:
+PORCENTAJE :
+
+7
+
+2
+
+78%
+
+22%
+
+DOCUMENTACIÓN
+No.
+
+Pregunta
+
+SI
+
+NO
+
+1
+2
+3
+4
+5
+
+Aplica un estandar para la
+documetación de requerimiento?
+Cumple con la estructura definida por
+el estandar?
+Utiliza un Glosario de términos
+normalizado?
+Los requerimientos Funcionales estan
+sujetos a una única interpretación?
+El modelo aplicado cumple con la
+sintaxis?
+
+X
+X
+X
+X
+X
+
+SUMATORIA:
+PORCENTAJE :
+
+5
+
+0
+
+100%
+
+0%
+
+NIVEL DE ACUERDO
+No.
+
+Pregunta
+
+SI
+
+1
+
+Todos los requerimientos han sido
+acordados con todos los interesados?
+
+X
+
+2
+
+Todos los requerimientos modificados
+han sido acordados por todos los
+implicados?
+
+X
+
+3
+
+Han sido resueltos todos los conflictos
+conocidos respectos de los
+requerimientos?
+
+SUMATORIA:
+PORCENTAJE :
+
+NO
+
+X
+2
+
+1
+
+67%
+
+33%
+
+Documentación: La documentación muestra un resultado excelente, alcanzando el 100%
+de cumplimiento en los 5 aspectos revisados. Esto indica que se está utilizando un
+estándar para la documentación de los requisitos, se cumple con la estructura definida, se
+emplea un glosario de términos normalizado, y se asegura que los requisitos funcionales
+estén sujetos a una única interpretación, cumpliendo además con la sintaxis del modelo
+aplicado.
+Contenido: Los resultados reflejan un nivel de calidad aceptable en cuanto al contenido
+de los requisitos, con un 78% de cumplimiento (7 de 9 aspectos). Se ha documentado la
+mayoría de los requerimientos relevantes, se han implementado las funciones requeridas,
+y los requisitos reflejan las necesidades del cliente sin presentar contradicciones internas.
+Además, el origen de cada requerimiento es claro y contribuye a alcanzar un objetivo
+definido. Sin embargo, se identifican dos áreas de mejora crítica: la falta de un mecanismo
+que permita seguir el impacto del requerimiento a lo largo del ciclo de vida del producto
+(trazabilidad de impacto), y la dificultad para devolverse a los requerimientos
+(trazabilidad inversa/rastreabilidad), aspectos clave para la gestión de cambios.
+Nivel de acuerdo: El grado de acuerdo entre las partes interesadas se ubica en un 67%
+de cumplimiento (2 de 3 aspectos). Aunque todos los requerimientos, incluidos los
+modificados, han sido consensuados y acordados por todos los implicados, el resultado
+refleja que no se han resuelto todos los conflictos conocidos respecto a los requerimientos.
+Este aspecto representa el principal riesgo identificado, ya que la existencia de conflictos
+no resueltos puede llevar a posteriores re-trabajos o insatisfacción del cliente.
+RF-KAIROSMIX-1.2-Actualizar Producto
+
+CONTENIDO
+No.
+1
+2
+
+Pregunta
+Todos los requerimientos relevantes se
+han documentado?
+Se han implementado las funciones
+requeridas?
+
+SI
+X
+X
+
+NO
+
+3
+
+4
+5
+6
+7
+
+8
+
+9
+
+Existe algún mecanismo que permita
+seguir el impacto de dicho
+requerimiento a lo largo del resto de
+las actividades del ciclo productivo.?
+El origen de cada requerimento
+individual está claro ?
+Que tan facil es devolverse a los
+requerimientos?
+Los requerimientos reflejan las
+necesidades y deseos del cliente?
+No hay contradicciones entre los
+requerimientos?
+El requerimiento que se esta
+especificando contribuye a alcanzar un
+objetivo definido ?
+Existe un proceso acotado (en plazo y
+presupuesto) que permita determinar
+que el sistema construido satisface lo
+descrito en el propio requerimiento?
+
+X
+
+X
+X
+X
+X
+
+X
+
+X
+
+SUMATORIA:
+PORCENTAJE :
+
+7
+
+2
+
+78%
+
+22%
+
+DOCUMENTACIÓN
+No.
+1
+2
+3
+4
+5
+
+Pregunta
+Aplica un estandar para la
+documetación de requerimiento?
+Cumple con la estructura definida por
+el estandar?
+Utiliza un Glosario de términos
+normalizado?
+Los requerimientos Funcionales estan
+sujetos a una única interpretación?
+El modelo aplicado cumple con la
+sintaxis?
+
+SUMATORIA:
+PORCENTAJE :
+
+NIVEL DE ACUERDO
+
+SI
+
+NO
+
+X
+X
+X
+X
+X
+4
+
+1
+
+80%
+
+20%
+
+No.
+
+Pregunta
+
+SI
+
+1
+
+Todos los requerimientos han sido
+acordados con todos los interesados?
+
+X
+
+2
+
+3
+
+Todos los requerimientos modificados
+han sido acordados por todos los
+implicados?
+Han sido resueltos todos los conflictos
+conocidos respectos de los
+requerimientos?
+
+SUMATORIA:
+PORCENTAJE :
+
+NO
+
+X
+
+X
+2
+
+1
+
+67%
+
+33%
+
+Contenido: Los resultados reflejan un nivel de calidad bueno en cuanto al contenido de
+los requisitos, con un 78% de cumplimiento (7 de 9 aspectos). La mayoría de los
+requerimientos relevantes han sido documentados e implementados, reflejan las
+necesidades del cliente, no presentan contradicciones, tienen un origen claro, contribuyen
+a un objetivo definido y existe un proceso para determinar si el sistema satisface lo
+descrito. No obstante, se mantienen las debilidades críticas en la gestión de la trazabilidad:
+no existe un mecanismo para seguir el impacto del requerimiento (trazabilidad de
+impacto) ni es fácil devolverse a ellos (trazabilidad inversa/rastreabilidad), lo que
+dificulta la gestión del cambio.
+Documentación: La documentación alcanza un nivel de cumplimiento del 80% (4 de 5
+aspectos), lo que es un resultado sólido. Se aplica un estándar para la documentación, se
+cumple con su estructura, los requisitos funcionales están sujetos a una única
+interpretación y el modelo aplicado cumple con la sintaxis. El único aspecto a mejorar es
+la ausencia de un Glosario de términos normalizado, lo que podría generar ambigüedades
+en la comunicación, a pesar de que la redacción de los requisitos en sí misma es clara.
+
+Nivel de acuerdo: El grado de acuerdo entre las partes interesadas obtuvo un 67% de
+cumplimiento (2 de 3 aspectos). Aunque todos los requerimientos, incluidos los
+modificados, han sido acordados y consensuados por todos los implicados, persiste el
+problema de que no se han resuelto todos los conflictos conocidos respecto a los
+requerimientos. Este aspecto debe ser abordado con prioridad, ya que los conflictos sin
+resolver representan un riesgo potencial para la estabilidad del proyecto.
+RF-KAIROSMIX-1.3-Consultar Producto
+
+CONTENIDO
+No.
+
+Pregunta
+
+SI
+
+1
+
+Todos los requerimientos relevantes se
+han documentado?
+
+X
+
+2
+
+3
+
+4
+5
+6
+7
+
+8
+
+9
+
+Se han implementado las funciones
+requeridas?
+Existe algún mecanismo que permita
+seguir el impacto de dicho
+requerimiento a lo largo del resto de
+las actividades del ciclo productivo.?
+El origen de cada requerimento
+individual está claro ?
+Que tan facil es devolverse a los
+requerimientos?
+Los requerimientos reflejan las
+necesidades y deseos del cliente?
+No hay contradicciones entre los
+requerimientos?
+El requerimiento que se esta
+especificando contribuye a alcanzar un
+objetivo definido ?
+Existe un proceso acotado (en plazo y
+presupuesto) que permita determinar
+que el sistema construido satisface lo
+descrito en el propio requerimiento?
+
+NO
+
+X
+
+X
+
+X
+X
+X
+X
+
+X
+
+X
+
+SUMATORIA:
+PORCENTAJE :
+
+7
+
+2
+
+78%
+
+22%
+
+DOCUMENTACIÓN
+No.
+
+Pregunta
+
+SI
+
+NO
+
+1
+2
+3
+4
+5
+
+Aplica un estandar para la
+documetación de requerimiento?
+Cumple con la estructura definida por
+el estandar?
+Utiliza un Glosario de términos
+normalizado?
+Los requerimientos Funcionales estan
+sujetos a una única interpretación?
+El modelo aplicado cumple con la
+sintaxis?
+
+X
+X
+X
+X
+X
+
+SUMATORIA:
+PORCENTAJE :
+
+5
+
+0
+
+100%
+
+0%
+
+NIVEL DE ACUERDO
+No.
+1
+
+2
+
+3
+
+Pregunta
+Todos los requerimientos han sido
+acordados con todos los interesados?
+Todos los requerimientos modificados
+han sido acordados por todos los
+implicados?
+Han sido resueltos todos los conflictos
+conocidos respectos de los
+requerimientos?
+
+SUMATORIA:
+PORCENTAJE :
+
+SI
+
+NO
+
+X
+
+X
+
+X
+2
+
+1
+
+67%
+
+33%
+
+Documentación: La documentación muestra un resultado excelente, con un 100% de
+cumplimiento en los 5 aspectos revisados. Esto indica que se está utilizando un estándar
+para redactar los requerimientos, se cumple con la estructura definida, se emplea un
+glosario de términos normalizado, y la redacción evita ambigüedades (ya que están
+sujetos a una única interpretación y cumplen con la sintaxis del modelo), lo que facilita
+una comprensión uniforme de cada requisito.
+Contenido: Los resultados reflejan un buen nivel de calidad en cuanto al contenido de
+los requisitos, alcanzando un 78% de cumplimiento (7 de 9 aspectos). Se ha documentado
+la mayoría de los requerimientos relevantes, se han implementado las funciones, reflejan
+las necesidades del cliente y no presentan contradicciones. Además, cada requerimiento
+tiene un origen claro y está vinculado a un objetivo definido, y existe un proceso para
+validar la implementación. Los únicos aspectos que no se cumplen (y representan áreas
+de mejora) son la falta de un mecanismo que permita seguir el impacto del requerimiento
+a lo largo del ciclo productivo (trazabilidad de impacto) y la dificultad para devolverse a
+ellos (trazabilidad inversa/rastreabilidad).
+Nivel de acuerdo: El grado de acuerdo entre las partes interesadas obtuvo un 67% de
+cumplimiento (2 de 3 aspectos). Se confirma que todos los requisitos, incluidos los
+modificados, han sido consensuados y acordados por todos los implicados. Sin embargo,
+el principal riesgo identificado es que no se han resuelto todos los conflictos conocidos
+respecto a los requerimientos, lo cual podría amenazar la estabilidad y el éxito del
+proyecto.
+
+RF-KAIROSMIX-1.4-Eliminar Producto
+
+CONTENIDO
+No.
+1
+2
+
+3
+
+4
+5
+
+Pregunta
+Todos los requerimientos relevantes se
+han documentado?
+Se han implementado las funciones
+requeridas?
+Existe algún mecanismo que permita
+seguir el impacto de dicho
+requerimiento a lo largo del resto de
+las actividades del ciclo productivo.?
+El origen de cada requerimento
+individual está claro ?
+Que tan facil es devolverse a los
+requerimientos?
+
+SI
+
+NO
+
+X
+X
+
+X
+
+X
+X
+
+6
+7
+
+8
+
+9
+
+Los requerimientos reflejan las
+necesidades y deseos del cliente?
+No hay contradicciones entre los
+requerimientos?
+El requerimiento que se esta
+especificando contribuye a alcanzar un
+objetivo definido ?
+Existe un proceso acotado (en plazo y
+presupuesto) que permita determinar
+que el sistema construido satisface lo
+descrito en el propio requerimiento?
+
+X
+X
+
+X
+
+X
+
+SUMATORIA:
+PORCENTAJE :
+
+7
+
+2
+
+78%
+
+22%
+
+DOCUMENTACIÓN
+No.
+1
+2
+3
+4
+5
+
+Pregunta
+Aplica un estandar para la
+documetación de requerimiento?
+Cumple con la estructura definida por
+el estandar?
+Utiliza un Glosario de términos
+normalizado?
+Los requerimientos Funcionales estan
+sujetos a una única interpretación?
+El modelo aplicado cumple con la
+sintaxis?
+
+SI
+
+NO
+
+X
+X
+X
+X
+X
+
+SUMATORIA:
+PORCENTAJE :
+
+4
+
+1
+
+80%
+
+20%
+
+NIVEL DE ACUERDO
+No.
+
+Pregunta
+
+SI
+
+1
+
+Todos los requerimientos han sido
+acordados con todos los interesados?
+
+X
+
+2
+
+Todos los requerimientos modificados
+han sido acordados por todos los
+implicados?
+
+X
+
+NO
+
+3
+
+Han sido resueltos todos los conflictos
+conocidos respectos de los
+requerimientos?
+
+SUMATORIA:
+PORCENTAJE :
+
+X
+2
+
+1
+
+67%
+
+33%
+
+Contenido: Los resultados reflejan un nivel de calidad bueno en el contenido de los
+requisitos, con un 78% de cumplimiento (7 de 9 aspectos). Se han documentado los
+requisitos clave, reflejan las necesidades del cliente y no presentan contradicciones.
+Además, tienen un origen claro, contribuyen a un objetivo definido y se cuenta con un
+proceso para determinar la satisfacción del requerimiento. Las debilidades principales se
+centran en la trazabilidad: no existe un mecanismo que permita seguir el impacto de un
+requerimiento (trazabilidad de impacto) y es difícil devolverse a ellos (trazabilidad
+inversa/rastreabilidad).
+Documentación: La documentación alcanza un nivel de cumplimiento del 80% (4 de 5
+aspectos), lo que es un resultado sólido. Se aplica un estándar para la documentación, se
+cumple con la estructura definida, los requisitos funcionales están sujetos a una única
+interpretación y el modelo aplicado cumple con la sintaxis. El aspecto a corregir es la
+ausencia de un Glosario de términos normalizado, lo cual, si bien no ha afectado la
+unicidad de interpretación de los requisitos hasta ahora, puede introducir riesgos de
+ambigüedad en la comunicación general del proyecto.
+Nivel de acuerdo: El grado de acuerdo entre las partes interesadas obtuvo un 67% de
+cumplimiento (2 de 3 aspectos). Aunque se confirma que todos los requerimientos,
+incluidos los modificados, han sido acordados y consensuados por todos los implicados,
+el resultado señala la existencia de conflictos conocidos respecto a los requerimientos
+que aún no han sido resueltos. Este es el punto de mayor riesgo, ya que los desacuerdos
+pendientes pueden generar inestabilidad y re-trabajos futuros.
+
+3. Recomendaciones y conclusiones
+
+●
+
+●
+
+Conclusiones
+o
+
+Sólida Calidad del Contenido: El contenido de los requisitos es robusto,
+con un 78% de cumplimiento. Los requisitos documentados son
+relevantes, reflejan las necesidades del cliente, contribuyen a objetivos
+definidos y no presentan contradicciones. Además, se cuenta con un
+proceso para validar que el sistema satisfaga lo descrito.
+
+o
+
+Área Crítica: Trazabilidad: La principal deficiencia en el contenido es la
+falta de trazabilidad, al no existir un mecanismo para seguir el impacto de
+un requerimiento a lo largo del ciclo productivo (trazabilidad de impacto)
+ni facilidad para la trazabilidad inversa. Esta carencia eleva el riesgo de
+gestión de cambios, ya que cualquier modificación puede afectar partes no
+previstas del sistema.
+
+o
+
+Mayor Riesgo: Nivel de Acuerdo: El nivel de acuerdo es el punto más
+crítico del proyecto, con solo un 67% de cumplimiento. A pesar de que los
+requisitos (y sus modificaciones) han sido formalmente acordados,
+persiste la existencia de conflictos conocidos que no han sido resueltos.
+Esta situación representa un riesgo latente de inestabilidad, re-trabajos o
+rechazo en etapas finales, ya que no todas las partes interesadas están
+plenamente alineadas.
+
+Recomendaciones
+o
+
+o
+
+o
+
+Es fundamental convocar de inmediato una sesión de resolución de
+conflictos con todas las partes interesadas clave. El objetivo de esta
+reunión debe ser obtener un consenso definitivo y formalizar la aprobación
+de los requisitos, especialmente aquellos donde se detectaron desacuerdos
+no resueltos. Al liquidar estos conflictos, se elimina el principal riesgo de
+inestabilidad, se previenen re-trabajos costosos en fases posteriores y se
+asegura que el proyecto avance con una visión unificada.
+Se debe establecer una matriz o utilizar una herramienta de gestión que
+vincule cada requisito con su origen de negocio y con los artefactos de
+desarrollo (diseño, código y pruebas). Esta acción es crucial para
+solucionar la falta de trazabilidad de impacto e inversa identificada. Al
+hacerlo, el equipo podrá evaluar rápidamente las consecuencias de
+cualquier cambio propuesto, asegurando la coherencia del sistema y la
+facilidad para verificar el cumplimiento de cada requisito a lo largo del
+ciclo de vida.
+Aunque existe un proceso para determinar la satisfacción del
+requerimiento, se recomienda acotar este proceso formalmente en
+términos de plazo y presupuesto de pruebas. Esto implica crear casos de
+prueba específicos desde ahora que estén directamente vinculados a cada
+requisito. Esta práctica garantizará que la verificación de la
+implementación sea objetiva, planificada y limitada en recursos,
+cumpliendo así con el aspecto que no se cumple en el proceso de
+
+determinar la satisfacción.
+
+
