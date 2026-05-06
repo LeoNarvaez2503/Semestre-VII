@@ -38,6 +38,7 @@ node_modules/
 *.mtc*
 *.mlf
 *.spl
+settings.json
 *.syc
 *.tdo
 !*.pdf
