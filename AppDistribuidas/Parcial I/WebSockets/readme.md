@@ -8,7 +8,7 @@
     - Leonardo Narváez
 - **Fecha:** 2026-05-06
 
-Este proyecto es un sistema de mensajería privada en tiempo real desarrollado con Flask y Flask-SocketIO. Permite a los usuarios comunicarse en salas privadas, con funcionalidades como confirmaciones de lectura y mensajes temporales con TTL configurable. No utiliza persistencia en base de datos, almacenando los datos únicamente en memoria durante la sesión activa.
+Este taller es un sistema de mensajería privada en tiempo real desarrollado con Flask y Flask-SocketIO. Permite a los usuarios comunicarse en salas privadas, con funcionalidades como confirmaciones de lectura y mensajes temporales con TTL configurable. No utiliza persistencia en base de datos, almacenando los datos únicamente en memoria durante la sesión activa.
 
 ---
 
