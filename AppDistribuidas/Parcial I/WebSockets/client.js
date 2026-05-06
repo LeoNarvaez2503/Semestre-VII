@@ -32,8 +32,11 @@ const sendMessage = (message) => {
 }
 
 const displayMessage = (data, isOwn) => {
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
     const prefix = isOwn ? 'You' : `${data.username}`;
     console.log(`[${data.timestamp}] ${prefix}: ${data.message}`);
+    rl.prompt(true);
 }
 
 socket.on('connect', async () => {
@@ -48,15 +51,24 @@ socket.on('connect', async () => {
 
 
 socket.on('user_joined', (data) => {
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
     console.log(`${data.username} has joined the chat.`);
+    rl.prompt(true);
 });
 
 socket.on('user_list', (data) => {
-    console.log(`Users in the chat: ${data.users.join(', ')} || Just you in the chat!`);
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
+    console.log(`Users in the chat: ${data.users.join(', ')}`);
+    rl.prompt(true);
 });
 
 socket.on('user_left', (data) => {
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
     console.log(`${data.username} has left the chat.`);
+    rl.prompt(true);
 });
 
 socket.on('chatMessage', (data) => {

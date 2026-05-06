@@ -13,24 +13,24 @@ users = {}
 
 @app.route('/')
 def index():
-    #return render_template('index.html') 
-    return "<h1>Bienvenido al servidor de chat</h1>"
+    return render_template('index.html') 
 
 @socketio.on('connect')
 def handle_connect():
     print(f'Cliente conectado:`{request.sid}`')
-socketio.on('set_username')
+@socketio.on('set_username')
 def handle_set_username(data):
     username = data.get('username','Anonimo')
     users[request.sid] = username
     emit('user_joined', {'username': username}, broadcast=True,include_self=False)
-    emit('user_list', list(users.values()), broadcast=True)
+    emit('user_list', {"users": list(users.values())}, broadcast=True)
 
-@socketio.on('chat_message')
+@socketio.on('chatMessage')
 def handle_chat_message(data):
     username = users.get(request.sid, 'Anonimo')
     message = data.get('message', '')
-    emit('chat_message', {'username': username, 'message': message, "timestamp": datetime.now()}, broadcast=True)
+    timestamp = datetime.now().strftime('%H:%M:%S')
+    emit('chatMessage', {'username': username, 'message': message, "timestamp": timestamp}, broadcast=True)
 
 @socketio.on('disconnect')
 def handle_disconnect():
