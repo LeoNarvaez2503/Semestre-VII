@@ -1,13 +1,14 @@
 import './components/login-screen.js';
 import './components/chat-screen.js';
-import { state, setState, addMessage, resetState, getState } from './store/state.js';
-import { connectSocket, disconnectSocket, sendMessage } from './services/socket-service.js';
+import { state, setState, addMessage, resetState, getState, markMessageRead } from './store/state.js';
+import { connectSocket, disconnectSocket, sendMessage, sendRead } from './services/socket-service.js';
 
 const app = document.getElementById('app');
 
 function render() {
-    if (!state.connected && !state.username) {
-        app.innerHTML = '<login-screen></login-screen>';
+    if (!state.username || !state.room) {
+        const error = state.loginError || '';
+        app.innerHTML = `<login-screen data-error="${error}"></login-screen>`;
     } else {
         app.innerHTML = '<chat-screen></chat-screen>';
     }
@@ -15,17 +16,28 @@ function render() {
 
 app.addEventListener('login:submit', (e) => {
     const username = e.detail.username;
-    if (!username) return;
-    setState({ username });
+    const room = e.detail.room;
+    if (!username || !room) return;
+    setState({ username, room, loginError: '' });
     connectSocket({
         onStateChange: setState,
         onMessage: addMessage,
+        onMessageRead: ({ messageId, username }) => {
+            markMessageRead(messageId, username);
+        },
         getState
     });
 });
 
 app.addEventListener('chat:send', (e) => {
-    sendMessage(e.detail.message);
+    sendMessage(e.detail.message, e.detail.ttlSeconds);
+});
+
+app.addEventListener('chat:read', (e) => {
+    const messageId = e.detail.messageId;
+    if (!messageId) return;
+    sendRead(messageId);
+    markMessageRead(messageId, state.username);
 });
 
 app.addEventListener('chat:exit', () => {
@@ -35,13 +47,3 @@ app.addEventListener('chat:exit', () => {
 
 window.addEventListener('state:change', render);
 render();
-
-function scrollToBottom() {
-    const area = document.getElementById('messagesArea');
-    if (area) {
-        area.scrollTop = area.scrollHeight;
-    }
-}
-
-// Start the app
-init();
