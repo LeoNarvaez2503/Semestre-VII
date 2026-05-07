@@ -10,7 +10,25 @@
 
 Este taller es un sistema de mensajería privada en tiempo real desarrollado con Flask y Flask-SocketIO. Permite a los usuarios comunicarse en salas privadas, con funcionalidades como confirmaciones de lectura y mensajes temporales con TTL configurable. No utiliza persistencia en base de datos, almacenando los datos únicamente en memoria durante la sesión activa.
 
----
+
+# Descarga y Acceso al Proyecto
+
+Puedes descargar únicamente la carpeta del proyecto desde el siguiente enlace:
+
+**Repositorio:** [WebSockets - MeatPuppets](https://github.com/LeoNarvaez2503/Semestre-VII/tree/MeatPuppets/AppDistribuidas/Parcial%20I/WebSockets)
+
+Una vez descargado el repositorio o la carpeta, ubícate en la carpeta `WebSockets` antes de ejecutar cualquier comando. Puedes hacerlo de la siguiente manera:
+
+### Acceso a la carpeta WebSockets
+
+Ubícate en la carpeta del proyecto antes de ejecutar cualquier comando. Si descargaste el repositorio completo, navega hasta:
+
+```
+cd "AppDistribuidas/Parcial I/WebSockets"
+```
+
+> **Nota:**
+> - Usa la ruta relativa anterior desde donde descomprimiste o clonaste el repositorio, funciona igual en Windows, Linux y Mac.
 
 ## Funcionalidades Principales
 
@@ -30,29 +48,39 @@ Este taller es un sistema de mensajería privada en tiempo real desarrollado con
 
 ---
 
+
+*** End Patch
+
+
+      
 ## Instrucciones de Instalación y Ejecución
 
 ### 1. Configuración del Entorno
 
-1. Crear un entorno virtual:
+1. Desde la carpeta `WebSockets`, crea un entorno virtual:
    ```bash
    python -m venv venv
    ```
-2. Activar el entorno virtual:
-   ```bash
-   .\venv\Scripts\activate
-   ```
+2. Activa el entorno virtual:
+    - En Windows:
+       ```bash
+       .\venv\Scripts\activate
+       ```
+    - En Linux/Mac:
+       ```bash
+       source venv/bin/activate
+       ```
 
 ### 2. Instalación de Dependencias
 
-Ejecutar el siguiente comando para instalar las dependencias necesarias:
+Instala las dependencias necesarias:
 ```bash
 pip install Flask Flask-SocketIO eventlet Flask-Cors
 ```
 
 ### 3. Ejecución del Servidor
 
-Iniciar el servidor con el siguiente comando:
+Inicia el servidor desde la carpeta `WebSockets` con el siguiente comando:
 ```bash
 python server.py
 ```
