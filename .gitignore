@@ -48,5 +48,3 @@ settings.json
 __pycache__/
 *.py[cod]
 
-# Ignore local screenshot/image assets for WebSockets docs
-AppDistribuidas/Parcial I/WebSockets/imgs/
