@@ -72,6 +72,8 @@ http://localhost:5000
 - Ingresar un nickname único y seleccionar una sala.
 - Hacer clic en "Entrar" para unirse al chat.
 
+![Nickname y sala privada](imgs/Login-sala.png)
+
 ### 2. Enviar Mensajes
 - Escribir un mensaje en el campo de texto.
 - Seleccionar un TTL (Tiempo de Vida) para el mensaje.
@@ -81,6 +83,8 @@ http://localhost:5000
 - Los mensajes enviados mostrarán un indicador:
   - `✓`: Enviado.
   - `✓✓`: Leído por el receptor.
+
+![Chat con TTL, Enviado y leído por receptores](imgs/Login-sala.png)
 
 ### 4. Mensajes Temporales
 - Los mensajes desaparecerán automáticamente después de que expire el TTL configurado.
