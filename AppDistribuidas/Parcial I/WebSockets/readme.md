@@ -84,7 +84,7 @@ http://localhost:5000
   - `✓`: Enviado.
   - `✓✓`: Leído por el receptor.
 
-![Chat con TTL, Enviado y leído por receptores](imgs/chat.png)
+![Chat con TTL, Enviado y leído por receptores](imgs/chat.jpg)
 
 ### 4. Mensajes Temporales
 - Los mensajes desaparecerán automáticamente después de que expire el TTL configurado.
