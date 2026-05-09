@@ -6,6 +6,8 @@ import ec.espe.chatsegurospring.model.RoomUser;
 import ec.espe.chatsegurospring.model.SharedFile;
 import ec.espe.chatsegurospring.repository.RoomRepository;
 import ec.espe.chatsegurospring.repository.RoomUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -26,6 +28,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class RoomService {
+
+    private static final Logger log = LoggerFactory.getLogger(RoomService.class);
 
     private final RoomRepository roomRepository;
     private final RoomUserRepository roomUserRepository;
@@ -136,9 +140,14 @@ public class RoomService {
 
     // ─── File Upload ───────────────────────────────────────────
 
-    @Async
+    /**
+     * Guarda archivos de forma asíncrona usando el ThreadPoolTaskExecutor.
+     * Cumple requisito: "Manejo de subidas de archivos en paralelo".
+     */
+    @Async("taskExecutor")
     @Transactional
     public CompletableFuture<Void> saveFile(String roomId, String nickname, MultipartFile file) throws IOException {
+        log.info("[HILO UPLOAD] Procesando archivo '{}' en hilo: {}", file.getOriginalFilename(), Thread.currentThread().getName());
         Room room = getRoom(roomId);
         if (room == null) {
             throw new NoSuchElementException("Sala no encontrada");

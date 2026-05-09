@@ -2,7 +2,6 @@ package ec.espe.chatsegurospring.controller;
 
 import ec.espe.chatsegurospring.dto.AdminLoginRequestDTO;
 import ec.espe.chatsegurospring.service.AdminTokenService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -10,17 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
 @Validated
 public class AdminController {
-
-    @Value("${chat.admin.username}")
-    private String adminUsername;
-
-    @Value("${chat.admin.password}")
-    private String adminPassword;
 
     private final AdminTokenService tokenService;
 
@@ -30,12 +24,16 @@ public class AdminController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody AdminLoginRequestDTO payload) {
-        if (!adminUsername.equals(payload.getUsername()) || !adminPassword.equals(payload.getPassword())) {
+        // Autenticación delegada al pool de hilos (taskExecutor) vía @Async
+        Optional<String> tokenOpt = tokenService
+                .authenticateAsync(payload.getUsername(), payload.getPassword())
+                .join();
+
+        if (tokenOpt.isEmpty()) {
             return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
         }
 
-        String token = tokenService.createToken();
-        ResponseCookie cookie = ResponseCookie.from("admin-token", token)
+        ResponseCookie cookie = ResponseCookie.from("admin-token", tokenOpt.get())
                 .httpOnly(true)
                 .path("/")
                 .sameSite("Strict")
