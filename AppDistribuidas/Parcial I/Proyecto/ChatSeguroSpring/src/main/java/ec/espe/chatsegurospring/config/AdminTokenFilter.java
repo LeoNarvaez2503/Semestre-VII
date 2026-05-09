@@ -26,7 +26,13 @@ public class AdminTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.startsWith("/api/admin/login") || path.startsWith("/api/rooms/join") || path.startsWith("/api/rooms/") && path.endsWith("/info") || path.startsWith("/ws/chat") || path.startsWith("/sockjs");
+        return path.startsWith("/api/admin/login")
+                || path.startsWith("/api/admin/logout")
+                || path.startsWith("/api/rooms/join")
+                || (path.startsWith("/api/rooms/") && path.endsWith("/info"))
+                || path.startsWith("/ws/chat")
+                || path.startsWith("/sockjs")
+                || path.startsWith("/uploads/");
     }
 
     @Override

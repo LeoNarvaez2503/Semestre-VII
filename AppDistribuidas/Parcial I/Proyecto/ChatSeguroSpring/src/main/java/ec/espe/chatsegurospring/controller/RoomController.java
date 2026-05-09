@@ -4,6 +4,7 @@ import ec.espe.chatsegurospring.dto.JoinRoomRequestDTO;
 import ec.espe.chatsegurospring.dto.RoomCreateRequestDTO;
 import ec.espe.chatsegurospring.model.Room;
 import ec.espe.chatsegurospring.model.RoomType;
+import ec.espe.chatsegurospring.model.RoomUser;
 import ec.espe.chatsegurospring.service.RoomService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -25,8 +27,8 @@ import java.util.Optional;
 public class RoomController {
 
     private final RoomService roomService;
-    private static final String ERROR_STRING="error";
-    private static final String MESSAGE_STRING="Sala no encontrada";
+    private static final String ERROR_STRING = "error";
+    private static final String MESSAGE_STRING = "Sala no encontrada";
 
     public RoomController(RoomService roomService) {
         this.roomService = roomService;
@@ -63,8 +65,8 @@ public class RoomController {
                 deviceId = java.util.UUID.randomUUID().toString();
             }
 
-            roomService.joinRoom(room.getId(), payload.getNickname(), deviceId);
-            Cookie cookie = new Cookie("deviceId", deviceId);
+            RoomUser roomUser = roomService.joinRoom(room.getId(), payload.getNickname(), deviceId);
+            Cookie cookie = new Cookie("deviceId", roomUser.getDeviceId());
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24);
@@ -73,8 +75,8 @@ public class RoomController {
             return ResponseEntity.ok(Map.of(
                     "roomId", room.getId(),
                     "type", room.getType(),
-                    "nickname", payload.getNickname(),
-                    "deviceId", deviceId
+                    "nickname", roomUser.getNickname(),
+                    "deviceId", roomUser.getDeviceId()
             ));
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
@@ -92,6 +94,10 @@ public class RoomController {
             return ResponseEntity.ok(Map.of("ok", true));
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, ex.getMessage()));
         } catch (IOException ex) {
             return ResponseEntity.status(500).body(Map.of(ERROR_STRING, "Error al guardar el archivo"));
         }
@@ -106,7 +112,9 @@ public class RoomController {
         return ResponseEntity.ok(Map.of(
                 "id", room.getId(),
                 "type", room.getType(),
-                "users", room.getUsers().keySet(),
+                "users", room.getUsers().stream()
+                        .map(RoomUser::getNickname)
+                        .collect(Collectors.toList()),
                 "files", room.getFiles()
         ));
     }

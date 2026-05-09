@@ -46,6 +46,23 @@ public class AdminController {
                 .body(Map.of("ok", true));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@CookieValue(value = "admin-token", required = false) String token) {
+        tokenService.revokeToken(token);
+
+        // Clear the cookie by setting maxAge to 0
+        ResponseCookie cookie = ResponseCookie.from("admin-token", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity.ok()
+                .header("Set-Cookie", cookie.toString())
+                .body(Map.of("ok", true, "message", "Sesión cerrada"));
+    }
+
     @GetMapping("/status")
     public ResponseEntity<?> status(@CookieValue(value = "admin-token", required = false) String token) {
         return ResponseEntity.ok(Map.of("logged", token != null && tokenService.validToken(token)));

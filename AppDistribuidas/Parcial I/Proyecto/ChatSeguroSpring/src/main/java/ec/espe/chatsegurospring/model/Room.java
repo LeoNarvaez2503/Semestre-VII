@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "rooms")
@@ -20,22 +18,31 @@ public class Room {
 
     private String pinHash;
 
+    /**
+     * SHA-256 hex digest of the raw PIN, used for fast O(1) lookups
+     * instead of iterating all rooms with BCrypt.checkpw().
+     */
+    @Column(name = "pin_digest", length = 64)
+    private String pinDigest;
+
     private long createdAt;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonIgnoreProperties("room")
     private List<SharedFile> files = new ArrayList<>();
 
-    @Transient
-    private Map<String, String> users = new LinkedHashMap<>();
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("room")
+    private List<RoomUser> users = new ArrayList<>();
 
     protected Room() {
     }
 
-    public Room(String id, RoomType type, String pinHash, long createdAt) {
+    public Room(String id, RoomType type, String pinHash, String pinDigest, long createdAt) {
         this.id = id;
         this.type = type;
         this.pinHash = pinHash;
+        this.pinDigest = pinDigest;
         this.createdAt = createdAt;
     }
 
@@ -51,13 +58,17 @@ public class Room {
         return pinHash;
     }
 
+    public String getPinDigest() {
+        return pinDigest;
+    }
+
     public long getCreatedAt() {
         return createdAt;
     }
 
-    public Map<String, String> getUsers() {
+    public List<RoomUser> getUsers() {
         if (users == null) {
-            users = new LinkedHashMap<>();
+            users = new ArrayList<>();
         }
         return users;
     }

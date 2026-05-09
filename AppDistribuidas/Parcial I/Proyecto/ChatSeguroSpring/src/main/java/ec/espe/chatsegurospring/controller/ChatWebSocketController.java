@@ -24,10 +24,19 @@ public class ChatWebSocketController {
     public Map<String, Object> sendMessage(@DestinationVariable String roomId, @Payload Map<String, String> payload) {
         String nickname = payload.get("nickname");
         String message = payload.get("message");
-        ec.espe.chatsegurospring.model.Room room = roomService.getRoom(roomId);
 
+        Room room = roomService.getRoom(roomId);
         if (room == null) {
             return Map.of("error", "Sala no encontrada");
+        }
+
+        // Validate that the sender is actually a member of this room
+        if (nickname == null || !roomService.isMember(roomId, nickname)) {
+            return Map.of("error", "No eres miembro de esta sala");
+        }
+
+        if (message == null || message.isBlank()) {
+            return Map.of("error", "El mensaje no puede estar vacío");
         }
 
         return Map.of(

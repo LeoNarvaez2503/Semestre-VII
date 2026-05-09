@@ -1,6 +1,8 @@
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/model/SharedFile.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/ChatSeguroSpringApplication.java
+/home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/config/WebMvcConfig.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/dto/JoinRoomRequestDTO.java
+/home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/repository/RoomUserRepository.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/model/Room.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/controller/RoomController.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/config/AdminTokenFilter.java
@@ -10,8 +12,9 @@
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/service/AdminTokenService.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/config/DotenvEnvironmentPostProcessor.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/controller/ChatWebSocketController.java
-/home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/config/WebSocketConfig.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/config/AsyncConfig.java
+/home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/config/WebSocketConfig.java
+/home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/model/RoomUser.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/repository/RoomRepository.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/dto/RoomCreateRequestDTO.java
 /home/meatpuppets/Repositorio/Semestre-VII/AppDistribuidas/Parcial I/Proyecto/ChatSeguroSpring/src/main/java/ec/espe/chatsegurospring/config/SecurityConfig.java
