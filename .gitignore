@@ -42,4 +42,5 @@ node_modules/
 *.syc
 *.tdo
 !*.pdf
-*.tex
+*.tex.agents/
+skills-lock.json
