@@ -1,2 +1,5 @@
 .env
 uploads/
+target/
+.idea/
+*.class

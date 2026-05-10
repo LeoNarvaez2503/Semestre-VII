@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -76,8 +77,7 @@ public class RoomController {
                     "roomId", room.getId(),
                     "type", room.getType(),
                     "nickname", roomUser.getNickname(),
-                    "deviceId", roomUser.getDeviceId()
-            ));
+                    "deviceId", roomUser.getDeviceId()));
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
         } catch (IllegalStateException ex) {
@@ -87,12 +87,12 @@ public class RoomController {
 
     @PostMapping(path = "/{roomId}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadFile(@PathVariable String roomId,
-                                        @RequestParam String nickname,
-                                        @RequestParam MultipartFile file) {
+            @RequestParam String nickname,
+            @RequestParam MultipartFile file) {
         try {
             roomService.saveFile(roomId, nickname, file).join();
             return ResponseEntity.ok(Map.of("ok", true));
-        } catch (java.util.concurrent.CompletionException ex) {
+        } catch (CompletionException ex) {
             Throwable cause = ex.getCause();
             if (cause instanceof NoSuchElementException) {
                 return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
@@ -117,7 +117,6 @@ public class RoomController {
                 "users", room.getUsers().stream()
                         .map(RoomUser::getNickname)
                         .collect(Collectors.toList()),
-                "files", room.getFiles()
-        ));
+                "files", room.getFiles()));
     }
 }

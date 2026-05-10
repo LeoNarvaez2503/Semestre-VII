@@ -1,6 +1,7 @@
 package ec.espe.chatsegurospring.controller;
 
 import ec.espe.chatsegurospring.dto.AdminLoginRequestDTO;
+import ec.espe.chatsegurospring.repository.RoomRepository;
 import ec.espe.chatsegurospring.service.AdminTokenService;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,9 @@ import java.util.Optional;
 public class AdminController {
 
     private final AdminTokenService tokenService;
-    private final ec.espe.chatsegurospring.repository.RoomRepository roomRepository;
+    private final RoomRepository roomRepository;
 
-    public AdminController(AdminTokenService tokenService, ec.espe.chatsegurospring.repository.RoomRepository roomRepository) {
+    public AdminController(AdminTokenService tokenService, RoomRepository roomRepository) {
         this.tokenService = tokenService;
         this.roomRepository = roomRepository;
     }
@@ -73,15 +74,14 @@ public class AdminController {
         if (token == null || !tokenService.validToken(token)) {
             return ResponseEntity.status(401).body(Map.of("error", "No autorizado"));
         }
-        
+
         java.util.List<Map<String, Object>> rooms = roomRepository.findAll().stream()
                 .map(room -> Map.<String, Object>of(
                         "id", room.getId(),
                         "type", room.getType(),
-                        "createdAt", room.getCreatedAt()
-                ))
+                        "createdAt", room.getCreatedAt()))
                 .collect(java.util.stream.Collectors.toList());
-                
+
         return ResponseEntity.ok(rooms);
     }
 }
