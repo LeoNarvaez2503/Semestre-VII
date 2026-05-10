@@ -5,14 +5,18 @@ import ec.espe.chatsegurospring.service.RoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 @Controller
@@ -23,6 +27,9 @@ public class ChatWebSocketController {
     private final RoomService roomService;
     private final SimpMessagingTemplate messagingTemplate;
     private final Executor taskExecutor;
+    
+    // Tracks sessionId -> [roomId, nickname]
+    private final Map<String, String[]> sessionMap = new ConcurrentHashMap<>();
 
     public ChatWebSocketController(RoomService roomService,
                                    SimpMessagingTemplate messagingTemplate,
@@ -32,15 +39,11 @@ public class ChatWebSocketController {
         this.taskExecutor = taskExecutor;
     }
 
-    /**
-     * Recibe mensajes STOMP y los retransmite (broadcast) a todos los suscriptores
-     * de la sala usando un hilo dedicado del ThreadPoolTaskExecutor.
-     * Cumple requisito: "Transmisión de mensajes a múltiples usuarios sin bloquear el servidor".
-     */
     @MessageMapping("/chat/{roomId}")
-    public void sendMessage(@DestinationVariable String roomId, @Payload Map<String, String> payload) {
+    public void sendMessage(@DestinationVariable String roomId, @Payload Map<String, String> payload, SimpMessageHeaderAccessor headerAccessor) {
         String nickname = payload.get("nickname");
         String message = payload.get("message");
+        String sessionId = headerAccessor.getSessionId();
 
         Room room = roomService.getRoom(roomId);
         if (room == null) {
@@ -48,10 +51,14 @@ public class ChatWebSocketController {
             return;
         }
 
-        // Validate that the sender is actually a member of this room
         if (nickname == null || !roomService.isMember(roomId, nickname)) {
             messagingTemplate.convertAndSend("/topic/room/" + roomId, Map.of("error", "No eres miembro de esta sala"));
             return;
+        }
+        
+        // Track session to remove user on disconnect
+        if (sessionId != null) {
+            sessionMap.put(sessionId, new String[]{roomId, nickname});
         }
 
         if (message == null || message.isBlank()) {
@@ -66,11 +73,31 @@ public class ChatWebSocketController {
                 "timestamp", System.currentTimeMillis()
         );
 
-        // Broadcast asíncrono en hilo del pool → no bloquea el hilo WebSocket
         CompletableFuture.runAsync(() -> {
             log.info("[HILO BROADCAST] Enviando mensaje a /topic/room/{} en hilo: {}", roomId, Thread.currentThread().getName());
             messagingTemplate.convertAndSend("/topic/room/" + roomId, outgoing);
         }, taskExecutor);
+    }
+    
+    @EventListener
+    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
+        String sessionId = event.getSessionId();
+        String[] data = sessionMap.remove(sessionId);
+        if (data != null) {
+            String roomId = data[0];
+            String nickname = data[1];
+            log.info("Usuario desconectado de WS: {}, saliendo de sala: {}", nickname, roomId);
+            roomService.leaveRoom(roomId, nickname);
+            
+            // Optional: Notify room that user left
+            Map<String, Object> outgoing = Map.of(
+                "roomId", roomId,
+                "nickname", "SISTEMA",
+                "message", nickname + " ha abandonado la sala.",
+                "timestamp", System.currentTimeMillis()
+            );
+            messagingTemplate.convertAndSend("/topic/room/" + roomId, outgoing);
+        }
     }
 }
 

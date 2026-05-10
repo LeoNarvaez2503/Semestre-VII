@@ -113,16 +113,25 @@ public class RoomService {
             RoomUser existing = existingUser.get();
             // If already in THIS room, return existing session
             if (existing.getRoom().getId().equals(roomId)) {
-                return existing;
+                existing.setActive(true);
+                return roomUserRepository.save(existing);
             }
-            // If in ANOTHER room, auto-remove from old room (allow room switching)
+            // If in ANOTHER room, delete from old room to free deviceId
             roomUserRepository.delete(existing);
             roomUserRepository.flush();
         }
 
         // Verify nickname uniqueness within the room
-        if (roomUserRepository.existsByRoom_IdAndNickname(roomId, nickname)) {
-            throw new IllegalStateException("Nickname ya existente en la sala");
+        Optional<RoomUser> existingNick = roomUserRepository.findByRoom_IdAndNickname(roomId, nickname);
+        if (existingNick.isPresent()) {
+            RoomUser ru = existingNick.get();
+            if (!ru.isActive()) {
+                ru.setActive(true);
+                ru.setDeviceId(deviceId);
+                return roomUserRepository.save(ru);
+            } else {
+                throw new IllegalStateException("Nickname ya existente en la sala");
+            }
         }
 
         RoomUser roomUser = new RoomUser(nickname, deviceId, Instant.now().toEpochMilli(), room);
@@ -131,15 +140,20 @@ public class RoomService {
 
     @Transactional
     public synchronized void leaveRoom(String roomId, String nickname) {
-        roomUserRepository.deleteByRoom_IdAndNickname(roomId, nickname);
+        roomUserRepository.findByRoom_IdAndNickname(roomId, nickname).ifPresent(user -> {
+            user.setActive(false);
+            roomUserRepository.save(user);
+        });
     }
 
     /**
-     * Verifies that a given nickname is a member of the specified room.
+     * Verifies that a given nickname is an active member of the specified room.
      */
     @Transactional(readOnly = true)
     public boolean isMember(String roomId, String nickname) {
-        return roomUserRepository.existsByRoom_IdAndNickname(roomId, nickname);
+        return roomUserRepository.findByRoom_IdAndNickname(roomId, nickname)
+                .map(RoomUser::isActive)
+                .orElse(false);
     }
 
     // ─── File Upload ───────────────────────────────────────────
