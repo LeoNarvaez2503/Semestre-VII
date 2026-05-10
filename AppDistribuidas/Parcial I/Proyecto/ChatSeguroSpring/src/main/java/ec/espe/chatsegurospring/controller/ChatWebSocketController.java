@@ -39,6 +39,9 @@ public class ChatWebSocketController {
      */
     @MessageMapping("/chat/{roomId}")
     public void sendMessage(@DestinationVariable String roomId, @Payload Map<String, String> payload) {
+        log.info("Recibido - roomId: {}, payload: {}", roomId, payload);
+        log.info("isMember: {}", roomService.isMember(roomId, payload.get("nickname")));
+        
         String nickname = payload.get("nickname");
         String message = payload.get("message");
 

@@ -31,6 +31,7 @@ public class AdminTokenFilter extends OncePerRequestFilter {
                 || path.startsWith("/api/rooms/join")
                 || (path.startsWith("/api/rooms/") && path.endsWith("/info"))
                 || path.startsWith("/ws/chat")
+                || path.startsWith("/ws/") // Added to exclude /ws/**
                 || path.startsWith("/sockjs")
                 || path.startsWith("/uploads/");
     }
