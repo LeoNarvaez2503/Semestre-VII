@@ -151,15 +151,13 @@ public class RoomService {
         }
 
         // Verify nickname uniqueness within the room
-        Optional<RoomUser> existingNick = roomUserRepository.findByRoom_IdAndNickname(roomId, nickname);
-        if (existingNick.isPresent()) {
-            RoomUser ru = existingNick.get();
-            if (!ru.isActive()) {
-                ru.setActive(true);
-                ru.setDeviceId(deviceId);
-                return roomUserRepository.save(ru);
-            } else {
+        Optional<RoomUser> existingNickUser = roomUserRepository.findByRoom_IdAndNickname(roomId, nickname);
+        if (existingNickUser.isPresent()) {
+            if (existingNickUser.get().isActive()) {
                 throw new IllegalStateException("Nickname ya existente en la sala");
+            } else {
+                roomUserRepository.delete(existingNickUser.get());
+                roomUserRepository.flush();
             }
         }
 
@@ -169,10 +167,7 @@ public class RoomService {
 
     @Transactional
     public synchronized void leaveRoom(String roomId, String nickname) {
-        roomUserRepository.findByRoom_IdAndNickname(roomId, nickname).ifPresent(user -> {
-            user.setActive(false);
-            roomUserRepository.save(user);
-        });
+        roomUserRepository.deleteByRoom_IdAndNickname(roomId, nickname);
     }
 
     @Transactional
@@ -193,9 +188,7 @@ public class RoomService {
      */
     @Transactional(readOnly = true)
     public boolean isMember(String roomId, String nickname) {
-        return roomUserRepository.findByRoom_IdAndNickname(roomId, nickname)
-                .map(RoomUser::isActive)
-                .orElse(false);
+        return roomUserRepository.existsByRoom_IdAndNickname(roomId, nickname);
     }
 
     // ─── File Upload ───────────────────────────────────────────

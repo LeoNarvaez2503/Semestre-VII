@@ -100,6 +100,10 @@ public class RoomController {
                 return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, cause.getMessage()));
             }
             return ResponseEntity.status(500).body(Map.of(ERROR_STRING, "Error interno al guardar el archivo"));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
+        } catch (IllegalStateException | IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, ex.getMessage()));
         } catch (Exception ex) {
             return ResponseEntity.status(500).body(Map.of(ERROR_STRING, "Error al procesar el archivo"));
         }

@@ -49,9 +49,9 @@ public class SecurityConfig {
                             "/api/rooms/**/info",
                             "/api/rooms/**/upload",
                             "/uploads/**",
-                            "/error"
+                            "/error",
+                            "/api/rooms/create"
                     ).permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/rooms/create").authenticated()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(new AdminTokenFilter(adminTokenService), BasicAuthenticationFilter.class);
