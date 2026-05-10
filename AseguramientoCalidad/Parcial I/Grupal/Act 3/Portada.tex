@@ -1,0 +1,166 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage[most]{tcolorbox}
+\usepackage{mathptmx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage{caption}
+
+\setlength{\parindent}{0pt}
+\setlength{\headheight}{26pt}
+
+% ─── Colores ────────────────────────────────────────────────────────────────
+\definecolor{colorPrimario}{RGB}{30,60,114}
+\definecolor{colorCodigo}{RGB}{245,245,245}
+\definecolor{colorAlerta}{RGB}{255,243,205}
+\definecolor{colorAlertaBorde}{RGB}{255,193,7}
+\definecolor{colorVerde}{RGB}{39,174,96}
+
+% ─── Estilo de código ───────────────────────────────────────────────────────
+\lstset{
+  backgroundcolor=\color{colorCodigo},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  framesep=5pt,
+  rulecolor=\color{gray!40},
+  xleftmargin=10pt,
+  xrightmargin=10pt,
+  showstringspaces=false,
+  keywordstyle=\color{colorPrimario}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{colorVerde},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt
+}
+
+% ─── Encabezado y pie ────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+
+\lhead{%
+  \setlength{\unitlength}{0.5mm}%
+  \begin{picture}(0,0)
+    \put(-1,0){\includegraphics[width=12mm]{LogoCarrera.jpg}}
+  \end{picture}%
+}
+
+\rhead{\thepage}
+
+% Línea negra del encabezado
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headrule}{%
+  \hbox to\headwidth{\color{black}\leaders\hrule height \headrulewidth\hfill}
+}
+
+% Sin línea en el pie
+\renewcommand{\footrulewidth}{0pt}
+
+% ─── Secciones ───────────────────────────────────────────────────────────────
+% Quitada la línea debajo de section
+\titleformat{\section}
+  {\large\bfseries\color{colorPrimario}}
+  {\thesection.}{0.5em}{}
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{colorPrimario!80}}
+  {\thesubsection.}{0.5em}{}
+
+\titlespacing*{\section}{0pt}{1ex}{0.6ex}
+\titlespacing*{\subsection}{0pt}{0.8ex}{0.4ex}
+
+% ─── Cajas ───────────────────────────────────────────────────────────────────
+\tcbuselibrary{skins,breakable}
+
+\newtcolorbox{cajaAlerta}{
+  colback=colorAlerta,
+  colframe=colorAlertaBorde,
+  fonttitle=\bfseries,
+  title={\faExclamationTriangle\quad Consideración de Seguridad},
+  breakable
+}
+
+\newtcolorbox{cajaInfo}{
+  colback=blue!5,
+  colframe=colorPrimario,
+  fonttitle=\bfseries,
+  title={\faInfoCircle\quad Observación Técnica},
+  breakable
+}
+
+% ─── Hipervínculos ───────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=colorPrimario,
+  urlcolor=colorPrimario,
+  citecolor=colorPrimario
+}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+% ══════════════════════════════════════════════════════════════════════════════
+
+% ─── Portada ──────────────────────────────────────────────────────────────────
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+
+{\bfseries\Large \MakeUppercase{Universidad de las Fuerzas Armadas ESPE}\par}
+\vspace{2cm}
+
+\includegraphics[width=0.8\textwidth]{ESPE_LOGO.png}
+
+\vspace{1cm}
+
+{\bfseries\Large Departamento de Ciencias de la Computación\par}
+
+\vspace{2.5cm}
+
+{\bfseries\huge Informe de Evaluación de Usabilidad y Satisfacción del Usuario\par}
+
+\vspace{2cm}
+
+\vfill
+
+{\large \textbf{Integrantes:}\par}
+{\large Caetano Flores\\Jordan Guaman\\Leonardo Narvaez\par}
+\vspace{0.4cm}
+
+{\large \textbf{Docente:}\par}
+{\large Sang Guun Yoo\par}
+\vspace{0.4cm}
+
+{\large \textbf{Materia:}\par}
+{\large Aseguramiento de la Calidad de Software\par}
+\vspace{0.4cm}
+
+{\large \textbf{NRC:}\par}
+{\large 30809\par}
+
+\vfill
+
+{\large \textbf{3 de Mayo de 2026}\par}
+\end{titlepage}
+
+% ─── Tabla de contenidos ──────────────────────────────────────────────────────
+\tableofcontents
+\newpage

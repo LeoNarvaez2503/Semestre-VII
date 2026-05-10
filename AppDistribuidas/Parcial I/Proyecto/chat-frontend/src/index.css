@@ -236,6 +236,12 @@ a:hover {
   color: var(--text-muted);
 }
 
+.form-input::-ms-reveal,
+.form-input::-webkit-contacts-auto-fill-button,
+.form-input::-webkit-credentials-auto-fill-button {
+  filter: invert(1);
+}
+
 .form-select {
   appearance: none;
   width: 100%;

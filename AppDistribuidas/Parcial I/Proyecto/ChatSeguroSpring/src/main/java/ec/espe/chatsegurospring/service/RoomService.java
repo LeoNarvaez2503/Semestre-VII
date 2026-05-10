@@ -62,6 +62,10 @@ public class RoomService {
             throw new IllegalArgumentException("El PIN debe tener " + pinLength + " dígitos");
         }
 
+        if (findRoomByPin(pin).isPresent()) {
+            throw new IllegalArgumentException("Ya existe una sala con este PIN");
+        }
+
         String roomId = UUID.randomUUID().toString().substring(0, 8);
         String pinHash = BCrypt.hashpw(pin, BCrypt.gensalt());
         String pinDigest = sha256(pin);

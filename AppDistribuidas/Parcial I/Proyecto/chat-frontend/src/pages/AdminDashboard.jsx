@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { adminStatus, adminLogout, createRoom } from '../services/api.js'
+import { adminStatus, adminLogout, createRoom, getAdminRooms } from '../services/api.js'
 
 export default function AdminDashboard() {
   const [rooms, setRooms] = useState([])
@@ -18,6 +18,14 @@ export default function AdminDashboard() {
         const data = await adminStatus()
         if (!data.logged) {
           navigate('/admin')
+        } else {
+          // Fetch existing rooms
+          try {
+            const adminRooms = await getAdminRooms();
+            setRooms(adminRooms);
+          } catch (e) {
+            console.error("Error al cargar las salas:", e);
+          }
         }
       } catch {
         navigate('/admin')
@@ -120,12 +128,12 @@ export default function AdminDashboard() {
 
         {rooms.length > 0 && (
           <div className="rooms-grid">
-            <div className="divider">Salas creadas en esta sesión</div>
+            <div className="divider">Salas activas</div>
             {rooms.map((room) => (
               <div key={room.id} className="room-card">
                 <div className="room-card-info">
                   <span className="room-card-id">#{room.id}</span>
-                  <span className="room-card-meta">PIN: {room.pin}</span>
+                  {room.pin && <span className="room-card-meta">PIN: {room.pin}</span>}
                 </div>
                 <span className={`badge badge-${room.type.toLowerCase()}`}>
                   {room.type}

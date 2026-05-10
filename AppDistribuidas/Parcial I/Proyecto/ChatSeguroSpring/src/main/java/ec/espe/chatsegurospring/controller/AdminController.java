@@ -17,9 +17,11 @@ import java.util.Optional;
 public class AdminController {
 
     private final AdminTokenService tokenService;
+    private final ec.espe.chatsegurospring.repository.RoomRepository roomRepository;
 
-    public AdminController(AdminTokenService tokenService) {
+    public AdminController(AdminTokenService tokenService, ec.espe.chatsegurospring.repository.RoomRepository roomRepository) {
         this.tokenService = tokenService;
+        this.roomRepository = roomRepository;
     }
 
     @PostMapping("/login")
@@ -64,5 +66,22 @@ public class AdminController {
     @GetMapping("/status")
     public ResponseEntity<?> status(@CookieValue(value = "admin-token", required = false) String token) {
         return ResponseEntity.ok(Map.of("logged", token != null && tokenService.validToken(token)));
+    }
+
+    @GetMapping("/rooms")
+    public ResponseEntity<?> getAllRooms(@CookieValue(value = "admin-token", required = false) String token) {
+        if (token == null || !tokenService.validToken(token)) {
+            return ResponseEntity.status(401).body(Map.of("error", "No autorizado"));
+        }
+        
+        java.util.List<Map<String, Object>> rooms = roomRepository.findAll().stream()
+                .map(room -> Map.<String, Object>of(
+                        "id", room.getId(),
+                        "type", room.getType(),
+                        "createdAt", room.getCreatedAt()
+                ))
+                .collect(java.util.stream.Collectors.toList());
+                
+        return ResponseEntity.ok(rooms);
     }
 }

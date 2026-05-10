@@ -224,6 +224,26 @@ export default function ChatRoom() {
                   <>
                     <span className="file-name">{selectedFile.name}</span>
                     <button
+                      type="button"
+                      aria-label="Descartar archivo"
+                      onClick={() => {
+                        setSelectedFile(null);
+                        setUploadError('');
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                      }}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--danger)',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        fontWeight: 'bold',
+                        padding: '0 var(--space-2)'
+                      }}
+                    >
+                      ×
+                    </button>
+                    <button
                       onClick={handleUpload}
                       className="btn btn-primary btn-sm"
                       disabled={uploading}

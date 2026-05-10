@@ -91,7 +91,7 @@ graph TD
 
 - **Java 21**
 - **Maven**
-- **Node.js 18+** y **npm**
+- **Node.js 22+** y **npm**
 - **Docker y Docker Compose** (para la base de datos)
 
 ---
@@ -110,8 +110,15 @@ docker compose up -d
 Las variables de entorno se leen del archivo `.env` en el directorio raíz del backend. Asegúrate de tenerlo configurado:
 
 - `MYSQL_ROOT_PASSWORD`
+- `MYSQL_DATABASE` / `MYSQL_PORT` (Configuración de DB)
+- `SPRING_DATASOURCE_URL` / `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` (Configuración de conexión JDBC para Spring Boot)
 - `CHAT_ADMIN_USERNAME` / `CHAT_ADMIN_PASSWORD` (Credenciales del admin)
 - `CHAT_UPLOAD_ALLOWED_TYPES` / `CHAT_UPLOAD_MAX_SIZE` (Configuración de multimedia)
+
+#### Descripción de variables
+
+- `CHAT_UPLOAD_ALLOWED_TYPES`: Tipos MIME permitidos para subida de archivos.
+- `CHAT_UPLOAD_MAX_SIZE`: Tamaño máximo permitido en bytes
 
 ### 3. Ejecutar el Backend (Spring Boot)
 
@@ -149,7 +156,7 @@ _(El frontend incluye un proxy configurado en `vite.config.js` que enruta autom�
    - Navega a `http://localhost:5173/`
    - Ingresa el PIN de la sala previamente creada y un nickname.
    - Serás redirigido a la sala en tiempo real.
-   - Si la sala es multimedia, podrás adjuntar y enviar archivos (PNG, JPEG, PDF, etc.).
+   - Si la sala es multimedia, podrás adjuntar y enviar archivos (PNG, JPEG, PDF, etc.) de hasta 10MB.
    - Puedes abrir múltiples pestañas o navegadores para simular varios usuarios chateando simultáneamente.
 
 ---
