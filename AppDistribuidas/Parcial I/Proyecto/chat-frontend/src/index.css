@@ -557,6 +557,10 @@ a:hover {
   flex-direction: column;
 }
 
+.sidebar-close {
+  display: none;
+}
+
 .sidebar h3 {
   font-size: var(--font-sm);
   font-weight: 600;
