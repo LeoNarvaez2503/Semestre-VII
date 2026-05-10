@@ -10,8 +10,6 @@ import ec.espe.chatsegurospring.repository.RoomUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -20,9 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Optional;
@@ -472,7 +467,8 @@ class RoomServiceTest extends BaseTest {
     void testSaveFile_NullOriginalFilename_UsesUnnamed() throws IOException {
         String roomId = "room-1";
         Room room = new Room(roomId, RoomType.MULTIMEDIA, "hash", "digest", System.currentTimeMillis());
-        room.getFiles().add(new SharedFile("test.png", "/uploads/test.png", "image/png", 1000, "Juan", System.currentTimeMillis(), room));
+        room.getFiles().add(new SharedFile("test.png", "/uploads/test.png", "image/png", 1000, "Juan",
+                System.currentTimeMillis(), room));
 
         when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
 

@@ -4,9 +4,6 @@ import ec.espe.chatsegurospring.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
@@ -16,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @DisplayName("AdminTokenService - Pruebas Unitarias")
 class AdminTokenServiceTest extends BaseTest {
