@@ -1,0 +1,31 @@
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gatling
+results/
+chat-load-test-results-*/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

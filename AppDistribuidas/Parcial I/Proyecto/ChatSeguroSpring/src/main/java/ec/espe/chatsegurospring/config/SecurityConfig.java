@@ -46,9 +46,10 @@ public class SecurityConfig {
                             "/**/*.gif",
                             "/api/rooms/join",
                             "/api/rooms/**/info",
-                            "/uploads/**"
+                            "/api/rooms/**/upload",
+                            "/uploads/**",
+                            "/api/rooms/create"
                     ).permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/rooms/create").authenticated()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(new AdminTokenFilter(adminTokenService), BasicAuthenticationFilter.class);
