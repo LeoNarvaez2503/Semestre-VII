@@ -10,9 +10,21 @@ export default function AdminDashboard() {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [checking, setChecking] = useState(true)
+  const [pinCache, setPinCache] = useState({})
   const navigate = useNavigate()
 
   useEffect(() => {
+    let cachedPins = {}
+    const raw = localStorage.getItem('adminRoomPins')
+    if (raw) {
+      try {
+        cachedPins = JSON.parse(raw)
+        setPinCache(cachedPins)
+      } catch {
+        localStorage.removeItem('adminRoomPins')
+      }
+    }
+
     async function checkAuth() {
       try {
         const data = await adminStatus()
@@ -22,7 +34,10 @@ export default function AdminDashboard() {
           // Fetch existing rooms
           try {
             const adminRooms = await getAdminRooms();
-            setRooms(adminRooms);
+            setRooms(adminRooms.map((room) => ({
+              ...room,
+              pin: cachedPins[room.id] || room.pin,
+            })));
           } catch (e) {
             console.error("Error al cargar las salas:", e);
           }
@@ -44,6 +59,9 @@ export default function AdminDashboard() {
 
     try {
       const data = await createRoom(pin, roomType)
+      const nextCache = { ...pinCache, [data.roomId]: pin }
+      setPinCache(nextCache)
+      localStorage.setItem('adminRoomPins', JSON.stringify(nextCache))
       setRooms((prev) => [
         { id: data.roomId, type: data.type, pin },
         ...prev,
