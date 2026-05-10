@@ -62,6 +62,10 @@ public class RoomService {
             throw new IllegalArgumentException("El PIN debe tener " + pinLength + " dígitos");
         }
 
+        if (findRoomByPin(pin).isPresent()) {
+            throw new IllegalArgumentException("Ya existe una sala con este PIN");
+        }
+
         String roomId = UUID.randomUUID().toString().substring(0, 8);
         String pinHash = BCrypt.hashpw(pin, BCrypt.gensalt());
         String pinDigest = sha256(pin);
@@ -92,6 +96,24 @@ public class RoomService {
 
     // ─── User Management (persistent) ──────────────────────────
 
+    public static final class LeaveInfo {
+        private final String roomId;
+        private final String nickname;
+
+        private LeaveInfo(String roomId, String nickname) {
+            this.roomId = roomId;
+            this.nickname = nickname;
+        }
+
+        public String getRoomId() {
+            return roomId;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+    }
+
     @Transactional
     public synchronized RoomUser joinRoom(String roomId, String nickname, String deviceId) {
         Room room = getRoom(roomId);
@@ -109,16 +131,34 @@ public class RoomService {
             RoomUser existing = existingUser.get();
             // If already in THIS room, return existing session
             if (existing.getRoom().getId().equals(roomId)) {
-                return existing;
+                if (!existing.getNickname().equals(nickname)) {
+                    Optional<RoomUser> existingNick = roomUserRepository.findByRoom_IdAndNickname(roomId, nickname);
+                    if (existingNick.isPresent() && !existingNick.get().getId().equals(existing.getId())) {
+                        if (existingNick.get().isActive()) {
+                            throw new IllegalStateException("Nickname ya existente en la sala");
+                        }
+                        roomUserRepository.delete(existingNick.get());
+                        roomUserRepository.flush();
+                    }
+                    existing.setNickname(nickname);
+                }
+                existing.setActive(true);
+                return roomUserRepository.save(existing);
             }
-            // If in ANOTHER room, auto-remove from old room (allow room switching)
+            // If in ANOTHER room, delete from old room to free deviceId
             roomUserRepository.delete(existing);
             roomUserRepository.flush();
         }
 
         // Verify nickname uniqueness within the room
-        if (roomUserRepository.existsByRoom_IdAndNickname(roomId, nickname)) {
-            throw new IllegalStateException("Nickname ya existente en la sala");
+        Optional<RoomUser> existingNickUser = roomUserRepository.findByRoom_IdAndNickname(roomId, nickname);
+        if (existingNickUser.isPresent()) {
+            if (existingNickUser.get().isActive()) {
+                throw new IllegalStateException("Nickname ya existente en la sala");
+            } else {
+                roomUserRepository.delete(existingNickUser.get());
+                roomUserRepository.flush();
+            }
         }
 
         RoomUser roomUser = new RoomUser(nickname, deviceId, Instant.now().toEpochMilli(), room);
@@ -130,8 +170,21 @@ public class RoomService {
         roomUserRepository.deleteByRoom_IdAndNickname(roomId, nickname);
     }
 
+    @Transactional
+    public synchronized Optional<LeaveInfo> leaveRoomByDeviceId(String deviceId) {
+        if (deviceId == null || deviceId.isBlank()) {
+            return Optional.empty();
+        }
+
+        return roomUserRepository.findByDeviceId(deviceId).map(user -> {
+            user.setActive(false);
+            roomUserRepository.save(user);
+            return new LeaveInfo(user.getRoom().getId(), user.getNickname());
+        });
+    }
+
     /**
-     * Verifies that a given nickname is a member of the specified room.
+     * Verifies that a given nickname is an active member of the specified room.
      */
     @Transactional(readOnly = true)
     public boolean isMember(String roomId, String nickname) {

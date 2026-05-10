@@ -15,16 +15,28 @@ public class DotenvEnvironmentPostProcessor implements EnvironmentPostProcessor 
 
     private static final String PROPERTY_SOURCE_NAME = "dotenvProperties";
 
+    private String envFileName = ".env";
+    private String envDirectory = ".";
+
+    // For testing
+    void setEnvDirectory(String envDirectory) {
+        this.envDirectory = envDirectory;
+    }
+
+    void setEnvFileName(String envFileName) {
+        this.envFileName = envFileName;
+    }
+
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        Path dotenvPath = Path.of(".env");
+        Path dotenvPath = Path.of(envDirectory, envFileName);
         if (!Files.exists(dotenvPath)) {
             return;
         }
 
         Dotenv dotenv = Dotenv.configure()
-                .filename(dotenvPath.getFileName().toString())
-                .directory(dotenvPath.getParent() != null ? dotenvPath.getParent().toString() : ".")
+                .filename(envFileName)
+                .directory(envDirectory)
                 .ignoreIfMissing()
                 .load();
 

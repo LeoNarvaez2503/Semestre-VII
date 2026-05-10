@@ -1,0 +1,46 @@
+sequenceDiagram
+    actor Tester as Tester
+    participant G as Gatling<br/>(ChatLoadSimulation)
+    participant REST as Backend<br/>(REST API)
+    participant WS as Backend<br/>(WebSocket)
+    participant Pool as ThreadPool<br/>TaskExecutor
+    participant DB as MySQL
+
+    Tester->>G: Ejecuta simulación Burst<br/>(50 usuarios en 10s)
+
+    loop i = 1 hasta 50 (ramp 10s)
+        G->>G: Genera nickname:<br/>"LoadTest_User_{i}"<br/>+ UUID clientId
+
+        Note over G,REST: Paso 1 - Join Room via REST
+        G->>REST: POST /api/rooms/join<br/>{roomId, pin: "1234",<br/>nickname: "LoadTest_User_{i}"}
+        REST->>DB: INSERT INTO room_users
+        DB-->>REST: OK
+        REST-->>G: 200 {roomUserId}
+
+        Note over G,WS: Paso 2 - Conectar WebSocket
+        G->>WS: WS CONNECT /ws/chat<br/>(SockJS handshake)
+        WS-->>G: Conexión STOMP OK
+
+        Note over G,WS: Paso 3 - Enviar 10 mensajes
+        loop msg = 1 hasta 10
+            G->>WS: STOMP SEND<br/>{nickname, message, timestamp}
+            WS->>Pool: CompletableFuture.runAsync
+            Pool->>WS: Broadcast async<br/>a /topic/room/{roomId}
+            WS-->>G: STOMP MESSAGE<br/>(broadcast recibido)
+            G->>G: Pausa 100-300ms
+        end
+
+        G->>G: Espera 2 segundos
+
+        Note over G,WS: Paso 4 - Cerrar conexión
+        G->>WS: WS CLOSE
+        WS-->>G: Conexión cerrada
+    end
+
+    Note over G: Validación de Assertions
+    G->>G: ✓ responseTime.mean < 1000ms
+    G->>G: ✓ responseTime.max < 5000ms
+    G->>G: ✓ responseTime.p95 < 2000ms
+    G->>G: ✓ successRate > 95%
+
+    G->>Tester: Genera reporte HTML<br/>con métricas

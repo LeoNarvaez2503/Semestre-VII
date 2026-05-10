@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -76,8 +77,7 @@ public class RoomController {
                     "roomId", room.getId(),
                     "type", room.getType(),
                     "nickname", roomUser.getNickname(),
-                    "deviceId", roomUser.getDeviceId()
-            ));
+                    "deviceId", roomUser.getDeviceId()));
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
         } catch (IllegalStateException ex) {
@@ -87,19 +87,25 @@ public class RoomController {
 
     @PostMapping(path = "/{roomId}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadFile(@PathVariable String roomId,
-                                        @RequestParam String nickname,
-                                        @RequestParam MultipartFile file) {
+            @RequestParam String nickname,
+            @RequestParam MultipartFile file) {
         try {
             roomService.saveFile(roomId, nickname, file).join();
             return ResponseEntity.ok(Map.of("ok", true));
+        } catch (CompletionException ex) {
+            Throwable cause = ex.getCause();
+            if (cause instanceof NoSuchElementException) {
+                return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
+            } else if (cause instanceof IllegalStateException || cause instanceof IllegalArgumentException) {
+                return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, cause.getMessage()));
+            }
+            return ResponseEntity.status(500).body(Map.of(ERROR_STRING, "Error interno al guardar el archivo"));
         } catch (NoSuchElementException ex) {
             return ResponseEntity.status(404).body(Map.of(ERROR_STRING, MESSAGE_STRING));
-        } catch (IllegalStateException ex) {
+        } catch (IllegalStateException | IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, ex.getMessage()));
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(Map.of(ERROR_STRING, ex.getMessage()));
-        } catch (IOException ex) {
-            return ResponseEntity.status(500).body(Map.of(ERROR_STRING, "Error al guardar el archivo"));
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(Map.of(ERROR_STRING, "Error al procesar el archivo"));
         }
     }
 
@@ -115,7 +121,6 @@ public class RoomController {
                 "users", room.getUsers().stream()
                         .map(RoomUser::getNickname)
                         .collect(Collectors.toList()),
-                "files", room.getFiles()
-        ));
+                "files", room.getFiles()));
     }
 }

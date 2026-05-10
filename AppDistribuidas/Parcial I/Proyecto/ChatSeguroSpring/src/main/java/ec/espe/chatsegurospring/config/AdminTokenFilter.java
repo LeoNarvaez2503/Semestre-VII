@@ -30,10 +30,12 @@ public class AdminTokenFilter extends OncePerRequestFilter {
                 || path.startsWith("/api/admin/logout")
                 || path.startsWith("/api/rooms/join")
                 || (path.startsWith("/api/rooms/") && path.endsWith("/info"))
+                || (path.startsWith("/api/rooms/") && path.endsWith("/upload"))
                 || path.startsWith("/ws/chat")
                 || path.startsWith("/ws/") // Added to exclude /ws/**
                 || path.startsWith("/sockjs")
-                || path.startsWith("/uploads/");
+                || path.startsWith("/uploads/")
+                || path.equals("/error");
     }
 
     @Override

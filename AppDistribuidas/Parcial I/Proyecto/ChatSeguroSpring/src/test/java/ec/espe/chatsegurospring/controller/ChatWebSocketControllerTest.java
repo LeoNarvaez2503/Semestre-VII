@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +57,7 @@ class ChatWebSocketControllerTest extends BaseTest {
         when(roomService.isMember(roomId, nickname)).thenReturn(true);
         doNothing().when(messagingTemplate).convertAndSend(anyString(), any(Object.class));
 
-        assertThatCode(() -> chatWebSocketController.sendMessage(roomId, payload))
+        assertThatCode(() -> chatWebSocketController.sendMessage(roomId, payload, SimpMessageHeaderAccessor.create()))
                 .doesNotThrowAnyException();
 
         // Esperar a que se complete el async
@@ -83,7 +84,7 @@ class ChatWebSocketControllerTest extends BaseTest {
         when(roomService.getRoom(roomId)).thenReturn(null);
         doNothing().when(messagingTemplate).convertAndSend(anyString(), any(Object.class));
 
-        chatWebSocketController.sendMessage(roomId, payload);
+        chatWebSocketController.sendMessage(roomId, payload, SimpMessageHeaderAccessor.create());
 
         verify(messagingTemplate, timeout(1000).times(1))
                 .convertAndSend(eq("/topic/room/" + roomId), any(Object.class));
@@ -105,7 +106,7 @@ class ChatWebSocketControllerTest extends BaseTest {
         when(roomService.isMember(roomId, nickname)).thenReturn(false);
         doNothing().when(messagingTemplate).convertAndSend(anyString(), any(Object.class));
 
-        chatWebSocketController.sendMessage(roomId, payload);
+        chatWebSocketController.sendMessage(roomId, payload, SimpMessageHeaderAccessor.create());
 
         verify(messagingTemplate, timeout(1000).times(1))
                 .convertAndSend(eq("/topic/room/" + roomId), any(Object.class));
@@ -127,7 +128,7 @@ class ChatWebSocketControllerTest extends BaseTest {
         when(roomService.isMember(roomId, nickname)).thenReturn(true);
         doNothing().when(messagingTemplate).convertAndSend(anyString(), any(Object.class));
 
-        chatWebSocketController.sendMessage(roomId, payload);
+        chatWebSocketController.sendMessage(roomId, payload, SimpMessageHeaderAccessor.create());
 
         verify(messagingTemplate, timeout(1000).times(1))
                 .convertAndSend(eq("/topic/room/" + roomId), any(Object.class));
@@ -153,7 +154,7 @@ class ChatWebSocketControllerTest extends BaseTest {
         doNothing().when(messagingTemplate).convertAndSend(anyString(), any(Object.class));
 
         long startTime = System.currentTimeMillis();
-        chatWebSocketController.sendMessage(roomId, payload);
+        chatWebSocketController.sendMessage(roomId, payload, SimpMessageHeaderAccessor.create());
         long endTime = System.currentTimeMillis();
 
         // El método debe retornar rápidamente (broadcast es async)
@@ -184,7 +185,7 @@ class ChatWebSocketControllerTest extends BaseTest {
         when(roomService.isMember(roomId, nickname)).thenReturn(true);
         doNothing().when(messagingTemplate).convertAndSend(anyString(), any(Object.class));
 
-        chatWebSocketController.sendMessage(roomId, payload);
+        chatWebSocketController.sendMessage(roomId, payload, SimpMessageHeaderAccessor.create());
 
         try {
             Thread.sleep(100);

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.*;
@@ -117,5 +118,33 @@ class RoomModelTest {
 
         assertThat(textRoom.getType()).isIn(RoomType.values());
         assertThat(multimediaRoom.getType()).isIn(RoomType.values());
+    }
+
+    @Test
+    @DisplayName("Room getUsers retorna lista vacía cuando users es null")
+    void testGetUsers_ReturnsEmptyList_WhenNull() throws Exception {
+        Room room = new Room("test-room", RoomType.TEXTO, "hash", "digest", System.currentTimeMillis());
+
+        Field usersField = Room.class.getDeclaredField("users");
+        usersField.setAccessible(true);
+        usersField.set(room, null);
+
+        var users = room.getUsers();
+
+        assertThat(users).isNotNull().isEmpty();
+    }
+
+    @Test
+    @DisplayName("Room getFiles retorna lista vacía cuando files es null")
+    void testGetFiles_ReturnsEmptyList_WhenNull() throws Exception {
+        Room room = new Room("test-room", RoomType.TEXTO, "hash", "digest", System.currentTimeMillis());
+
+        Field filesField = Room.class.getDeclaredField("files");
+        filesField.setAccessible(true);
+        filesField.set(room, null);
+
+        var files = room.getFiles();
+
+        assertThat(files).isNotNull().isEmpty();
     }
 }

@@ -320,4 +320,78 @@ class RoomControllerTest extends BaseTest {
                 .extracting("error")
                 .isEqualTo("Sala no encontrada");
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // TESTS: POST /api/rooms/{roomId}/upload - Casos adicionales de excepción
+    // ─────────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Subir archivo: CompletionException con IllegalStateException retorna 400")
+    void testUploadFile_CompletionException_IllegalStateException() throws Exception {
+        MultipartFile mockFile = mock(MultipartFile.class);
+
+        IllegalStateException cause = new IllegalStateException("Sala de tipo TEXTO");
+        when(roomService.saveFile("room-1", "Juan", mockFile))
+                .thenReturn(java.util.concurrent.CompletableFuture.failedFuture(
+                        new java.util.concurrent.CompletionException(cause)));
+
+        ResponseEntity<?> result = roomController.uploadFile("room-1", "Juan", mockFile);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(result.getBody())
+                .extracting("error")
+                .isEqualTo("Sala de tipo TEXTO");
+    }
+
+    @Test
+    @DisplayName("Subir archivo: CompletionException con IllegalArgumentException retorna 400")
+    void testUploadFile_CompletionException_IllegalArgumentException() throws Exception {
+        MultipartFile mockFile = mock(MultipartFile.class);
+
+        IllegalArgumentException cause = new IllegalArgumentException("Tipo no permitido");
+        when(roomService.saveFile("room-1", "Juan", mockFile))
+                .thenReturn(java.util.concurrent.CompletableFuture.failedFuture(
+                        new java.util.concurrent.CompletionException(cause)));
+
+        ResponseEntity<?> result = roomController.uploadFile("room-1", "Juan", mockFile);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(result.getBody())
+                .extracting("error")
+                .isEqualTo("Tipo no permitido");
+    }
+
+    @Test
+    @DisplayName("Subir archivo: CompletionException con otra excepción retorna 500")
+    void testUploadFile_CompletionException_OtherException_Returns500() throws Exception {
+        MultipartFile mockFile = mock(MultipartFile.class);
+
+        RuntimeException cause = new RuntimeException("Unknown error");
+        when(roomService.saveFile("room-1", "Juan", mockFile))
+                .thenReturn(java.util.concurrent.CompletableFuture.failedFuture(
+                        new java.util.concurrent.CompletionException(cause)));
+
+        ResponseEntity<?> result = roomController.uploadFile("room-1", "Juan", mockFile);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(result.getBody())
+                .extracting("error")
+                .isEqualTo("Error interno al guardar el archivo");
+    }
+
+    @Test
+    @DisplayName("Subir archivo: excepción genérica retorna 500")
+    void testUploadFile_GenericException_Returns500() throws Exception {
+        MultipartFile mockFile = mock(MultipartFile.class);
+
+        when(roomService.saveFile("room-1", "Juan", mockFile))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        ResponseEntity<?> result = roomController.uploadFile("room-1", "Juan", mockFile);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(result.getBody())
+                .extracting("error")
+                .isEqualTo("Error al procesar el archivo");
+    }
 }

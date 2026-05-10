@@ -20,6 +20,9 @@ public class RoomUser {
     @Column(name = "device_id", nullable = false)
     private String deviceId;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     private long joinedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -55,5 +58,21 @@ public class RoomUser {
 
     public Room getRoom() {
         return room;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 }

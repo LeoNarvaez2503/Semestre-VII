@@ -33,6 +33,10 @@ export async function adminStatus() {
   return request('/admin/status');
 }
 
+export async function getAdminRooms() {
+  return request('/admin/rooms');
+}
+
 // ─── Rooms ──────────────────────────────────────────────
 
 export async function createRoom(pin, type) {

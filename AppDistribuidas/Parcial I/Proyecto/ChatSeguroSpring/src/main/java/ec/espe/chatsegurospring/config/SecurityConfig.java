@@ -33,6 +33,7 @@ public class SecurityConfig {
                     .requestMatchers(
                             "/api/admin/login",
                             "/api/admin/status",
+                            "/api/admin/rooms",
                             "/api/admin/logout",
                             "/ws/chat/**",
                             "/sockjs/**",
@@ -48,6 +49,7 @@ public class SecurityConfig {
                             "/api/rooms/**/info",
                             "/api/rooms/**/upload",
                             "/uploads/**",
+                            "/error",
                             "/api/rooms/create"
                     ).permitAll()
                     .anyRequest().authenticated()

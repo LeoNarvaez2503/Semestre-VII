@@ -184,7 +184,7 @@ class RoomServiceTest extends BaseTest {
 
         when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
         when(roomUserRepository.findByDeviceId(deviceId)).thenReturn(Optional.empty());
-        when(roomUserRepository.existsByRoom_IdAndNickname(roomId, nickname)).thenReturn(false);
+        when(roomUserRepository.findByRoom_IdAndNickname(roomId, nickname)).thenReturn(Optional.empty());
         when(roomUserRepository.save(any(RoomUser.class))).thenReturn(newUser);
 
         RoomUser result = roomService.joinRoom(roomId, nickname, deviceId);
@@ -236,7 +236,7 @@ class RoomServiceTest extends BaseTest {
 
         when(roomRepository.findById(newRoomId)).thenReturn(Optional.of(newRoom));
         when(roomUserRepository.findByDeviceId(deviceId)).thenReturn(Optional.of(existingUser));
-        when(roomUserRepository.existsByRoom_IdAndNickname(newRoomId, "NewNick")).thenReturn(false);
+        when(roomUserRepository.findByRoom_IdAndNickname(newRoomId, "NewNick")).thenReturn(Optional.empty());
         when(roomUserRepository.save(any(RoomUser.class))).thenReturn(newUser);
 
         RoomUser result = roomService.joinRoom(newRoomId, "NewNick", deviceId);
@@ -258,7 +258,9 @@ class RoomServiceTest extends BaseTest {
 
         when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
         when(roomUserRepository.findByDeviceId(deviceId)).thenReturn(Optional.empty());
-        when(roomUserRepository.existsByRoom_IdAndNickname(roomId, nickname)).thenReturn(true);
+        RoomUser activeUser = new RoomUser(nickname, "other-device", System.currentTimeMillis(), room);
+        activeUser.setActive(true);
+        when(roomUserRepository.findByRoom_IdAndNickname(roomId, nickname)).thenReturn(Optional.of(activeUser));
 
         assertThatThrownBy(() -> roomService.joinRoom(roomId, nickname, deviceId))
                 .isInstanceOf(IllegalStateException.class)
@@ -403,6 +405,145 @@ class RoomServiceTest extends BaseTest {
         Room result = roomService.getRoom("invalid");
 
         assertThat(result).isNull();
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // TESTS: joinRoom() - Casos adicionales
+    // ─────────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Unirse a sala: dispositivo ya en la misma sala con diferente nickname, actualiza nickname")
+    void testJoinRoom_DeviceInSameRoom_DifferentNickname_UpdatesNickname() {
+        String roomId = "room-1";
+        String newNickname = "NewNick";
+        String deviceId = "device-uuid-123";
+
+        Room room = new Room(roomId, RoomType.TEXTO, "hash", "digest", System.currentTimeMillis());
+        RoomUser existingUser = new RoomUser("OldNick", deviceId, System.currentTimeMillis(), room);
+        existingUser.setActive(true);
+
+        when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
+        when(roomUserRepository.findByDeviceId(deviceId)).thenReturn(Optional.of(existingUser));
+        when(roomUserRepository.findByRoom_IdAndNickname(roomId, newNickname)).thenReturn(Optional.empty());
+        when(roomUserRepository.save(any(RoomUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        RoomUser result = roomService.joinRoom(roomId, newNickname, deviceId);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getNickname()).isEqualTo(newNickname);
+        verify(roomUserRepository, never()).delete(any(RoomUser.class));
+    }
+
+    @Test
+    @DisplayName("Unirse a sala: nickname existente pero inactivo, se elimina y crea nuevo")
+    void testJoinRoom_NicknameExists_Inactive_DeletesAndCreatesNew() {
+        String roomId = "room-1";
+        String nickname = "Juan";
+        String deviceId = "device-uuid-123";
+
+        Room room = new Room(roomId, RoomType.TEXTO, "hash", "digest", System.currentTimeMillis());
+
+        RoomUser existingActiveUser = new RoomUser("OtherUser", "other-device", System.currentTimeMillis(), room);
+        existingActiveUser.setActive(true);
+
+        RoomUser inactiveUser = new RoomUser(nickname, "another-device", System.currentTimeMillis(), room);
+        inactiveUser.setActive(false);
+
+        when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
+        when(roomUserRepository.findByDeviceId(deviceId)).thenReturn(Optional.empty());
+
+        when(roomUserRepository.findByRoom_IdAndNickname(roomId, nickname))
+                .thenReturn(Optional.of(inactiveUser));
+        when(roomUserRepository.save(any(RoomUser.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        RoomUser result = roomService.joinRoom(roomId, nickname, deviceId);
+
+        assertThat(result).isNotNull();
+        verify(roomUserRepository, times(1)).delete(inactiveUser);
+        verify(roomUserRepository, times(1)).save(any(RoomUser.class));
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // TESTS: saveFile() - Casos adicionales
+    // ─────────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Subir archivo: nombre original null usa 'unnamed'")
+    void testSaveFile_NullOriginalFilename_UsesUnnamed() throws IOException {
+        String roomId = "room-1";
+        Room room = new Room(roomId, RoomType.MULTIMEDIA, "hash", "digest", System.currentTimeMillis());
+        room.getFiles().add(new SharedFile("test.png", "/uploads/test.png", "image/png", 1000, "Juan", System.currentTimeMillis(), room));
+
+        when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
+
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.getOriginalFilename()).thenReturn(null);
+        when(mockFile.getContentType()).thenReturn("image/png");
+        when(mockFile.getSize()).thenReturn(1000L);
+        when(mockFile.getInputStream()).thenReturn(java.io.InputStream.nullInputStream());
+
+        roomService.saveFile(roomId, "Juan", mockFile).join();
+
+        verify(roomRepository, times(1)).save(room);
+    }
+
+    @Test
+    @DisplayName("Subir archivo: nombre con caracteres especiales es sanitizado")
+    void testSaveFile_SpecialCharactersInFilename_AreSanitized() throws IOException {
+        String roomId = "room-1";
+        Room room = new Room(roomId, RoomType.MULTIMEDIA, "hash", "digest", System.currentTimeMillis());
+
+        when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
+
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.getOriginalFilename()).thenReturn("my file@#$.txt");
+        when(mockFile.getContentType()).thenReturn("application/pdf");
+        when(mockFile.getSize()).thenReturn(1000L);
+        when(mockFile.getInputStream()).thenReturn(java.io.InputStream.nullInputStream());
+
+        roomService.saveFile(roomId, "Juan", mockFile).join();
+
+        verify(roomRepository, times(1)).save(room);
+    }
+
+    @Test
+    @DisplayName("Subir archivo: copia de archivo falla lanza IOException")
+    void testSaveFile_FileCopyFails_ThrowsException() throws Exception {
+        String roomId = "room-1";
+        Room room = new Room(roomId, RoomType.MULTIMEDIA, "hash", "digest", System.currentTimeMillis());
+
+        when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
+
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.getOriginalFilename()).thenReturn("test.pdf");
+        when(mockFile.getContentType()).thenReturn("application/pdf");
+        when(mockFile.getSize()).thenReturn(1000L);
+        doThrow(new java.io.IOException("File copy failed")).when(mockFile).getInputStream();
+
+        assertThatThrownBy(() -> roomService.saveFile(roomId, "Juan", mockFile))
+                .isInstanceOf(java.io.IOException.class);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // TESTS: leaveRoomByDeviceId() - Casos adicionales
+    // ─────────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Abandonar sala por deviceId: deviceId null retorna empty")
+    void testLeaveRoomByDeviceId_NullDeviceId_ReturnsEmpty() {
+        Optional<RoomService.LeaveInfo> result = roomService.leaveRoomByDeviceId(null);
+
+        assertThat(result).isEmpty();
+        verify(roomUserRepository, never()).findByDeviceId(anyString());
+    }
+
+    @Test
+    @DisplayName("Abandonar sala por deviceId: deviceId vacío retorna empty")
+    void testLeaveRoomByDeviceId_BlankDeviceId_ReturnsEmpty() {
+        Optional<RoomService.LeaveInfo> result = roomService.leaveRoomByDeviceId("   ");
+
+        assertThat(result).isEmpty();
+        verify(roomUserRepository, never()).findByDeviceId(anyString());
     }
 
     // ─────────────────────────────────────────────────────────────
