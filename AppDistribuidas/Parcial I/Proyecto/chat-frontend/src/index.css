@@ -772,11 +772,95 @@ a:hover {
   background: var(--border);
 }
 
+/* ─── Mobile sidebar toggle button ─────────────────────── */
+
+.sidebar-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.sidebar-toggle:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─── Sidebar overlay (mobile) ─────────────────────────── */
+
+.sidebar-overlay {
+  display: none;
+}
+
 /* ─── Responsive ────────────────────────────────────────── */
 
 @media (max-width: 768px) {
+  .sidebar-toggle {
+    display: inline-flex;
+  }
+
+  /* Sidebar becomes a slide-in drawer */
   .sidebar {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100%;
+    z-index: 1000;
+    border-left: 1px solid var(--border);
+    padding: var(--space-6) var(--space-4);
+    transition: right var(--transition-base);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .sidebar.sidebar-open {
+    right: 0;
+  }
+
+  .sidebar-overlay {
     display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar-overlay.sidebar-overlay-visible {
+    display: block;
+  }
+
+  .sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-lg);
+    cursor: pointer;
+    margin-bottom: var(--space-4);
+    margin-left: auto;
+    transition: all var(--transition-fast);
+  }
+
+  .sidebar-close:hover {
+    background: var(--danger-bg);
+    border-color: var(--danger);
+    color: var(--danger);
   }
 
   .card {
@@ -796,12 +880,49 @@ a:hover {
     padding: var(--space-3) var(--space-4);
   }
 
+  .chat-header-info {
+    gap: var(--space-2);
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .chat-header-info h2 {
+    font-size: var(--font-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .messages-list {
     padding: var(--space-3) var(--space-4);
   }
 
   .chat-input-area {
     padding: var(--space-3) var(--space-4);
+    padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .chat-input-form .btn {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .file-upload-area {
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .file-input-wrapper {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .file-name {
+    max-width: 140px;
+  }
+
+  .room-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
   }
 }
 
@@ -809,9 +930,43 @@ a:hover {
   .card {
     padding: var(--space-5);
     border-radius: var(--radius-md);
+    margin: var(--space-2);
+  }
+
+  .card-wide {
+    max-width: 100%;
   }
 
   .page {
-    padding: var(--space-4);
+    padding: var(--space-3);
+  }
+
+  .card-header h1 {
+    font-size: var(--font-xl);
+  }
+
+  .card-header p {
+    font-size: var(--font-xs);
+  }
+
+  .chat-header-info .badge {
+    font-size: 0.6rem;
+    padding: 2px var(--space-2);
+  }
+
+  .message {
+    max-width: 92%;
+  }
+
+  .btn-full {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-base);
+    min-height: 44px;
+  }
+
+  .form-input,
+  .form-select {
+    padding: var(--space-3) var(--space-4);
+    font-size: 16px; /* prevents iOS zoom on focus */
   }
 }

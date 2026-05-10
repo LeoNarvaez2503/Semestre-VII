@@ -14,6 +14,7 @@ export default function ChatRoom() {
   const [users, setUsers] = useState([])
   const [files, setFiles] = useState([])
   const [connected, setConnected] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [error, setError] = useState('')
   const [uploadError, setUploadError] = useState('')
   const [uploading, setUploading] = useState(false)
@@ -165,9 +166,18 @@ export default function ChatRoom() {
             </span>
           )}
         </div>
-        <button onClick={handleLeave} className="btn btn-secondary btn-sm">
-          Salir
-        </button>
+        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          <button
+            className="sidebar-toggle"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Ver usuarios"
+          >
+            👥
+          </button>
+          <button onClick={handleLeave} className="btn btn-secondary btn-sm">
+            Salir
+          </button>
+        </div>
       </header>
 
       {error && (
@@ -280,8 +290,21 @@ export default function ChatRoom() {
           </div>
         </div>
 
+        {/* Sidebar overlay (mobile) */}
+        <div
+          className={`sidebar-overlay ${sidebarOpen ? 'sidebar-overlay-visible' : ''}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+
         {/* Sidebar */}
-        <aside className="sidebar">
+        <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
+          <button
+            className="sidebar-close"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Cerrar panel"
+          >
+            ✕
+          </button>
           <h3>Usuarios ({users.length})</h3>
           {users.map((user) => (
             <div key={user} className="user-item">
