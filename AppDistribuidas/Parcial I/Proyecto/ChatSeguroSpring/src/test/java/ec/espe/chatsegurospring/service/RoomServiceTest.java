@@ -430,16 +430,13 @@ class RoomServiceTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Unirse a sala: nickname existente pero inactivo, se elimina y crea nuevo")
-    void testJoinRoom_NicknameExists_Inactive_DeletesAndCreatesNew() {
+    @DisplayName("Unirse a sala: nickname existente pero inactivo, se reactiva")
+    void testJoinRoom_NicknameExists_Inactive_ReactivatesUser() {
         String roomId = "room-1";
         String nickname = "Juan";
         String deviceId = "device-uuid-123";
 
         Room room = new Room(roomId, RoomType.TEXTO, "hash", "digest", System.currentTimeMillis());
-
-        RoomUser existingActiveUser = new RoomUser("OtherUser", "other-device", System.currentTimeMillis(), room);
-        existingActiveUser.setActive(true);
 
         RoomUser inactiveUser = new RoomUser(nickname, "another-device", System.currentTimeMillis(), room);
         inactiveUser.setActive(false);
@@ -454,8 +451,10 @@ class RoomServiceTest extends BaseTest {
         RoomUser result = roomService.joinRoom(roomId, nickname, deviceId);
 
         assertThat(result).isNotNull();
-        verify(roomUserRepository, times(1)).delete(inactiveUser);
-        verify(roomUserRepository, times(1)).save(any(RoomUser.class));
+        assertThat(result.isActive()).isTrue();
+        assertThat(result.getDeviceId()).isEqualTo(deviceId);
+        verify(roomUserRepository, never()).delete(any(RoomUser.class));
+        verify(roomUserRepository, times(1)).save(inactiveUser);
     }
 
     // ─────────────────────────────────────────────────────────────
