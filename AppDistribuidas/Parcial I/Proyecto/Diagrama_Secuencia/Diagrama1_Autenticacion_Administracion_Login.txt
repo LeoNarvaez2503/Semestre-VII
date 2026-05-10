@@ -1,0 +1,38 @@
+sequenceDiagram
+    actor Admin as Administrador
+    participant FE as Frontend<br/>(AdminLogin.jsx)
+    participant API as api.js
+    participant AC as AdminController
+    participant ATS as AdminTokenService
+    participant Pool as ThreadPoolTaskExecutor<br/>(chat-async-*)
+    participant Map as ConcurrentHashMap<br/>(tokens)
+
+    Admin->>FE: Ingresa usuario y contraseña
+    FE->>API: adminLogin(username, password)
+    API->>AC: POST /api/admin/login<br/>{username, password}
+    AC->>ATS: authenticateAsync(username, password)
+
+    Note over ATS,Pool: @Async("taskExecutor")
+
+    ATS->>Pool: Delega a hilo del pool
+    Pool->>ATS: Ejecuta validación de credenciales
+
+    alt Credenciales válidas
+        ATS->>ATS: createToken() → UUID.randomUUID()
+        ATS->>Map: tokens.put(token, timestamp)
+
+        ATS-->>AC: CompletableFuture(Optional(token))
+
+        AC-->>API: 200 OK + Set-Cookie admin-token
+
+        API-->>FE: Respuesta exitosa
+        FE->>Admin: Navega a /admin/dashboard
+
+    else Credenciales inválidas
+        ATS-->>AC: CompletableFuture(Optional.empty())
+
+        AC-->>API: 401 Error credenciales inválidas
+
+        API-->>FE: Error
+        FE->>Admin: Muestra mensaje de error
+    end
