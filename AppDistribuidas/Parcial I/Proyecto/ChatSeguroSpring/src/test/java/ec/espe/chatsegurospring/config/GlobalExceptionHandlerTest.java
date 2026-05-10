@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GlobalExceptionHandlerTest {
 
+    @SuppressWarnings("deprecation")
     @Test
     void handleMaxSizeException_returnsBadRequest() {
         GlobalExceptionHandler handler = new GlobalExceptionHandler();

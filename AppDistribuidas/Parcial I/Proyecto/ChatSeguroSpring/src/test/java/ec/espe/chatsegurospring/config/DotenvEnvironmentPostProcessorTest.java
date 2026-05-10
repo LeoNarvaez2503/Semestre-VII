@@ -6,14 +6,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
-
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("DotenvEnvironmentPostProcessor - Post-procesador de variables de entorno")
@@ -70,12 +64,13 @@ class DotenvEnvironmentPostProcessorTest {
         SpringApplication mockApp = org.mockito.Mockito.mock(SpringApplication.class);
 
         java.util.concurrent.atomic.AtomicBoolean called = new java.util.concurrent.atomic.AtomicBoolean(false);
-        org.mockito.Mockito.when(mockEnv.getPropertySources()).thenReturn(new org.springframework.core.env.MutablePropertySources() {
-            @Override
-            public void addLast(org.springframework.core.env.PropertySource<?> propertySource) {
-                called.set(true);
-            }
-        });
+        org.mockito.Mockito.when(mockEnv.getPropertySources())
+                .thenReturn(new org.springframework.core.env.MutablePropertySources() {
+                    @Override
+                    public void addLast(org.springframework.core.env.PropertySource<?> propertySource) {
+                        called.set(true);
+                    }
+                });
 
         processor.postProcessEnvironment(mockEnv, mockApp);
 
