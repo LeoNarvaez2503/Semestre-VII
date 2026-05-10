@@ -68,6 +68,10 @@ public class RoomUser {
         this.active = active;
     }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }

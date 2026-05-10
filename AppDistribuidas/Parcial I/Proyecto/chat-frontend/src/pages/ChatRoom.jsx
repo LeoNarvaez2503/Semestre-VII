@@ -136,6 +136,7 @@ export default function ChatRoom() {
     localStorage.removeItem('nickname')
     localStorage.removeItem('roomId')
     localStorage.removeItem('roomType')
+    localStorage.removeItem('deviceId')
     disconnect()
     navigate('/')
   }

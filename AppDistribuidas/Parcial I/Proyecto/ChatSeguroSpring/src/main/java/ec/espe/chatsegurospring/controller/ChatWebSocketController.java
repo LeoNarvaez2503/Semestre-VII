@@ -83,21 +83,44 @@ public class ChatWebSocketController {
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         String sessionId = event.getSessionId();
         String[] data = sessionMap.remove(sessionId);
+        String roomId = null;
+        String nickname = null;
+        boolean alreadyLeft = false;
+
         if (data != null) {
-            String roomId = data[0];
-            String nickname = data[1];
-            log.info("Usuario desconectado de WS: {}, saliendo de sala: {}", nickname, roomId);
+            roomId = data[0];
+            nickname = data[1];
             roomService.leaveRoom(roomId, nickname);
-            
-            // Optional: Notify room that user left
-            Map<String, Object> outgoing = Map.of(
-                "roomId", roomId,
-                "nickname", "SISTEMA",
-                "message", nickname + " ha abandonado la sala.",
-                "timestamp", System.currentTimeMillis()
-            );
-            messagingTemplate.convertAndSend("/topic/room/" + roomId, outgoing);
+            alreadyLeft = true;
+        } else {
+            SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
+            Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
+            if (sessionAttributes != null) {
+                Object deviceIdObj = sessionAttributes.get("deviceId");
+                if (deviceIdObj instanceof String deviceId && !deviceId.isBlank()) {
+                    RoomService.LeaveInfo info = roomService.leaveRoomByDeviceId(deviceId).orElse(null);
+                    if (info != null) {
+                        roomId = info.getRoomId();
+                        nickname = info.getNickname();
+                        alreadyLeft = true;
+                    }
+                }
+            }
         }
+
+        if (!alreadyLeft || roomId == null || nickname == null) {
+            return;
+        }
+
+        log.info("Usuario desconectado de WS: {}, saliendo de sala: {}", nickname, roomId);
+
+        Map<String, Object> outgoing = Map.of(
+            "roomId", roomId,
+            "nickname", "SISTEMA",
+            "message", nickname + " ha abandonado la sala.",
+            "timestamp", System.currentTimeMillis()
+        );
+        messagingTemplate.convertAndSend("/topic/room/" + roomId, outgoing);
     }
 }
 

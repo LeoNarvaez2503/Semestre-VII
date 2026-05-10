@@ -96,6 +96,24 @@ public class RoomService {
 
     // ─── User Management (persistent) ──────────────────────────
 
+    public static final class LeaveInfo {
+        private final String roomId;
+        private final String nickname;
+
+        private LeaveInfo(String roomId, String nickname) {
+            this.roomId = roomId;
+            this.nickname = nickname;
+        }
+
+        public String getRoomId() {
+            return roomId;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+    }
+
     @Transactional
     public synchronized RoomUser joinRoom(String roomId, String nickname, String deviceId) {
         Room room = getRoom(roomId);
@@ -113,6 +131,17 @@ public class RoomService {
             RoomUser existing = existingUser.get();
             // If already in THIS room, return existing session
             if (existing.getRoom().getId().equals(roomId)) {
+                if (!existing.getNickname().equals(nickname)) {
+                    Optional<RoomUser> existingNick = roomUserRepository.findByRoom_IdAndNickname(roomId, nickname);
+                    if (existingNick.isPresent() && !existingNick.get().getId().equals(existing.getId())) {
+                        if (existingNick.get().isActive()) {
+                            throw new IllegalStateException("Nickname ya existente en la sala");
+                        }
+                        roomUserRepository.delete(existingNick.get());
+                        roomUserRepository.flush();
+                    }
+                    existing.setNickname(nickname);
+                }
                 existing.setActive(true);
                 return roomUserRepository.save(existing);
             }
@@ -143,6 +172,19 @@ public class RoomService {
         roomUserRepository.findByRoom_IdAndNickname(roomId, nickname).ifPresent(user -> {
             user.setActive(false);
             roomUserRepository.save(user);
+        });
+    }
+
+    @Transactional
+    public synchronized Optional<LeaveInfo> leaveRoomByDeviceId(String deviceId) {
+        if (deviceId == null || deviceId.isBlank()) {
+            return Optional.empty();
+        }
+
+        return roomUserRepository.findByDeviceId(deviceId).map(user -> {
+            user.setActive(false);
+            roomUserRepository.save(user);
+            return new LeaveInfo(user.getRoom().getId(), user.getNickname());
         });
     }
 
