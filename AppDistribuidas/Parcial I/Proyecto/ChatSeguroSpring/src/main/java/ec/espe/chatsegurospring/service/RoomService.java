@@ -137,6 +137,7 @@ public class RoomService {
                         if (existingNick.get().isActive()) {
                             throw new IllegalStateException("Nickname ya existente en la sala");
                         }
+                        room.getUsers().remove(existingNick.get());
                         roomUserRepository.delete(existingNick.get());
                         roomUserRepository.flush();
                     }
@@ -146,6 +147,8 @@ public class RoomService {
                 return roomUserRepository.save(existing);
             }
             // If in ANOTHER room, delete from old room to free deviceId
+            Room oldRoom = existing.getRoom();
+            oldRoom.getUsers().remove(existing);
             roomUserRepository.delete(existing);
             roomUserRepository.flush();
         }
@@ -156,8 +159,10 @@ public class RoomService {
             if (existingNickUser.get().isActive()) {
                 throw new IllegalStateException("Nickname ya existente en la sala");
             } else {
-                roomUserRepository.delete(existingNickUser.get());
-                roomUserRepository.flush();
+                RoomUser userToReactivate = existingNickUser.get();
+                userToReactivate.setDeviceId(deviceId);
+                userToReactivate.setActive(true);
+                return roomUserRepository.save(userToReactivate);
             }
         }
 
