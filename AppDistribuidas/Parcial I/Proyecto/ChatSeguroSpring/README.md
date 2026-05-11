@@ -17,6 +17,16 @@ Desarrollo de un aplicativo de chat en tiempo real que permite la gestión de sa
 
 ---
 
+## 🛠️ Tecnologías Utilizadas
+
+- **Backend:** Java 21, Spring Boot 3, Spring Security, Spring Data JPA
+- **Frontend:** React, Vite
+- **Base de Datos:** MySQL, Docker & Docker Compose
+- **Comunicación:** WebSocket, STOMP, SockJS
+- **Pruebas de Carga:** Gatling (Scala)
+
+---
+
 ## 🏗️ Arquitectura del Sistema
 
 El sistema sigue una arquitectura cliente-servidor con comunicación REST para operaciones CRUD/Auth y WebSockets (STOMP) para mensajería full-duplex.
@@ -83,6 +93,19 @@ graph TD
 
     RoomSvc --> Repo
     Repo <--> DB
+```
+
+---
+
+## 📁 Estructura del Proyecto
+
+```text
+Proyecto/
+├── ChatSeguroSpring/   # Backend Spring Boot y base de datos (docker-compose.yml)
+├── chat-frontend/      # Frontend React + Vite
+├── chat-load-tests/    # Pruebas de carga Gatling (Scala)
+├── Diagrama_Secuencia/ # Diagramas de secuencia
+└── Requerimientos/     # Documentación de requisitos
 ```
 
 ---
@@ -163,7 +186,7 @@ _(El frontend incluye un proxy configurado en `vite.config.js` que enruta autom�
 
 ## 🛡️ Seguridad Implementada
 
-- **Criptografía de PINs:** Almacenamiento en base de datos usando un digest **SHA-256** (para búsquedas optimizadas O(1)) y validación final segura con **BCrypt** (protección contra colisiones).
+- **Criptografía de PINs:** Almacenamiento en base de datos usando un digest **SHA-256** (para búsquedas optimizadas O(1)) y validación final segura con **BCrypt** para almacenamiento seguro y protección contra fuerza bruta.
 - **Control de Acceso (WebSocket):** El servidor verifica que el `nickname` que intenta enviar un mensaje a través de STOMP realmente pertenezca a la sala (`RoomService.isMember()`), evitando falsificación de identidad (spoofing).
 - **Manejo de Sesiones:** Cookie-based `deviceId` para asegurar que un dispositivo/pestaña no ocupe más de un usuario a la vez, con auto-limpieza al cambiar de sala.
 - **Validación Multimedia:** Restricción por tipo MIME (`Content-Type`) configurado desde `.env`, no confiando solo en la extensión del archivo. Las salas de `TEXTO` bloquean uploads a nivel de backend.
