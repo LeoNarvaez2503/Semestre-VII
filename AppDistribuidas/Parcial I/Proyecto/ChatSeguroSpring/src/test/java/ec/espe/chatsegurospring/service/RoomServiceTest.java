@@ -10,8 +10,6 @@ import ec.espe.chatsegurospring.repository.RoomUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -20,9 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Optional;
@@ -435,16 +430,13 @@ class RoomServiceTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Unirse a sala: nickname existente pero inactivo, se elimina y crea nuevo")
-    void testJoinRoom_NicknameExists_Inactive_DeletesAndCreatesNew() {
+    @DisplayName("Unirse a sala: nickname existente pero inactivo, se reactiva")
+    void testJoinRoom_NicknameExists_Inactive_ReactivatesUser() {
         String roomId = "room-1";
         String nickname = "Juan";
         String deviceId = "device-uuid-123";
 
         Room room = new Room(roomId, RoomType.TEXTO, "hash", "digest", System.currentTimeMillis());
-
-        RoomUser existingActiveUser = new RoomUser("OtherUser", "other-device", System.currentTimeMillis(), room);
-        existingActiveUser.setActive(true);
 
         RoomUser inactiveUser = new RoomUser(nickname, "another-device", System.currentTimeMillis(), room);
         inactiveUser.setActive(false);
@@ -459,8 +451,10 @@ class RoomServiceTest extends BaseTest {
         RoomUser result = roomService.joinRoom(roomId, nickname, deviceId);
 
         assertThat(result).isNotNull();
-        verify(roomUserRepository, times(1)).delete(inactiveUser);
-        verify(roomUserRepository, times(1)).save(any(RoomUser.class));
+        assertThat(result.isActive()).isTrue();
+        assertThat(result.getDeviceId()).isEqualTo(deviceId);
+        verify(roomUserRepository, never()).delete(any(RoomUser.class));
+        verify(roomUserRepository, times(1)).save(inactiveUser);
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -472,7 +466,8 @@ class RoomServiceTest extends BaseTest {
     void testSaveFile_NullOriginalFilename_UsesUnnamed() throws IOException {
         String roomId = "room-1";
         Room room = new Room(roomId, RoomType.MULTIMEDIA, "hash", "digest", System.currentTimeMillis());
-        room.getFiles().add(new SharedFile("test.png", "/uploads/test.png", "image/png", 1000, "Juan", System.currentTimeMillis(), room));
+        room.getFiles().add(new SharedFile("test.png", "/uploads/test.png", "image/png", 1000, "Juan",
+                System.currentTimeMillis(), room));
 
         when(roomRepository.findById(roomId)).thenReturn(Optional.of(room));
 

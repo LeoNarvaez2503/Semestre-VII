@@ -3,7 +3,6 @@ package ec.espe.chatsegurospring.config;
 import ec.espe.chatsegurospring.service.AdminTokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,35 +25,34 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                            "/api/admin/login",
-                            "/api/admin/status",
-                            "/api/admin/rooms",
-                            "/api/admin/logout",
-                            "/ws/chat/**",
-                            "/sockjs/**",
-                            "/",
-                            "/**/*.html",
-                            "/**/*.js",
-                            "/**/*.css",
-                            "/**/*.png",
-                            "/**/*.jpg",
-                            "/**/*.jpeg",
-                            "/**/*.gif",
-                            "/api/rooms/join",
-                            "/api/rooms/**/info",
-                            "/api/rooms/**/upload",
-                            "/uploads/**",
-                            "/error",
-                            "/api/rooms/create"
-                    ).permitAll()
-                    .anyRequest().authenticated()
-            )
-            .addFilterBefore(new AdminTokenFilter(adminTokenService), BasicAuthenticationFilter.class);
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/admin/login",
+                                "/api/admin/status",
+                                "/api/admin/rooms",
+                                "/api/admin/logout",
+                                "/ws/chat/**",
+                                "/sockjs/**",
+                                "/",
+                                "/**/*.html",
+                                "/**/*.js",
+                                "/**/*.css",
+                                "/**/*.png",
+                                "/**/*.jpg",
+                                "/**/*.jpeg",
+                                "/**/*.gif",
+                                "/api/rooms/join",
+                                "/api/rooms/**/info",
+                                "/api/rooms/**/upload",
+                                "/uploads/**",
+                                "/error",
+                                "/api/rooms/create")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(new AdminTokenFilter(adminTokenService), BasicAuthenticationFilter.class);
 
         return http.build();
     }

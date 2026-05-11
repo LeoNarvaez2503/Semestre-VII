@@ -116,8 +116,8 @@ class RoomModelTest {
         Room textRoom = new Room("text-room", RoomType.TEXTO, "hash", "digest", System.currentTimeMillis());
         Room multimediaRoom = new Room("media-room", RoomType.MULTIMEDIA, "hash", "digest", System.currentTimeMillis());
 
-        assertThat(textRoom.getType()).isIn(RoomType.values());
-        assertThat(multimediaRoom.getType()).isIn(RoomType.values());
+        assertThat(textRoom.getType()).isIn((Object[]) RoomType.values());
+        assertThat(multimediaRoom.getType()).isIn((Object[]) RoomType.values());
     }
 
     @Test
