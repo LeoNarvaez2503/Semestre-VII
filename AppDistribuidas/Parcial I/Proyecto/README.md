@@ -4,7 +4,9 @@ Sistema completo de chat en tiempo real con salas seguras, autenticación de adm
 
 ## 📋 Descripción del Proyecto
 
-Desarrollo de un aplicativo de chat en tiempo real que permite la gestión de salas de conversación seguras y colaborativas. La aplicación cuenta con un backend (Java/Spring Boot) que maneja la lógica, seguridad y persistencia; y un frontend responsivo (React) para una interfaz de usuario moderna e intuitiva.
+Desarrollo de un aplicativo de chat en tiempo real que permite la gestion de salas de conversacion seguras y colaborativas. La aplicacion cuenta con un backend (Java/Spring Boot) que maneja la logica, seguridad y persistencia; y un frontend responsivo (React) para una interfaz de usuario moderna e intuitiva.
+
+**Objetivo y alcance:** ofrecer mensajeria en tiempo real con control de acceso por PIN, administracion de salas y soporte de archivos (segun el tipo de sala), con persistencia en MySQL y comunicacion WebSocket.
 
 ### Características Principales:
 
@@ -33,67 +35,88 @@ El sistema sigue una arquitectura cliente-servidor con comunicación REST para o
 
 ```mermaid
 graph TD
-    %% Frontend
-    subgraph Frontend [Cliente - React JS]
-        UI[Interfaz de Usuario]
-        REST_C[Cliente REST - fetch]
-        STOMP_C[Cliente STOMP/SockJS]
+    %% Definicion de estilos para claridad
+    classDef frontend fill:#61DAFB,stroke:#333,stroke-width:2px,color:#000;
+    classDef backend fill:#6DB33F,stroke:#333,stroke-width:2px,color:#fff;
+    classDef database fill:#00758F,stroke:#333,stroke-width:2px,color:#fff;
+    classDef security fill:#E06666,stroke:#333,stroke-width:2px,color:#fff;
+
+    subgraph Frontend [Capa Cliente Frontend - React 19 y Vite]
+        UI[Componentes UI - React]:::frontend
+        STOMP_CLI[Cliente STOMP / SockJS]:::frontend
+        REST_CLI[Cliente HTTP - fetch]:::frontend
+
+        UI -->|Gestion de Salas y Login| REST_CLI
+        UI -->|Envio de Mensajes| STOMP_CLI
     end
 
-    %% Proxy / Servidor Web
-    ViteProxy[Vite Dev Server Proxy :5173]
+    subgraph Backend [Capa Servidor Backend - Spring Boot 3]
 
-    %% Backend
-    subgraph Backend [Servidor - Spring Boot :8080]
-        SEC[SecurityConfig & AdminTokenFilter]
-
-        subgraph Controladores [REST Controllers]
-            AdminCtrl[AdminController]
-            RoomCtrl[RoomController]
+        subgraph Seguridad [Filtros y Seguridad]
+            SEC[AdminTokenFilter / SecurityConfig]:::security
         end
 
-        subgraph WebSocket [WebSocket]
-            WSCtrl[ChatWebSocketController]
-            MessageBroker((STOMP Broker))
+        subgraph Controladores [Capa de Presentacion - Controladores]
+            REST_CTRL[RoomController / AdminController]:::backend
+            WS_CTRL[ChatWebSocketController]:::backend
         end
 
-        subgraph Servicios [Capa de Servicios]
-            RoomSvc[RoomService]
-            AdminSvc[AdminTokenService]
-            FileStorage[Local File Storage /uploads/]
+        subgraph Servicios [Capa de Logica de Negocio - Servicios]
+            R_SERV[RoomService]:::backend
+            T_SERV[AdminTokenService]:::backend
+            ASYNC[AsyncConfig / Hilos Nativos]:::backend
         end
 
-        subgraph Datos [Persistencia - Spring Data JPA]
-            Repo[Room / RoomUser Repositories]
+        subgraph Persistencia [Capa de Acceso a Datos]
+            REPO[RoomRepository / RoomUserRepository]:::backend
         end
+
+        %% Conexiones REST
+        REST_CLI -->|Peticiones HTTP POST y GET| SEC
+        SEC -->|Valida Token| REST_CTRL
+        REST_CTRL --> T_SERV
+        REST_CTRL --> R_SERV
+
+        %% Conexiones WebSocket
+        STOMP_CLI <-->|Conexion Bidireccional TCP| WS_CTRL
+        WS_CTRL --> R_SERV
+
+        %% Concurrencia y Datos
+        R_SERV <-->|Delega tareas pesadas| ASYNC
+        R_SERV -->|Guarda o Lee| REPO
     end
 
-    %% Base de Datos
-    DB[(Base de Datos MySQL)]
+    subgraph Infraestructura [Capa de Infraestructura - Docker]
+        DB[(MySQL 8.1 - Puerto 3306)]:::database
+    end
 
-    %% Conexiones
-    UI <--> REST_C
-    UI <--> STOMP_C
-
-    REST_C -->|HTTP GET/POST| ViteProxy
-    STOMP_C <-->|ws://| ViteProxy
-
-    ViteProxy -->|Proxy HTTP/WS| SEC
-
-    SEC --> AdminCtrl
-    SEC --> RoomCtrl
-    SEC --> WSCtrl
-
-    AdminCtrl --> AdminSvc
-    RoomCtrl --> RoomSvc
-    WSCtrl --> RoomSvc
-    WSCtrl <--> MessageBroker
-
-    RoomCtrl --> FileStorage
-
-    RoomSvc --> Repo
-    Repo <--> DB
+    %% Conexion a Base de Datos
+    REPO <-->|Hibernate / JPA| DB
 ```
+
+---
+
+## 🧩 Diagramas
+
+Los diagramas de secuencia se encuentran en la carpeta de diagramas. Cada archivo describe el flujo de un caso de uso:
+
+- [Diagrama 1 - Autenticacion y administracion de login](AppDistribuidas/Parcial%20I/Proyecto/Diagrama_Secuencia/Diagrama1_Autenticacion_Administracion_Login.txt)
+- [Diagrama 2 - Creacion de sala de chat](AppDistribuidas/Parcial%20I/Proyecto/Diagrama_Secuencia/Diagrama2_Creacion_Sala_Chat.txt)
+- [Diagrama 3 - Conexion de usuario a sala](AppDistribuidas/Parcial%20I/Proyecto/Diagrama_Secuencia/Diagrama3_Conexion_Usuario_Sala.txt)
+- [Diagrama 4 - Envio y recepcion de mensajes](AppDistribuidas/Parcial%20I/Proyecto/Diagrama_Secuencia/Diagrama4_EnvioRecepcion_Mensaje_WebSocket.txt)
+- [Diagrama 5 - Subida de archivos en chat](AppDistribuidas/Parcial%20I/Proyecto/Diagrama_Secuencia/Diagrama5_Subida_Archivos_Chat.txt)
+- [Diagrama 6 - Logout administrador](AppDistribuidas/Parcial%20I/Proyecto/Diagrama_Secuencia/Diagrama6_LogOut_Admin.txt)
+- [Diagrama 7 - Flujo de pruebas de carga](AppDistribuidas/Parcial%20I/Proyecto/Diagrama_Secuencia/Diagrama7_LoadTest.txt)
+
+### Vista rapida (imagenes)
+
+![Diagrama 1 - Autenticacion y administracion de login](Diagrama_Secuencia/Diagrama1_Autenticacion_Administracion_Login.png)
+![Diagrama 2 - Creacion de sala de chat](Diagrama_Secuencia/Diagrama2_Creacion_Sala_Chat.png)
+![Diagrama 3 - Conexion de usuario a sala](Diagrama_Secuencia/Diagrama3_Conexion_Usuario_Sala.png)
+![Diagrama 4 - Envio y recepcion de mensajes](Diagrama_Secuencia/Diagrama4_EnvioRecepcion_Mensaje_WebSocket.png)
+![Diagrama 5 - Subida de archivos en chat](Diagrama_Secuencia/Diagrama5_Subida_Archivos_Chat.png)
+![Diagrama 6 - Logout administrador](Diagrama_Secuencia/Diagrama6_LogOut_Admin.png)
+![Diagrama 7 - Flujo de pruebas de carga](Diagrama_Secuencia/Diagrama7_LoadTest.png)
 
 ---
 
@@ -102,10 +125,16 @@ graph TD
 ```text
 Proyecto/
 ├── ChatSeguroSpring/   # Backend Spring Boot y base de datos (docker-compose.yml)
+│   ├── src/            # Codigo fuente del backend
+│   ├── uploads/        # Archivos subidos (modo desarrollo)
+│   └── docker-compose.yml
 ├── chat-frontend/      # Frontend React + Vite
+│   ├── src/            # Componentes y vistas de la UI
+│   └── vite.config.js  # Proxy a backend (/api, /ws, /uploads)
 ├── chat-load-tests/    # Pruebas de carga Gatling (Scala)
+│   └── src/            # Simulaciones y escenarios
 ├── Diagrama_Secuencia/ # Diagramas de secuencia
-└── Requerimientos/     # Documentación de requisitos
+└── Requerimientos/     # Documentacion de requisitos
 ```
 
 ---
