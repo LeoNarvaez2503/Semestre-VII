@@ -1,0 +1,42 @@
+Evaluación de Madurez de Procesos (CMMI) - Proyecto KairosMix
+Este documento presenta el análisis de madurez del proceso de desarrollo de software para el proyecto KairosMix, aplicando los 5 niveles del modelo CMMI (Inicial, Definido, Gestión, Cuantitativo, Optimización) y utilizando métricas de desempeño de Sprints y calidad de requisitos extraídas de la Matriz IREB.
+1. Contexto del Proyecto
+Proyecto: KairosMix [cite: 195, 203].
+Descripción: Aplicativo orientado a la digitalización de procesos de venta y personalización de productos en una tienda de frutos secos [cite: 203].
+Equipo de Desarrollo (Universidad de las Fuerzas Armadas ESPE): Alejandro Caetano Flores Maya, Jordán Alexander Guamán Alcivar, Anthony Alain Morales Carvajal y Leonardo Vinicio Narváez Criollo [cite: 188, 190, 192].
+2. Evidencia Objetiva y Métricas
+A. Calidad de Requisitos (Matriz IREB)
+Evaluación de los requisitos funcionales en tres áreas clave [cite: 208, 211]:
+Criterio de Calidad
+Cumplimiento
+Hallazgos Principales
+Documentación
+100%
+Se aplica un estándar estricto, cumple con la estructura requerida y utiliza un glosario normalizado [cite: 248, 304, 336].
+Contenido
+78%
+Las funciones implementadas reflejan las necesidades del cliente, pero existe una falta crítica de mecanismos de trazabilidad de impacto y trazabilidad inversa [cite: 250, 253, 338, 341].
+Nivel de Acuerdo
+67%
+Aunque los requisitos fueron acordados, persisten conflictos conocidos respecto a los requerimientos que no han sido resueltos [cite: 254, 255, 342, 344].
+
+B. Desempeño y Cronograma (Sprints)
+Sprint 0: Mostró una predictibilidad excepcional [cite: 2]. El equipo completó el 100% de las 35 horas estimadas en 7 días, manteniendo un flujo uniforme de 7 horas diarias [cite: 1, 2].
+Sprints 1 al 4: Mantuvieron cargas planificadas de 34.5, 32, 33 y 18.5 horas respectivamente [cite: 5, 8, 10, 12].
+Sprint Final: Hubo un incremento masivo y atípico en la carga de trabajo a 153 horas estimadas (cerrando con 113 horas reales), lo que sugiere acumulación de tareas al final del ciclo [cite: 15].
+3. Análisis según los 5 Niveles de Madurez CMMI
+Basado en el marco sistemático del CMMI, evaluamos la posición actual del proyecto KairosMix:
+Nivel 1: Inicial (Superado)
+El desarrollo no es ad-hoc ni caótico. El equipo utiliza herramientas formales para el levantamiento de requisitos (Matriz IREB) y seguimiento de tareas (Burndown Charts) [cite: 1, 196].
+Nivel 2: Definido (Alcanzado)
+El equipo ha logrado estandarizar la forma en la que trabaja. Existe un 100% de cumplimiento en la estandarización de la documentación de requerimientos [cite: 248]. Los requisitos funcionales no son ambiguos y tienen un origen claro [cite: 248, 250, 336].
+Nivel 3: Gestión (Parcialmente Alcanzado / Nivel Actual)
+Aunque se gestionan Sprints con líneas de base establecidas [cite: 1, 5], el proceso de gestión de proyectos presenta fisuras: la falta de trazabilidad impide rastrear cómo un cambio afectará el resto del ciclo [cite: 253], y la presencia de conflictos no resueltos con interesados [cite: 255] demuestra que la gestión de la comunicación aún requiere maduración. Además, la explosión de horas en el Sprint Final evidencia fallos en la distribución equitativa del esfuerzo [cite: 15].
+Nivel 4: Cuantitativo (En Progreso)
+El proyecto recopila datos valiosos (horas estimadas, horas restantes, porcentajes de cumplimiento de calidad) [cite: 1, 209]. Sin embargo, la madurez cuantitativa exige usar estos datos para predecir y prevenir desviaciones, algo que no ocurrió al enfrentar la carga del Sprint Final.
+Nivel 5: Optimización (No Alcanzado)
+No se evidencia un sistema de mejora continua automatizada que aproveche el análisis cuantitativo para optimizar los flujos de trabajo estructurales del equipo.
+4. Plan de Acción y Recomendaciones
+Cierre de Conflictos (Acción Inmediata): Convocar reuniones estratégicas para resolver los desacuerdos documentados en el Nivel de Acuerdo de la matriz IREB [cite: 409, 410]. Esto asegurará la estabilidad antes de futuros desarrollos.
+Implementación de Matriz de Trazabilidad: Se debe integrar una herramienta que conecte cada requerimiento validado con los módulos de código y casos de prueba correspondientes [cite: 412, 413].
+Retrospectiva Cuantitativa del Sprint Final: Analizar las causas del incremento a 153 horas en el último sprint [cite: 15] para ajustar las variables de estimación en proyectos futuros, avanzando así hacia el Nivel 4 del CMMI.
