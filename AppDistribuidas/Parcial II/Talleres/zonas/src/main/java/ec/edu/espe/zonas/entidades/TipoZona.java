@@ -1,4 +1,4 @@
-package ec.edu.espe.zona.entidades;
+package ec.edu.espe.zonas.entidades;
 
 public enum TipoZona{
     VIP,
