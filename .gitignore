@@ -42,9 +42,14 @@ settings.json
 *.syc
 *.tdo
 !*.pdf
+<<<<<<< HEAD
 *.tex
 
 # Python cache and compiled files
 __pycache__/
 *.py[cod]
 
+=======
+*.tex.agents/
+skills-lock.json
+>>>>>>> origin/proyecto-parcial1-testv2

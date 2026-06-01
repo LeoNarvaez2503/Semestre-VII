@@ -1,0 +1,66 @@
+sequenceDiagram
+    actor User as Usuario
+    participant FE as Frontend<br/>(JoinRoom.jsx)
+    participant API as api.js
+    participant LS as localStorage
+    participant RC as RoomController
+    participant RS as RoomService
+    participant RR as RoomRepository
+    participant RUR as RoomUserRepository
+    participant DB as MySQL
+
+    User->>FE: Ingresa PIN y nickname
+    FE->>LS: Lee deviceId almacenado
+    LS-->>FE: deviceId (o vacío)
+    FE->>API: joinRoom(pin, nickname, deviceId)
+    API->>RC: POST /api/rooms/join<br/>{pin, nickname, deviceId}
+
+    RC->>RS: findRoomByPin(pin)
+    RS->>RS: SHA-256(pin) → digest
+    RS->>RR: findAllByPinDigest(digest)
+    RR->>DB: SELECT FROM rooms<br/>WHERE pin_digest = ?
+    DB-->>RR: Lista de candidatos
+    RR-->>RS: List(Room)
+    RS->>RS: BCrypt.checkpw(pin,<br/>candidato.pinHash)
+
+    alt Sala encontrada
+        RS-->>RC: Optional(Room)
+        RC->>RS: joinRoom(roomId, nickname, deviceId)
+
+        Note over RS: synchronized block
+        RS->>RUR: findByDeviceId(deviceId)
+
+        alt deviceId en OTRA sala
+            RS->>RUR: delete(existingUser)
+            RUR->>DB: DELETE FROM room_users
+            RS->>RUR: flush()
+        else deviceId en ESTA sala
+            RUR-->>RS: existingUser
+            RS-->>RC: Retorna usuario existente
+        end
+
+        RS->>RUR: existsByRoom_IdAndNickname<br/>(roomId, nickname)
+
+        alt Nickname duplicado
+            RS-->>RC: throw IllegalStateException<br/>("Nickname ya existente")
+            RC-->>API: 400 {error}
+            API-->>FE: Error
+            FE->>User: Muestra error
+        else Nickname disponible
+            RS->>RUR: save(new RoomUser<br/>(nickname, deviceId, room))
+            RUR->>DB: INSERT INTO room_users
+            DB-->>RUR: RoomUser
+            RUR-->>RS: RoomUser
+            RS-->>RC: RoomUser
+
+            RC-->>API: 200 {roomId, type, nickname,<br/>deviceId} + Set-Cookie: deviceId
+            API-->>FE: Datos de sesión
+            FE->>LS: Guarda deviceId, nickname,<br/>roomId, roomType
+            FE->>User: Navega a /room/{roomId}
+        end
+    else Sala no encontrada
+        RS-->>RC: Optional.empty()
+        RC-->>API: 404 {error: "Sala no encontrada"}
+        API-->>FE: Error
+        FE->>User: Muestra error
+    end
