@@ -1,5 +1,9 @@
 package ec.edu.espe.zonas.entidades;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,9 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,6 +42,9 @@ public class Zona {
 
     @Column
     private int status; // 1: Activo, 0: Inactivo
+
+    @Column
+    private int capacidad;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

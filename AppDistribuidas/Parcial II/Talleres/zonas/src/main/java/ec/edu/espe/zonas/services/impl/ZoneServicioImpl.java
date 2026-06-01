@@ -55,6 +55,7 @@ public class ZoneServicioImpl implements ZonaServicio {
         objZona.setName(request.getName().trim());
         objZona.setCode(generarCodigoUnico());
         objZona.setDescription(request.getDescription());
+        objZona.setCapacidad(request.getCapacidad());
         objZona.setType(request.getType());
         objZona.setStatus(1);
         objZona.setDateCreated(LocalDateTime.now());
@@ -135,6 +136,7 @@ public class ZoneServicioImpl implements ZonaServicio {
             .description(objZona.getDescription())
             .status(objZona.getStatus())
             .type(objZona.getType())
+            .capacidad(objZona.getCapacidad())
             .spaces(objZona.getSpaces())
             .dateCreated(objZona.getDateCreated())
             .dateModified(objZona.getDateModified())
