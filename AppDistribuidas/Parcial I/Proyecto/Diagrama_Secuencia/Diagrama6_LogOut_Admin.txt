@@ -1,0 +1,20 @@
+sequenceDiagram
+    actor Admin as Administrador
+    participant FE as Frontend<br/>(AdminDashboard.jsx)
+    participant API as api.js
+    participant AC as AdminController
+    participant ATS as AdminTokenService
+    participant Map as ConcurrentHashMap<br/>(tokens)
+
+    Admin->>FE: Pulsa "Cerrar sesión"
+    FE->>API: adminLogout()
+    API->>AC: POST /api/admin/logout<br/>Cookie: admin-token
+
+    AC->>AC: Extrae token desde cookie
+    AC->>ATS: revokeToken(token)
+    ATS->>Map: tokens.remove(token)
+    Map-->>ATS: Token eliminado
+
+    AC-->>API: 200 OK<br/>Sesion cerrada<br/>Set-Cookie admin-token vacia<br/>maxAge=0
+    API-->>FE: Respuesta OK
+    FE->>Admin: Navega a /admin (login)

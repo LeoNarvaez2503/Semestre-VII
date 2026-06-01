@@ -1,0 +1,68 @@
+sequenceDiagram
+    actor User as Usuario
+    participant FE as Frontend<br/>(ChatRoom.jsx)
+    participant API as api.js
+    participant RC as RoomController
+    participant RS as RoomService
+    participant Pool as ThreadPoolTask<br/>Executor
+    participant RR as RoomRepository
+    participant FS as FileSystem<br/>(uploads/)
+    participant DB as MySQL
+    participant WS as websocket.js
+    participant Broker as STOMP Broker
+
+    User->>FE: Selecciona archivo<br/>y pulsa "Subir"
+    FE->>API: uploadFile(roomId,<br/>nickname, file)
+    API->>RC: POST /api/rooms/{roomId}/upload<br/>(multipart: nickname, file)
+
+    RC->>RS: saveFile(roomId, nickname, file)
+    Note over RS,Pool: @Async("taskExecutor")<br/>Ejecución en hilo dedicado
+
+    RS->>Pool: Delega a hilo chat-async-*
+    Pool->>RS: Ejecuta en hilo del pool
+
+    RS->>RR: findById(roomId)
+    RR->>DB: SELECT FROM rooms
+    DB-->>RR: Room
+    RR-->>RS: Room
+
+    RS->>RS: Valida room.type == MULTIMEDIA
+
+    alt Sala tipo TEXTO
+        RS-->>RC: throw IllegalStateException<br/>("No permite archivos")
+        RC-->>API: 400 {error}
+        API-->>FE: Error
+        FE->>User: Muestra error
+    else Sala MULTIMEDIA
+        RS->>RS: Valida file.size <= 10MB
+        RS->>RS: Valida contentType ∈<br/>{png, jpeg, gif, pdf}
+
+        alt Validación falla
+            RS-->>RC: throw IllegalArgumentException
+            RC-->>API: 400 {error}
+            API-->>FE: Error
+            FE->>User: Muestra error
+        else Validación OK
+            RS->>FS: Files.createDirectories<br/>(uploads/{roomId}/)
+            RS->>FS: Files.copy(file,<br/>{timestamp}-{nombre})
+            FS-->>RS: Archivo guardado
+
+            RS->>RS: new SharedFile(originalName,<br/>url, contentType, size, sender)
+            RS->>RR: save(room) con archivo asociado
+            RR->>DB: INSERT INTO shared_files
+            DB-->>RR: OK
+
+            RS-->>RC: CompletableFuture(null)
+            RC-->>API: 200 {ok: true}
+            API-->>FE: Éxito
+
+            FE->>API: getRoomInfo(roomId)
+            API-->>FE: Lista actualizada de archivos
+
+            FE->>WS: sendMessage(roomId, nickname,<br/>"📎 Archivo compartido: {nombre}")
+            WS->>Broker: SEND /app/chat/{roomId}
+            Broker-->>FE: Broadcast a todos
+
+            FE->>User: Archivo visible en sidebar
+        end
+    end
