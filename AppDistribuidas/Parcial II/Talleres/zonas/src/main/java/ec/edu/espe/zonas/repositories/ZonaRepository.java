@@ -1,13 +1,10 @@
 package ec.edu.espe.zonas.repositories;
+
 import ec.edu.espe.zonas.entidades.Zona;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.UUID;
-
-public interface ZonaRepository extends JpaRepository<Zona, UUID>{
-    boolean existByCode (String code);
-    boolean existByName (String name);
-    
+public interface ZonaRepository extends JpaRepository<Zona, UUID> {
+    boolean existsByCode(String code);
+    boolean existsByName(String name);
 }
-
-

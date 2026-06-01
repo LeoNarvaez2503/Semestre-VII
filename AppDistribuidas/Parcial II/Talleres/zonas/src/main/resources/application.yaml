@@ -1,3 +1,20 @@
 spring:
   application:
     name: zonas
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/zonas_db}
+    username: ${DB_USERNAME:zonas_user}
+    password: ${DB_PASSWORD:zonas_pass}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+server:
+  port: ${PORT:8080}

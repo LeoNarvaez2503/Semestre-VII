@@ -1,14 +1,14 @@
 package ec.edu.espe.zonas.repositories;
+
 import ec.edu.espe.zonas.entidades.Espacio;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.UUID;
-import java.util.List;
+public interface EspacioRepository extends JpaRepository<Espacio, UUID> {
+    boolean existsByCode(String code);
 
-public interface EspacioRepository extends JpaRepository<Espacio, UUID>{
-    boolean existByCode(String code);
+    List<Espacio> findByZoneId(UUID idZone);
 
-    List<Espacio> findByZona(UUID idZone);
-
-    List<Espacio> findByZoneAndStatus(UUID idZone, boolean Status);
+    List<Espacio> findByZoneIdAndStatus(UUID idZone, boolean status);
 }

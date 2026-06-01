@@ -1,43 +1,40 @@
 package ec.edu.espe.zonas.entidades;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.*;
-
 @Entity
-@Table(name="espacios")
+@Table(name = "espacios")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+public class Espacio {
 
-public class Espacio{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique=true, nullable=false, length=12)
+    @Column(unique = true, nullable = false, length = 12)
     private String code;
 
-    @Column(unique=false)
+    @Column(unique = false)
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoEspacio type;
 
-    @OneToMany(mappedBy = "zona")
-
-    @Column (nullable = false)
+    @Column(nullable = false)
     private boolean status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_zona")
+    @JoinColumn(name = "id_zona")
     private Zona zone;
 
     @Column
@@ -45,6 +42,4 @@ public class Espacio{
 
     @Column
     private LocalDateTime dateModified;
-
-
 }
