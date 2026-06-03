@@ -4,6 +4,7 @@ import ec.edu.espe.zonas.dtos.ZonaRequestDto;
 import ec.edu.espe.zonas.dtos.ZonaResponseDTO;
 import ec.edu.espe.zonas.entidades.Zona;
 import ec.edu.espe.zonas.repositories.ZonaRepository;
+import ec.edu.espe.zonas.services.EspacioServicio;
 import ec.edu.espe.zonas.services.ZonaServicio;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ZoneServicioImpl implements ZonaServicio {
 
     private final ZonaRepository zonaRepository;
+    private final EspacioServicio espacioServicio;
 
     @Override
     public List<ZonaResponseDTO> obtenerZonas() {
@@ -114,6 +116,7 @@ public class ZoneServicioImpl implements ZonaServicio {
         zona.setStatus(0);
         zona.setDateModified(LocalDateTime.now());
         zonaRepository.save(zona);
+        espacioServicio.desactivarEspaciosPorZona(idZone);
     }
 
     private String generarCodigoUnico() {
