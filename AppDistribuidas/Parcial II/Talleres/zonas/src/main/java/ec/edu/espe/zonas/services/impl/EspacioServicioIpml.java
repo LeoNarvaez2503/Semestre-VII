@@ -57,9 +57,37 @@ public class EspacioServicioIpml implements EspacioServicio {
                     "Zona no encontrada con id: " + dto.getZoneId()
                 )
             );
+        if (objZona.getStatus() == 0) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "La zona está inactiva"
+            );
+        }
+        if (objZona.getCapacidad() <= 0) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "La zona no tiene capacidad disponible"
+            );
+        }
+        int espaciosActivos = repositorioEspacio
+            .findByZoneIdAndStatus(objZona.getId(), true)
+            .size();
+        if (espaciosActivos >= objZona.getCapacidad()) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "La zona ya alcanzó su capacidad máxima"
+            );
+        }
+
         Espacio newSpace = mapper.toEntityEspacio(dto);
         newSpace.setZone(objZona);
         newSpace.setStatus(true);
+        newSpace.setCode(generarCodigoUnico());
+        if (newSpace.getEstado() == null) {
+            newSpace.setEstado(EstadoEspacio.DISPONIBLE);
+        }
+        newSpace.setDateCreated(java.time.LocalDateTime.now());
+        newSpace.setDateModified(java.time.LocalDateTime.now());
         return mapper.toResponseDTO(repositorioEspacio.save(newSpace));
     }
 
@@ -94,7 +122,15 @@ public class EspacioServicioIpml implements EspacioServicio {
                     "Espacio no encontrado con id: " + idEspacio
                 )
             );
+        Zona zona = espacio.getZone();
+        if (zona != null && zona.getStatus() == 0) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "No se puede ocupar un espacio en una zona inactiva"
+            );
+        }
         espacio.setEstado(estado);
+        espacio.setDateModified(java.time.LocalDateTime.now());
         return mapper.toResponseDTO(repositorioEspacio.save(espacio));
     }
 
@@ -132,7 +168,22 @@ public class EspacioServicioIpml implements EspacioServicio {
     @Override
     public void desactivarEspaciosPorZona(UUID idZona) {
         List<Espacio> espacios = repositorioEspacio.findByZoneId(idZona);
-        espacios.forEach(espacio -> espacio.setStatus(false));
+        espacios.forEach(espacio -> {
+            espacio.setStatus(false);
+            espacio.setDateModified(java.time.LocalDateTime.now());
+        });
         repositorioEspacio.saveAll(espacios);
+    }
+
+    private String generarCodigoUnico() {
+        String code;
+        do {
+            code = UUID.randomUUID()
+                .toString()
+                .replace("-", "")
+                .substring(0, 12)
+                .toUpperCase();
+        } while (repositorioEspacio.existsByCode(code));
+        return code;
     }
 }

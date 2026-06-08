@@ -52,6 +52,12 @@ public class ZoneServicioImpl implements ZonaServicio {
                 "Ya existe una zona con ese nombre"
             );
         }
+        if (request.getCapacidad() <= 0) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "La capacidad debe ser mayor a 0"
+            );
+        }
 
         Zona objZona = new Zona();
         objZona.setName(request.getName().trim());
@@ -95,6 +101,18 @@ public class ZoneServicioImpl implements ZonaServicio {
 
         if (request.getType() != null) {
             zona.setType(request.getType());
+        }
+
+        if (request.getCapacidad() > 0) {
+            int espaciosActuales =
+                zona.getSpaces() == null ? 0 : zona.getSpaces().size();
+            if (request.getCapacidad() < espaciosActuales) {
+                throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "La capacidad no puede ser menor al número de espacios"
+                );
+            }
+            zona.setCapacidad(request.getCapacidad());
         }
 
         zona.setDateModified(LocalDateTime.now());
