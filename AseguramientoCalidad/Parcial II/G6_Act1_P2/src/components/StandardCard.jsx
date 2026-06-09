@@ -30,12 +30,12 @@ function MiniProgressRing({ pct, color }) {
 }
 
 function extractColor(c) {
-  if (c?.includes('violet')) return '#a78bfa';
-  if (c?.includes('cyan')) return '#22d3ee';
-  if (c?.includes('emerald')) return '#34d399';
-  if (c?.includes('orange')) return '#fb923c';
-  if (c?.includes('pink')) return '#f472b6';
-  return '#a78bfa';
+  if (c?.includes('violet')) return '#6366f1';
+  if (c?.includes('cyan')) return '#06b6d4';
+  if (c?.includes('emerald')) return '#10b981';
+  if (c?.includes('orange')) return '#f97316';
+  if (c?.includes('pink')) return '#ec4899';
+  return '#6366f1';
 }
 
 export default function StandardCard({ standard, onClick, isSelected, index, moduleNumber }) {
@@ -56,85 +56,104 @@ export default function StandardCard({ standard, onClick, isSelected, index, mod
     >
       <motion.button
         onClick={onClick}
-        className={`group relative w-full h-full glass rounded-2xl p-5 overflow-hidden cursor-pointer text-left bg-transparent border-0 ${isSelected ? 'ring-2 ring-violet-500/50' : ''}`}
-        whileHover={{ y: -5, boxShadow: 'var(--shadow-glow)' }}
+        className={`group relative w-full h-full glass rounded-2xl overflow-hidden cursor-pointer text-left bg-white border border-slate-100 flex flex-col justify-between ${
+          isSelected ? 'ring-2 ring-violet-500/50 shadow-md' : 'shadow-sm'
+        }`}
+        style={{
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border-color)',
+          boxShadow: 'var(--shadow-card)',
+          padding: 0
+        }}
+        whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)' }}
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.25 }}
         type="button"
         aria-label={`Abrir módulo: ${standard.titulo}`}
       >
-        {/* Hover glow */}
-        <div className={`absolute -top-16 -right-16 w-48 h-48 bg-gradient-to-bl ${standard.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-full blur-2xl pointer-events-none`} />
+        {/* Banner header image */}
+        <div className={`w-full h-28 bg-gradient-to-r ${standard.color} relative overflow-hidden flex-shrink-0`}>
+          {/* Subtle pattern dots/lines */}
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
+          <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+          <div className="absolute -top-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-xl" />
 
-        {moduleNumber != null && (
-          <div className={`card-module-number bg-gradient-to-br ${standard.color}`} title={`Módulo ${moduleNumber}`}>{moduleNumber}</div>
-        )}
+          {moduleNumber != null && (
+            <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-widest text-white/95 bg-black/15 backdrop-blur-sm">
+              Mód {moduleNumber}
+            </div>
+          )}
+        </div>
 
-        <div className="relative z-10 flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <motion.div className={`p-2.5 rounded-xl bg-gradient-to-br ${standard.color} text-white shadow-md`}
-              whileHover={{ rotate: [-3, 3, 0], scale: 1.08 }} transition={{ duration: 0.4 }}
-            >
-              <Icon className="w-5 h-5" />
-            </motion.div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 text-xs font-semibold rounded-full" style={{ background: 'var(--bg-badge)', color: 'var(--text-secondary)' }}>
+        {/* Circular icon in white container - Placed outside of banner to prevent overflow-hidden clipping */}
+        <div className="absolute top-[90px] left-5 p-1 rounded-full bg-white shadow-md flex items-center justify-center z-10" style={{ background: 'var(--bg-secondary)' }}>
+          <div className={`p-2 rounded-full bg-gradient-to-br ${standard.color} text-white shadow-inner flex items-center justify-center w-8 h-8`}>
+            <Icon className="w-4 h-4" />
+          </div>
+        </div>
+
+        {/* Card Body */}
+        <div className="p-5 pt-8 flex-grow flex flex-col justify-between w-full">
+          <div>
+            <div className="flex items-center justify-between gap-2 mb-2.5">
+              <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-md" style={{ background: 'var(--bg-badge)', color: 'var(--text-accent)' }}>
                 {standard.categoria}
               </span>
               <MiniProgressRing pct={progress} color={ringColor} />
             </div>
-          </div>
 
-          {/* Title */}
-          <h3 className="text-sm font-bold mb-1 group-hover:text-violet-400 transition-colors line-clamp-2" style={{ color: 'var(--text-primary)' }}>
-            {standard.titulo}
-          </h3>
-          <p className="text-xs mb-3 line-clamp-1" style={{ color: 'var(--text-muted)' }}>{standard.subtitulo}</p>
-          <p className="text-xs mb-4 line-clamp-3 flex-grow leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            {standard.descripcionCorta}
-          </p>
-
-          {/* Tema progress bars */}
-          <div className="space-y-1 mb-4">
-            <p className="text-xs font-semibold mb-1.5" style={{ color: 'var(--text-muted)' }}>
-              {temas.length} temas · {temas.filter((_, i) => getTemaState(standard.id, i).quizPassed).length} aprobados
+            <h3 className="text-[15px] font-extrabold mb-1 line-clamp-1 group-hover:text-indigo-500 transition-colors" style={{ color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif' }}>
+              {standard.titulo}
+            </h3>
+            <p className="text-[11px] font-semibold mb-2.5 line-clamp-1" style={{ color: 'var(--text-muted)' }}>{standard.subtitulo}</p>
+            <p className="text-xs mb-4 line-clamp-3 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              {standard.descripcionCorta}
             </p>
-            <div className="flex items-center gap-1">
-              {temas.map((_, idx) => {
-                const ts = getTemaState(standard.id, idx);
-                const accessible = canAccessTema(standard.id, idx);
-                return (
-                  <div key={idx} className="flex-1 h-1.5 rounded-full transition-all" title={`Tema ${idx + 1}`}
-                    style={{
-                      background: ts.quizPassed ? '#22c55e' : accessible ? 'var(--text-accent)' : 'var(--bg-badge)',
-                      opacity: ts.quizPassed ? 1 : accessible ? 0.4 : 0.2,
-                    }}
-                  />
-                );
-              })}
-            </div>
           </div>
 
-          {/* Reading time */}
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-muted)' }}>
-                <Clock className="w-3 h-3" /> Lectura total
+          <div>
+            {/* Progress indicators */}
+            <div className="space-y-1 mb-4">
+              <div className="flex justify-between items-center text-[10px] font-bold" style={{ color: 'var(--text-muted)' }}>
+                <span>Temas Aprobados</span>
+                <span>{temas.filter((_, i) => getTemaState(standard.id, i).quizPassed).length} / {temas.length}</span>
+              </div>
+              <div className="flex items-center gap-1.5 pt-0.5">
+                {temas.map((_, idx) => {
+                  const ts = getTemaState(standard.id, idx);
+                  const accessible = canAccessTema(standard.id, idx);
+                  return (
+                    <div key={idx} className="flex-grow h-1.5 rounded-full transition-all" title={`Tema ${idx + 1}`}
+                      style={{
+                        background: ts.quizPassed ? '#22c55e' : accessible ? ringColor : 'var(--border-color)',
+                        opacity: ts.quizPassed ? 1 : accessible ? 0.4 : 0.25,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Reading time */}
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="flex items-center gap-1 text-[11px] font-bold" style={{ color: 'var(--text-muted)' }}>
+                  <Clock className="w-3 h-3" /> Tiempo estimado
+                </span>
+                <span className="text-[11px] font-extrabold" style={{ color: 'var(--text-accent)' }}>{readingTime} min</span>
+              </div>
+              <ReadingTimeIndicator minutes={readingTime} />
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'var(--border-color)' }}>
+              <span className="text-[11px] font-extrabold" style={{ color: 'var(--text-accent)' }}>
+                {progress === 0 ? 'Comenzar curso' : progress >= 100 ? '✓ Completado' : 'Continuar'}
               </span>
-              <span className="text-xs font-bold" style={{ color: 'var(--text-accent)' }}>{readingTime} min</span>
+              <motion.div animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}>
+                <ArrowRight className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
+              </motion.div>
             </div>
-            <ReadingTimeIndicator minutes={readingTime} />
-          </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-3.5 border-t" style={{ borderColor: 'var(--border-color)' }}>
-            <span className="text-xs font-bold" style={{ color: 'var(--text-accent)' }}>
-              {progress === 0 ? 'Comenzar curso' : progress >= 100 ? '✓ Curso completo' : 'Continuar curso'}
-            </span>
-            <motion.div animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}>
-              <ArrowRight className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
-            </motion.div>
           </div>
         </div>
       </motion.button>

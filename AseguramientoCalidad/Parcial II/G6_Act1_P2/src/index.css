@@ -7,47 +7,48 @@
    ======================================== */
 :root {
   /* Dark theme (default) */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #111118;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-card-hover: rgba(255, 255, 255, 0.07);
-  --bg-input: #18181b;
+  --bg-primary: #09090b;
+  --bg-secondary: #18181b;
+  --bg-card: #18181b;
+  --bg-card-hover: #27272a;
+  --bg-input: #09090b;
   --bg-badge: #27272a;
-  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.06);
   --border-hover: rgba(167, 139, 250, 0.4);
   --text-primary: #f4f4f5;
   --text-secondary: #a1a1aa;
-  --text-muted: #52525b;
+  --text-muted: #71717a;
   --text-accent: #a78bfa;
-  --scrollbar-track: #18181b;
-  --scrollbar-thumb: #52525b;
-  --scrollbar-hover: #71717a;
-  --particle-opacity: 0.25;
-  --grid-opacity: 0.04;
-  --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 30px rgba(167, 139, 250, 0.15);
+  --scrollbar-track: #09090b;
+  --scrollbar-thumb: #27272a;
+  --scrollbar-hover: #3f3f46;
+  --particle-opacity: 0.15;
+  --grid-opacity: 0.02;
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 30px rgba(167, 139, 250, 0.1);
 }
 
 html.light {
-  --bg-primary: #f8f7ff;
-  --bg-secondary: #eeedf7;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card-hover: rgba(255, 255, 255, 0.98);
-  --bg-input: #ffffff;
-  --bg-badge: #e4e4f0;
-  --border-color: rgba(100, 90, 160, 0.15);
-  --border-hover: rgba(124, 58, 237, 0.5);
-  --text-primary: #1e1b4b;
-  --text-secondary: #4c4980;
-  --text-muted: #8b87b8;
-  --text-accent: #7c3aed;
-  --scrollbar-track: #e4e4f0;
-  --scrollbar-thumb: #a5b4fc;
-  --scrollbar-hover: #818cf8;
-  --particle-opacity: 0.12;
-  --grid-opacity: 0.06;
-  --shadow-card: 0 8px 32px rgba(100, 90, 160, 0.15);
-  --shadow-glow: 0 0 30px rgba(124, 58, 237, 0.12);
+  /* Premium Light Dashboard */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #ffffff;
+  --bg-input: #f8fafc;
+  --bg-badge: #f1f5f9;
+  --border-color: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-accent: #6366f1;
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-hover: #94a3b8;
+  --particle-opacity: 0.05;
+  --grid-opacity: 0.03;
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 10px -1px rgba(0, 0, 0, 0.03);
+  --shadow-glow: 0 10px 25px -5px rgba(99, 102, 241, 0.15);
 }
 
 /* ========================================
@@ -66,9 +67,13 @@ html {
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Inter', 'Geist', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   overflow-x: hidden;
   transition: background 0.4s ease, color 0.4s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
 }
 
 /* ========================================
