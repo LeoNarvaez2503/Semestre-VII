@@ -1,19 +1,45 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateVehiculoDto } from './dto/create-vehiculo.dto';
 import { UpdateVehiculoDto } from './dto/update-vehiculo.dto';
+import Vehiculo from './entities/vehiculo.entity';
+import { Repository } from 'typeorm';
+import { FactoryVehiculos } from './factory/factory-vehiculo';
 
 @Injectable()
 export class VehiculosService {
-  create(createVehiculoDto: CreateVehiculoDto) {
-    return 'This action adds a new vehiculo';
+  constructor(
+    @InjectRepository(Vehiculo)
+    private repositoryVehiculo: Repository<Vehiculo>,
+  ) {}
+
+  async create(createVehiculoDto: CreateVehiculoDto): Promise<Vehiculo> {
+    const existe = await this.repositoryVehiculo.findOne({
+      where: {
+        placa: createVehiculoDto.datos.placa,
+      },
+    });
+    if (existe) {
+      throw new Error('Vehiculo ya existe');
+    }
+    const vehiculo = FactoryVehiculos.crear(createVehiculoDto);
+    return this.repositoryVehiculo.save(vehiculo);
   }
 
-  findAll() {
-    return `This action returns all vehiculos`;
+  async findAll(): Promise<Vehiculo[]> {
+    return this.repositoryVehiculo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} vehiculo`;
+  async findOne(id: string): Promise<Vehiculo> {
+    const vehiculo = await this.repositoryVehiculo.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (!vehiculo) {
+      throw new Error('Vehiculo no encontrado');
+    }
+    return vehiculo;
   }
 
   update(id: number, updateVehiculoDto: UpdateVehiculoDto) {
