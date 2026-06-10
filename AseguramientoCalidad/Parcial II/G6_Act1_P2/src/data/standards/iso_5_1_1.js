@@ -1,7 +1,7 @@
 export const iso_5_1_1 = {
   id: 3,
   titulo: "ISO/IEC 29110-5-1-1:2025",
-  subtitulo: "Software engineering guidelines for the generic Entry profile",
+  subtitulo: "Referencia en imagen: ISO/IEC 29110 - 5-1-1",
   categoria: "Guidelines",
   tags: ["Entry Profile", "Start-ups", "Small Projects", "2025"],
   descripcionCorta: "Guía operativa para el Perfil de Entrada diseñado para start-ups y proyectos pequeños con menos de 6 personas-mes.",
@@ -30,6 +30,8 @@ La serie ISO 29110 define cuatro perfiles progresivos que permiten a las empresa
 Al igual que el Perfil Básico, el Perfil de Entrada **no es aplicable** bajo ninguna circunstancia para el desarrollo de software crítico para la seguridad (safety-critical).`,
       reflexionPrompt: "Si fueras a fundar una start-up de software con 2 amigos, ¿comenzarías aplicando el Perfil de Entrada o irías directo al Perfil Básico? Justifica tu respuesta.",
       recursos: {
+        videoUrl: "https://www.youtube.com/embed/1VUweN0S9n8",
+        videoTitle: "ISO/IEC 29110-5-1-1:2025 Entry Profile",
         links: [
           { titulo: "ISO/IEC 29110-5-1-1:2025 - Catálogo ISO", url: "https://www.iso.org/standard/85420.html" }
         ]

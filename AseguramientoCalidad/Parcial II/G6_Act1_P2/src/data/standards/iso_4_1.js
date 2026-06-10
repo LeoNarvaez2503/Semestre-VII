@@ -1,7 +1,7 @@
 export const iso_4_1 = {
   id: 2,
   titulo: "ISO/IEC 29110-4-1:2018",
-  subtitulo: "Profile specifications: Generic profile group",
+  subtitulo: "Referencia en imagen: ISO/IEC 29110 - 4-1",
   categoria: "Specifications",
   tags: ["Profile Specifications", "Generic Group", "Requirements", "2018"],
   descripcionCorta: "Especificación de requisitos del Perfil Básico con elementos obligatorios directamente aplicables para organizaciones que buscan conformidad.",
@@ -29,6 +29,8 @@ La norma especifica que **no se puede declarar conformidad** para la creación d
 Todos los requisitos obligatorios dentro de este estándar están redactados con el verbo auxiliar **\"shall\"** (en español traducido como **deberá**). Si un requisito contiene un \"shall\", su cumplimiento es estricto y mandatorio para lograr la conformidad. Las sugerencias y buenas prácticas no vinculantes utilizan \"should\" (debería).`,
       reflexionPrompt: "¿Por qué crees que los auditores hacen tanto énfasis en la diferencia entre 'shall' (deberá) y 'should' (debería)? ¿Qué problemas de cumplimiento evita esto?",
       recursos: {
+        videoUrl: "https://www.youtube.com/embed/yPY3mxjamDA",
+        videoTitle: "ISO/IEC 29110-4-1:2018 Specifications",
         links: [
           { titulo: "ISO/IEC 29110-4-1:2018 - Tienda Oficial ISO", url: "https://www.iso.org/standard/67223.html" }
         ]

@@ -1,7 +1,7 @@
 export const iso_3_1 = {
   id: 4,
   titulo: "ISO/IEC TR 29110-3-1:2020",
-  subtitulo: "Process assessment guidelines",
+  subtitulo: "Referencia en imagen: ISO/IEC 29110 - 3",
   categoria: "Technical Report",
   tags: ["Assessment", "Evaluation", "Maturity Model", "2020"],
   descripcionCorta: "Informe técnico que proporciona directrices para evaluar la madurez y rendimiento de los procesos en VSEs.",
@@ -28,6 +28,10 @@ Determinar la capacidad de los procesos de desarrollo y gestión de software imp
 ### Adaptación de Costos y Complejidad para VSEs
 Las evaluaciones tradicionales basadas en CMMI o ISO/IEC 33020 son prohibitivamente caras, largas y complejas para micro-empresas. Esta guía establece un marco de evaluación ágil, reduciendo drásticamente los tiempos de auditoría a pocos días y enfocándose en la verificación de evidencias digitales existentes en el día a día.`,
       reflexionPrompt: "¿Qué valor encuentras en realizar una autoevaluación interna antes de contratar una auditoría formal de certificación externa?",
+      recursos: {
+        videoUrl: "https://www.youtube.com/embed/gVAjJa_6HHU",
+        videoTitle: "ISO/IEC TR 29110-3-1:2020 Assessment",
+      },
       quiz: [
         {
           pregunta: "¿Qué norma internacional regula el marco general de evaluación de procesos bajo el cual se rige esta guía?",

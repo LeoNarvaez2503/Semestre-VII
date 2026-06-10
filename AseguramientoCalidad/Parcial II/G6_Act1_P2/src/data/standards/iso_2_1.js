@@ -1,7 +1,7 @@
 export const iso_2_1 = {
   id: 5,
   titulo: "ISO/IEC 29110-2-1:2015",
-  subtitulo: "Framework and Taxonomy",
+  subtitulo: "Referencia en imagen: ISO/IEC 29110 - 2",
   categoria: "Framework",
   tags: ["Framework", "Taxonomy", "Conceptual", "2015"],
   descripcionCorta: "Marco de referencia y taxonomía legal que establece los conceptos fundamentales de ingeniería de software para VSEs.",
@@ -28,6 +28,8 @@ A diferencia de las Partes 5 (guías para desarrolladores), **este documento no 
 Aunque su foco son las VSEs (hasta 25 personas), el estándar advierte que sus bases conceptuales pueden ser adoptadas por departamentos de TI de grandes corporaciones, reconociendo que ciertos problemas organizacionales de las macroempresas no estarán cubiertos por estos perfiles simplificados.`,
       reflexionPrompt: "¿Por qué es crucial contar con un glosario de términos común e internacional antes de intentar evaluar o implementar procesos de calidad?",
       recursos: {
+        videoUrl: "https://www.youtube.com/embed/kfiivMJCAJE",
+        videoTitle: "ISO/IEC 29110-2-1:2015 Framework",
         links: [
           { titulo: "ISO/IEC 29110-2-1:2015 - ISO Store", url: "https://www.iso.org/standard/62712.html" }
         ]
