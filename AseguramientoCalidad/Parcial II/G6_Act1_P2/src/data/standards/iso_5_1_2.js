@@ -1,7 +1,7 @@
 export const iso_5_1_2 = {
   id: 1,
   titulo: "ISO/IEC 29110-5-1-2:2025",
-  subtitulo: "Software engineering guidelines for the generic Basic profile",
+  subtitulo: "Referencia en imagen: ISO/IEC 29110 - 5-1-2",
   categoria: "Guidelines",
   tags: ["Software Engineering", "Basic Profile", "Guidelines", "2025"],
   descripcionCorta: "Guía completa para implementar el Perfil Básico diseñado para VSEs que desarrollan un único producto con un único equipo de trabajo.",
@@ -26,7 +26,7 @@ export const iso_5_1_2 = {
 El límite de 25 personas responde a que las micro y pequeñas empresas representan más del 85% de la industria del software a nivel mundial. Estas organizaciones no disponen del presupuesto, el personal ni el tiempo para aplicar metodologías de calidad tradicionales. El Perfil Básico les permite alcanzar la certificación internacional mediante procesos ágiles, flexibles y optimizados para su tamaño.`,
       reflexionPrompt: "¿Tu empresa o proyecto universitario califica como VSE? ¿Qué beneficios concretos crees que traería implementar este perfil en tu entorno actual?",
       recursos: {
-        videoUrl: "https://www.youtube.com/embed/k5VZHgOhDPs",
+        videoUrl: "https://www.youtube.com/embed/7hRl3fBL8Es",
         videoTitle: "Introducción a ISO/IEC 29110 — Perfil Básico",
         links: [
           { titulo: "ISO/IEC 29110 — Sitio Oficial ISO", url: "https://www.iso.org/standard/82669.html" },
@@ -228,6 +228,10 @@ Una Línea Base es un conjunto de especificaciones o entregables aprobados forma
 Reemplazan el confuso término de \"tareas opcionales\". Son actividades que se deben ejecutar **únicamente si** el cliente las solicita de forma explícitamente en el acuerdo de proyecto.
 - **Ejemplo**: La creación de documentación de usuario final detallada o la migración de datos históricos de un sistema legacy. Si el cliente no lo solicita ni financia, el equipo no está obligado a hacerlo para cumplir con el estándar.`,
       reflexionPrompt: "¿Cómo manejas actualmente el control de cambios en tus proyectos? ¿Crees que la flexibilidad de roles ayuda o dificulta la organización del equipo?",
+      recursos: {
+        videoUrl: "https://www.youtube.com/embed/6fPheibXugY",
+        videoTitle: "ISO/IEC 29110-5-1-2:2025 Masterclass",
+      },
       quiz: [
         {
           pregunta: "¿Qué es una Línea Base (Baseline) en este estándar?",
