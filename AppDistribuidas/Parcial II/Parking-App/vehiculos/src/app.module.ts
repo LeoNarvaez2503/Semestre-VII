@@ -6,6 +6,8 @@ import { Vehiculo } from './vehiculos/entities/vehiculo.entity';
 import { Auto } from './vehiculos/entities/auto.entity';
 import { Motocicleta } from './vehiculos/entities/motocicleta.entity';
 import { Camioneta } from './vehiculos/entities/camioneta.entity';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -30,5 +32,7 @@ import { Camioneta } from './vehiculos/entities/camioneta.entity';
     }),
     VehiculosModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
