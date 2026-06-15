@@ -96,7 +96,7 @@ class MotoDto extends BaseVehiculoDto {
   @Matches(/^[a-zA-Z\s\-áéíóúÁÉÍÓÚñÑ]+$/, {
     message: 'El tipo solo puede contener letras, espacios y guiones',
   })
-  tipo!: string;
+  tipoMoto!: string;
 }
 
 class CamionetaDto extends BaseVehiculoDto {
@@ -107,7 +107,7 @@ class CamionetaDto extends BaseVehiculoDto {
   cabina!: number;
 }
 export class CreateVehiculoDto {
-  @IsIn(['Auto', 'Moto', 'Camioneta'])
+  @IsIn(['Auto', 'Moto', 'Camioneta', 'auto', 'moto', 'camioneta'])
   tipo!: string;
 
   @ValidateNested()
@@ -115,12 +115,14 @@ export class CreateVehiculoDto {
     const object = opts?.object as CreateVehiculoDto;
     if (!object) return BaseVehiculoDto;
 
-    switch (object.tipo) {
-      case 'Auto':
+    const tipo = object.tipo.toLowerCase();
+
+    switch (tipo) {
+      case 'auto':
         return AutoDto;
-      case 'Moto':
+      case 'moto':
         return MotoDto;
-      case 'Camioneta':
+      case 'camioneta':
         return CamionetaDto;
       default:
         return BaseVehiculoDto;

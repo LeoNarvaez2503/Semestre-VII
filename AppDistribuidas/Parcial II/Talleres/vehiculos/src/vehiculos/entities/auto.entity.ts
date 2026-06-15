@@ -1,7 +1,7 @@
 import { Column, ChildEntity } from 'typeorm/browser';
 import Vehiculo from './vehiculo.entity';
 
-@ChildEntity('Auto')
+@ChildEntity('auto')
 export class Auto extends Vehiculo {
   @Column()
   numeroPuertas!: number;
@@ -9,6 +9,6 @@ export class Auto extends Vehiculo {
   @Column()
   capacidadMaletero!: number;
   obtenerTipo(): string {
-    return 'Auto';
+    return 'auto';
   }
 }

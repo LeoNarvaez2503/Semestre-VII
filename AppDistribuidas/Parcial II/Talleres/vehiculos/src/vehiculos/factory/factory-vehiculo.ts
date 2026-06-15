@@ -6,12 +6,14 @@ import Vehiculo from '../entities/vehiculo.entity';
 
 export class FactoryVehiculos {
   static crear(dto: CreateVehiculoDto): Vehiculo {
-    switch (dto.tipo) {
+    const tipo = dto.tipo.toLowerCase();
+
+    switch (tipo) {
       case 'auto':
         const auto = new Auto();
         Object.assign(auto, dto.datos);
         return auto;
-      case 'motocicleta':
+      case 'moto':
         const moto = new Moto();
         Object.assign(moto, dto.datos);
         return moto;
