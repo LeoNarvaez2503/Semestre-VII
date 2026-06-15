@@ -1,0 +1,12 @@
+/* App.css — Component-level styles and topology animation */
+
+@keyframes pulse-node {
+  from { opacity: 0.3; r: 1.5; }
+  to   { opacity: 0.7; r: 3.5; }
+}
+
+/* Ensure code-block pre renders HTML (innerHTML pattern) */
+.code-content pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
