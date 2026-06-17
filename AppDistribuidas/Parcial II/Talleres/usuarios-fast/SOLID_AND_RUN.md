@@ -75,6 +75,46 @@ export DATABASE_URL="postgresql+pg8000://user:password@localhost:5432/dbname"
 
 Si no exportas `DATABASE_URL`, la aplicación usa por defecto `sqlite:///./test.db`.
 
+4. Usar Docker (recomendado si ya usas Docker)
+
+Este repositorio incluye un `docker-compose.yml` que define dos servicios: `db` (Postgres) y `api` (tu aplicación). Para usarlo:
+
+- Copia el ejemplo de variables y edítalas si es necesario:
+
+```bash
+cp .env.example .env
+# Edita .env para ajustar credenciales si las necesitas
+```
+
+- Construye y levanta los contenedores:
+
+```bash
+docker-compose up --build -d
+```
+
+- Verifica los logs del API:
+
+```bash
+docker-compose logs -f api
+```
+
+- Detener y eliminar contenedores:
+
+```bash
+docker-compose down
+```
+
+Notas sobre la configuración del `docker-compose.yml` incluida:
+
+- La base de datos Postgres se expone en el host en el puerto `5433` (mapeado desde el contenedor `5432`). Sin embargo, dentro de la red de Docker el servicio `api` se comunica con la base de datos usando el hostname `db` y el puerto `5432` (esto está reflejado en `.env.example`).
+- El `Dockerfile` del proyecto crea la imagen y arranca `uvicorn` en el puerto `8000`, que se publica en el host en `8000`.
+
+5. Levantar la aplicación localmente con `uvicorn` (alternativa a Docker)
+
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
 4. Levantar la aplicación con `uvicorn`
 
 ```bash
