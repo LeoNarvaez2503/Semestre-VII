@@ -5,7 +5,9 @@ from app.models.user import User
 from app.models.role import Role
 from app.models.user_role import UserRole
 from app.schemas.user import UserCreate, UserUpdate
+from passlib.context import CryptContext
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class UserService:
     @staticmethod
     def get_user_by_id(db: Session, id_person: str) -> User:
@@ -59,11 +61,14 @@ class UserService:
             db.add(person_obj)
             db.flush() # Obtiene el ID asignado a person_obj
 
+            def get_password_hash(password: str) -> str:
+                return pwd_context.hash(password)
+            hashed_password = get_password_hash(user_in.password)
             # Crear Usuario
             user_obj = User(
                 id_person=person_obj.id,
                 username=user_in.username,
-                password_hash=user_in.password, # En producción, hash con passlib/bcrypt
+                password_hash=pwd_context.hash(user_in.password), # En producción, hash con passlib/bcrypt
                 active=True
             )
             db.add(user_obj)
@@ -133,8 +138,7 @@ class UserService:
             if user_in.username:
                 user_obj.username = user_in.username
             if user_in.password:
-                user_obj.password_hash = user_in.password
-
+                user_obj.password_hash=pwd_context.hash(user_in.password)
             # Actualizar Roles si se especifican
             if user_in.roles is not None:
                 # Eliminar asociaciones previas

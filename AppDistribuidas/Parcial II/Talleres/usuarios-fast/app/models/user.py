@@ -10,7 +10,7 @@ class User(Base):
     active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
     last_login = Column(DateTime(timezone=False), nullable=True)
-    password_hash = Column(String(30), nullable=False)
+    password_hash = Column(String(255), nullable=False)
     updated_at = Column(DateTime(timezone=False), server_default=func.now(), onupdate=func.now(), nullable=False)
     username = Column(String(15), unique=True, nullable=False, index=True)
 

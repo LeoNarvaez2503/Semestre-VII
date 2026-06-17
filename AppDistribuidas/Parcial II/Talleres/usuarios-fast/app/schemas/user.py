@@ -70,13 +70,13 @@ class UserBase(BaseModel):
     username: str = Field(..., min_length=3, max_length=15)
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=6, max_length=30)
+    password: str = Field(..., min_length=8, max_length=72)
     person: PersonCreate
     roles: Optional[List[str]] = []
 
 class UserUpdate(BaseModel):
     username: Optional[str] = Field(None, min_length=3, max_length=15)
-    password: Optional[str] = Field(None, min_length=6, max_length=30)
+    password: Optional[str] = Field(None, min_length=8, max_length=72)
     person: Optional[PersonUpdate] = None
     roles: Optional[List[str]] = None
 
