@@ -1,49 +1,39 @@
-from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
+from typing import List
+from app.repositories.user_repository import IUserRepository
+from app.core.hasher import PasswordHasher
+from app.schemas.user import UserCreate, UserUpdate
+from app.exceptions import NotFoundError, ConflictError, InternalError
 from app.models.person import Person
 from app.models.user import User
 from app.models.role import Role
 from app.models.user_role import UserRole
-from app.schemas.user import UserCreate, UserUpdate
-from app.core.security import get_password_hash
+
 
 class UserService:
-    @staticmethod
-    def get_user_by_id(db: Session, id_person: str) -> User:
-        user = db.query(User).filter(User.id_person == id_person, User.active == True).first()
+    def __init__(self, repo: IUserRepository, hasher: PasswordHasher):
+        self.repo = repo
+        self.hasher = hasher
+
+    def get_user_by_id(self, id_person: str) -> User:
+        user = self.repo.get_user_by_id(id_person)
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Usuario con ID {id_person} no encontrado o inactivo."
-            )
+            raise NotFoundError(f"Usuario con ID {id_person} no encontrado o inactivo.")
         return user
 
-    @staticmethod
-    def get_users(db: Session) -> list[User]:
-        return db.query(User).filter(User.active == True).all()
+    def get_users(self) -> List[User]:
+        return self.repo.get_users()
 
-    @staticmethod
-    def create_user(db: Session, user_in: UserCreate) -> User:
-        # 1. Validar unicidad
-        if db.query(User).filter(User.username == user_in.username).first():
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f"El nombre de usuario '{user_in.username}' ya está registrado."
-            )
-        
-        if db.query(Person).filter(Person.email == user_in.person.email).first():
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f"El correo electrónico '{user_in.person.email}' ya está registrado."
-            )
+    def create_user(self, user_in: UserCreate) -> User:
+        # Validaciones de unicidad
+        if self.repo.get_by_username(user_in.username):
+            raise ConflictError(f"El nombre de usuario '{user_in.username}' ya está registrado.")
 
-        if db.query(Person).filter(Person.dni == user_in.person.dni).first():
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail=f"El DNI '{user_in.person.dni}' ya está registrado."
-            )
+        if self.repo.get_person_by_email(user_in.person.email):
+            raise ConflictError(f"El correo electrónico '{user_in.person.email}' ya está registrado.")
 
-        # 2. Transacción
+        if self.repo.get_person_by_dni(user_in.person.dni):
+            raise ConflictError(f"El DNI '{user_in.person.dni}' ya está registrado.")
+
         try:
             # Crear Persona
             person_obj = Person(
@@ -55,80 +45,59 @@ class UserService:
                 nationality=user_in.person.nationality,
                 phone=user_in.person.phone,
                 address=user_in.person.address,
-                active=True
+                active=True,
             )
-            db.add(person_obj)
-            db.flush() # Obtiene el ID asignado a person_obj
+            self.repo.add_person(person_obj)
+
+            # Hashear contraseña
+            try:
+                hashed_pw = self.hasher.hash(user_in.password)
+            except Exception as e:
+                self.repo.rollback()
+                raise InternalError(str(e))
 
             # Crear Usuario
-            try:
-                hashed_pw = get_password_hash(user_in.password)
-            except ValueError as e:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-            except Exception as e:
-                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error al procesar la contraseña")
-
             user_obj = User(
                 id_person=person_obj.id,
                 username=user_in.username,
                 password_hash=hashed_pw,
-                active=True
+                active=True,
             )
-            db.add(user_obj)
-            db.flush()
+            self.repo.add_user(user_obj)
 
             # Guardar roles
             if user_in.roles:
                 for role_name in user_in.roles:
-                    role_obj = db.query(Role).filter(Role.name == role_name).first()
+                    role_obj = self.repo.get_role_by_name(role_name)
                     if not role_obj:
-                        role_obj = Role(
-                            name=role_name,
-                            active=True,
-                            description=f"Rol de {role_name}"
-                        )
-                        db.add(role_obj)
-                        db.flush()
+                        role_obj = Role(name=role_name, active=True, description=f"Rol de {role_name}")
+                        self.repo.add_role(role_obj)
 
-                    user_role_obj = UserRole(
-                        id_user=user_obj.id_person,
-                        id_role=role_obj.id,
-                        active=True
-                    )
-                    db.add(user_role_obj)
+                    user_role_obj = UserRole(id_user=user_obj.id_person, id_role=role_obj.id, active=True)
+                    self.repo.add_user_role(user_role_obj)
 
-            db.commit()
-            db.refresh(user_obj)
+            self.repo.commit()
+            self.repo.refresh(user_obj)
             return user_obj
         except Exception as e:
-            db.rollback()
-            raise e
+            self.repo.rollback()
+            raise InternalError(str(e))
 
-    @staticmethod
-    def update_user(db: Session, id_person: str, user_in: UserUpdate) -> User:
-        user_obj = UserService.get_user_by_id(db, id_person)
+    def update_user(self, id_person: str, user_in: UserUpdate) -> User:
+        user_obj = self.get_user_by_id(id_person)
 
         # Validar unicidad si cambian campos únicos
         if user_in.username and user_in.username != user_obj.username:
-            if db.query(User).filter(User.username == user_in.username).first():
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail=f"El nombre de usuario '{user_in.username}' ya está registrado."
-                )
+            if self.repo.get_by_username(user_in.username):
+                raise ConflictError(f"El nombre de usuario '{user_in.username}' ya está registrado.")
 
         if user_in.person:
             if user_in.person.email and user_in.person.email != user_obj.person.email:
-                if db.query(Person).filter(Person.email == user_in.person.email).first():
-                    raise HTTPException(
-                        status_code=status.HTTP_409_CONFLICT,
-                        detail=f"El correo electrónico '{user_in.person.email}' ya está registrado."
-                    )
+                if self.repo.get_person_by_email(user_in.person.email):
+                    raise ConflictError(f"El correo electrónico '{user_in.person.email}' ya está registrado.")
             if user_in.person.dni and user_in.person.dni != user_obj.person.dni:
-                if db.query(Person).filter(Person.dni == user_in.person.dni).first():
-                    raise HTTPException(
-                        status_code=status.HTTP_409_CONFLICT,
-                        detail=f"El DNI '{user_in.person.dni}' ya está registrado."
-                    )
+                if self.repo.get_person_by_dni(user_in.person.dni):
+                    raise ConflictError(f"El DNI '{user_in.person.dni}' ya está registrado.")
 
         try:
             # Actualizar Persona
@@ -142,45 +111,34 @@ class UserService:
                 user_obj.username = user_in.username
             if user_in.password:
                 try:
-                    user_obj.password_hash = get_password_hash(user_in.password)
-                except ValueError as e:
-                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-                except Exception:
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error al procesar la contraseña")
+                    user_obj.password_hash = self.hasher.hash(user_in.password)
+                except Exception as e:
+                    self.repo.rollback()
+                    raise InternalError(str(e))
 
             # Actualizar Roles si se especifican
             if user_in.roles is not None:
                 # Eliminar asociaciones previas
-                db.query(UserRole).filter(UserRole.id_user == user_obj.id_person).delete()
-                
+                self.repo.delete_user_roles(user_obj.id_person)
+
                 for role_name in user_in.roles:
-                    role_obj = db.query(Role).filter(Role.name == role_name).first()
+                    role_obj = self.repo.get_role_by_name(role_name)
                     if not role_obj:
-                        role_obj = Role(
-                            name=role_name,
-                            active=True,
-                            description=f"Rol de {role_name}"
-                        )
-                        db.add(role_obj)
-                        db.flush()
+                        role_obj = Role(name=role_name, active=True, description=f"Rol de {role_name}")
+                        self.repo.add_role(role_obj)
 
-                    user_role_obj = UserRole(
-                        id_user=user_obj.id_person,
-                        id_role=role_obj.id,
-                        active=True
-                    )
-                    db.add(user_role_obj)
+                    user_role_obj = UserRole(id_user=user_obj.id_person, id_role=role_obj.id, active=True)
+                    self.repo.add_user_role(user_role_obj)
 
-            db.commit()
-            db.refresh(user_obj)
+            self.repo.commit()
+            self.repo.refresh(user_obj)
             return user_obj
         except Exception as e:
-            db.rollback()
-            raise e
+            self.repo.rollback()
+            raise InternalError(str(e))
 
-    @staticmethod
-    def delete_user(db: Session, id_person: str) -> dict:
-        user_obj = UserService.get_user_by_id(db, id_person)
+    def delete_user(self, id_person: str) -> dict:
+        user_obj = self.get_user_by_id(id_person)
 
         try:
             # Eliminación lógica (Inactivación)
@@ -191,8 +149,8 @@ class UserService:
             for ur in user_obj.user_roles:
                 ur.active = False
 
-            db.commit()
+            self.repo.commit()
             return {"message": f"Usuario con ID {id_person} inactivado exitosamente (eliminación lógica)."}
         except Exception as e:
-            db.rollback()
-            raise e
+            self.repo.rollback()
+            raise InternalError(str(e))
