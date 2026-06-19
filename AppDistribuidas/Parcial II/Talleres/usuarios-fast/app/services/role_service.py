@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
+from app.utils.exceptions import EntityNotFoundException, EntityAlreadyExistsException
 from app.models.role import Role
 from app.models.user_role import UserRole
 from app.schemas.user import RoleCreate, RoleUpdate
@@ -9,10 +9,7 @@ class RoleService:
     def get_role_by_id(db: Session, role_id: str) -> Role:
         role = db.query(Role).filter(Role.id == role_id, Role.active == True).first()
         if not role:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Rol con ID {role_id} no encontrado o inactivo."
-            )
+            raise EntityNotFoundException(f"Rol con ID {role_id} no encontrado o inactivo.")
         return role
 
     @staticmethod
@@ -25,10 +22,7 @@ class RoleService:
         existing_role = db.query(Role).filter(Role.name == role_in.name).first()
         if existing_role:
             if existing_role.active:
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail=f"El rol con nombre '{role_in.name}' ya está registrado."
-                )
+                raise EntityAlreadyExistsException(f"El rol con nombre '{role_in.name}' ya está registrado.")
             else:
                 # Si existía inactivo, lo reactivamos y actualizamos la descripción
                 existing_role.active = True
@@ -54,10 +48,7 @@ class RoleService:
         if role_in.name and role_in.name != role_obj.name:
             existing_role = db.query(Role).filter(Role.name == role_in.name).first()
             if existing_role:
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail=f"El rol con nombre '{role_in.name}' ya está registrado."
-                )
+                raise EntityAlreadyExistsException(f"El rol con nombre '{role_in.name}' ya está registrado.")
             role_obj.name = role_in.name
 
         if role_in.description is not None:

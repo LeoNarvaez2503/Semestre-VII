@@ -8,3 +8,4 @@ email_validator
 python-dotenv
 passlib
 bcrypt==3.2.2
+python-stdnum==2.2

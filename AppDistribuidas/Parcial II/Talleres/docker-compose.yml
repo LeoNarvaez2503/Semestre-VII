@@ -1,0 +1,117 @@
+services:
+  # --- MICROSERVICIO: USUARIOS ---
+  usuarios-db:
+    image: postgres:15-alpine
+    container_name: usuarios_db_unificado
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: usuarios
+    ports:
+      - "5431:5432"
+    volumes:
+      - usuarios_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d usuarios"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  usuarios-api:
+    build:
+      context: ./usuarios-fast
+      dockerfile: Dockerfile
+    container_name: usuarios_api_unificado
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:admin@usuarios-db:5432/usuarios
+      PORT: 8000
+    depends_on:
+      usuarios-db:
+        condition: service_healthy
+
+  # --- MICROSERVICIO: VEHICULOS ---
+  vehiculos-db:
+    image: postgres:15-alpine
+    container_name: vehiculos_db_unificado
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: vehiculos_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - vehiculos_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d vehiculos_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  vehiculos-app:
+    build:
+      context: ./vehiculos
+      dockerfile: Dockerfile
+    container_name: vehiculos_app_unificado
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: vehiculos-db
+      DB_PORT: 5432
+      DB_USUARIO: admin
+      DB_CONTRASENA: adminpassword
+      DB_NOMBRE: vehiculos_db
+    depends_on:
+      vehiculos-db:
+        condition: service_healthy
+
+  # --- MICROSERVICIO: ZONAS ---
+  zonas-db:
+    image: postgres:16-alpine
+    container_name: zonas_db_unificado
+    restart: always
+    environment:
+      POSTGRES_DB: zonas_db
+      POSTGRES_USER: zonas_user
+      POSTGRES_PASSWORD: zonas_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - zonas_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zonas_user -d zonas_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  zonas-app:
+    build:
+      context: ./zonas
+      dockerfile: Dockerfile
+    container_name: zonas_app_unificado
+    restart: always
+    environment:
+      DB_URL: jdbc:postgresql://zonas-db:5432/zonas_db
+      DB_USERNAME: zonas_user
+      DB_PASSWORD: zonas_pass
+      PORT: 8080
+      ZONA_NAME: Zona Principal
+      ZONA_CODE: Z001
+      ZONA_DESCRIPTION: Zona creada desde Docker Compose Unificado
+      ZONA_TYPE: REGULAR
+    ports:
+      - "8080:8080"
+    depends_on:
+      zonas-db:
+        condition: service_healthy
+
+volumes:
+  usuarios_pgdata:
+  vehiculos_pgdata:
+  zonas_pgdata:
