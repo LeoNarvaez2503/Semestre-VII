@@ -196,3 +196,35 @@ class UserService:
         except Exception as e:
             db.rollback()
             raise e
+
+    @staticmethod
+    def update_user_roles(db: Session, id_person: str, roles: list[str]) -> User:
+        user_obj = UserService.get_user_by_id(db, id_person)
+        try:
+            # Eliminar asociaciones previas
+            db.query(UserRole).filter(UserRole.id_user == user_obj.id_person).delete()
+
+            for role_name in roles:
+                role_obj = db.query(Role).filter(Role.name == role_name).first()
+                if not role_obj:
+                    role_obj = Role(
+                        name=role_name,
+                        active=True,
+                        description=f"Rol de {role_name}"
+                    )
+                    db.add(role_obj)
+                    db.flush()
+
+                user_role_obj = UserRole(
+                    id_user=user_obj.id_person,
+                    id_role=role_obj.id,
+                    active=True
+                )
+                db.add(user_role_obj)
+
+            db.commit()
+            db.refresh(user_obj)
+            return user_obj
+        except Exception as e:
+            db.rollback()
+            raise e

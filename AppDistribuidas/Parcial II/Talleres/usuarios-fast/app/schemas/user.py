@@ -178,6 +178,9 @@ class UserUpdate(BaseModel):
     def validate_username(cls, v: Optional[str]) -> Optional[str]:
         return validate_username_format(v)
 
+class UserRolesUpdate(BaseModel):
+    roles: List[str]
+
 class UserResponse(UserBase):
     id_person: UUID
     active: bool
