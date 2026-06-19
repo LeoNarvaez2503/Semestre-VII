@@ -46,7 +46,7 @@ public class ZoneServicioImpl implements ZonaServicio {
                 "El tipo de zona es obligatorio"
             );
         }
-        if (zonaRepository.existsByName(request.getName())) {
+        if (zonaRepository.existsByName(request.getName().trim())) {
             throw new ResponseStatusException(
                 HttpStatus.CONFLICT,
                 "Ya existe una zona con ese nombre"

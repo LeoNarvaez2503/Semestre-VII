@@ -1,10 +1,10 @@
-import { Column, ChildEntity } from 'typeorm/browser';
+import { Column, ChildEntity } from 'typeorm';
 import Vehiculo from './vehiculo.entity';
 
 @ChildEntity('camioneta')
 export class Camioneta extends Vehiculo {
-  @Column()
-  cabina!: string;
+  @Column({ type: 'int' })
+  cabina!: number;
 
   @Column()
   capacidadCarga!: number;

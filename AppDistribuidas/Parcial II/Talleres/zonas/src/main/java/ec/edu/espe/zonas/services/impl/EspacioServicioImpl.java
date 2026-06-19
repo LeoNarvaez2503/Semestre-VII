@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
-public class EspacioServicioIpml implements EspacioServicio {
+public class EspacioServicioImpl implements EspacioServicio {
 
     private final EspacioRepository repositorioEspacio;
     private final ZonaRepository zonaRepository;

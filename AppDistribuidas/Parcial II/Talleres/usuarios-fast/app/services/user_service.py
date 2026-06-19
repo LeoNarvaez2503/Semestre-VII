@@ -61,9 +61,6 @@ class UserService:
             db.add(person_obj)
             db.flush() # Obtiene el ID asignado a person_obj
 
-            def get_password_hash(password: str) -> str:
-                return pwd_context.hash(password)
-            hashed_password = get_password_hash(user_in.password)
             # Crear Usuario
             user_obj = User(
                 id_person=person_obj.id,

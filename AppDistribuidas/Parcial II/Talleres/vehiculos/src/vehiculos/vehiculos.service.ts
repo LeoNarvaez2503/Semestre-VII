@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateVehiculoDto } from './dto/create-vehiculo.dto';
 import { UpdateVehiculoDto } from './dto/update-vehiculo.dto';
@@ -20,7 +20,7 @@ export class VehiculosService {
       },
     });
     if (existe) {
-      throw new Error('Vehiculo ya existe');
+      throw new ConflictException('Vehiculo ya existe');
     }
     const vehiculo = FactoryVehiculos.crear(createVehiculoDto);
     return this.repositoryVehiculo.save(vehiculo);
@@ -37,16 +37,35 @@ export class VehiculosService {
       },
     });
     if (!vehiculo) {
-      throw new Error('Vehiculo no encontrado');
+      throw new NotFoundException('Vehiculo no encontrado');
     }
     return vehiculo;
   }
 
-  update(id: number, updateVehiculoDto: UpdateVehiculoDto) {
-    return `This action updates a #${id} vehiculo`;
+  async update(
+    id: string,
+    updateVehiculoDto: UpdateVehiculoDto,
+  ): Promise<Vehiculo> {
+    const vehiculo = await this.findOne(id);
+    if (updateVehiculoDto.datos) {
+      const datos = updateVehiculoDto.datos;
+      if (datos.placa && datos.placa !== vehiculo.placa) {
+        const existe = await this.repositoryVehiculo.findOne({
+          where: { placa: datos.placa },
+        });
+        if (existe && existe.id !== id) {
+          throw new ConflictException(
+            'La placa ya está registrada por otro vehículo',
+          );
+        }
+      }
+      Object.assign(vehiculo, datos);
+    }
+    return this.repositoryVehiculo.save(vehiculo);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} vehiculo`;
+  async remove(id: string): Promise<void> {
+    const vehiculo = await this.findOne(id);
+    await this.repositoryVehiculo.remove(vehiculo);
   }
 }

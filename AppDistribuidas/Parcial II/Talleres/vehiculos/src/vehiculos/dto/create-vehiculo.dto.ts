@@ -10,8 +10,10 @@ import {
   IsIn,
   ValidateNested,
   Max,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Clasificacion } from '../entities/vehiculo.entity';
 
 class BaseVehiculoDto {
   @IsString()
@@ -53,6 +55,10 @@ class BaseVehiculoDto {
   @IsNotEmpty()
   @Min(1885, { message: 'El año debe se mayor o igual a 1885' })
   anio!: number;
+
+  @IsEnum(Clasificacion, { message: 'La clasificación debe ser un valor válido' })
+  @IsNotEmpty()
+  clasificacion!: Clasificacion;
 }
 
 class AutoDto extends BaseVehiculoDto {
@@ -96,7 +102,7 @@ class MotoDto extends BaseVehiculoDto {
   @Matches(/^[a-zA-Z\s\-áéíóúÁÉÍÓÚñÑ]+$/, {
     message: 'El tipo solo puede contener letras, espacios y guiones',
   })
-  tipoMoto!: string;
+  tipo!: string;
 }
 
 class CamionetaDto extends BaseVehiculoDto {
@@ -105,6 +111,11 @@ class CamionetaDto extends BaseVehiculoDto {
   @Min(1, { message: 'La cabina debe ser mayor o igual a 1' })
   @Max(2, { message: 'La cabina debe ser menor o igual a 2' })
   cabina!: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1, { message: 'La capacidad de carga debe ser mayor o igual a 1' })
+  capacidadCarga!: number;
 }
 export class CreateVehiculoDto {
   @IsIn(['Auto', 'Moto', 'Camioneta', 'auto', 'moto', 'camioneta'])

@@ -28,6 +28,9 @@ export default abstract class Vehiculo {
   modelo!: string;
 
   @Column()
+  color!: string;
+
+  @Column()
   anio!: number;
 
   @Column({ type: 'enum', enum: Clasificacion })

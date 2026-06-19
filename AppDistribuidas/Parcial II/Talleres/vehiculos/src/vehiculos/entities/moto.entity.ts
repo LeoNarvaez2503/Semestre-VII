@@ -1,4 +1,4 @@
-import { Column, ChildEntity } from 'typeorm/browser';
+import { Column, ChildEntity } from 'typeorm';
 import Vehiculo from './vehiculo.entity';
 
 export enum TipoMoto {
