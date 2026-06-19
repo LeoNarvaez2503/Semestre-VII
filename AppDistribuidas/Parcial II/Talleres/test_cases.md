@@ -235,62 +235,189 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
   * **Cuerpo (JSON)**:
     ```json
     {
-      "tipo": "Auto",
-      "datos": {
-        "placa": "PDF1234",
-        "marca": "Toyota",
-        "modelo": "Corolla",
+      "type": "Auto",
+      "data": {
+        "plate": "PDF1234",
+        "brand": "Toyota",
+        "model": "Corolla",
         "color": "Rojo",
-        "anio": 2023,
-        "clasificacion": "Gasolina",
-        "puertas": 4,
-        "tipoCombustible": "Gasolina",
-        "capacidadMaletero": 470
+        "year": 2023,
+        "classification": "Gasolina",
+        "doors": 4,
+        "fuelType": "Gasolina",
+        "trunkCapacity": 470
       }
     }
     ```
   * **Respuesta Esperada**: `201 Created` con el UUID autogenerado del vehículo.
-* **Error: Placa con Formato Incorrecto**:
-  * **Cuerpo (JSON)**: *(Placa en minúsculas o longitud errónea)*
+* **Caso Exitoso de Normalización (Placa en Minúsculas y Espacios en Extremos)**:
+  * **Cuerpo (JSON)**:
     ```json
     {
-      "tipo": "Auto",
-      "datos": {
-        "placa": "pdf1234",
-        "marca": "Toyota",
-        "modelo": "Corolla",
+      "type": "Auto",
+      "data": {
+        "plate": "   pdf1234   ",
+        "brand": "   Toyota   ",
+        "model": "Corolla",
         "color": "Rojo",
-        "anio": 2023,
-        "clasificacion": "Gasolina",
-        "puertas": 4,
-        "tipoCombustible": "Gasolina",
-        "capacidadMaletero": 470
+        "year": 2023,
+        "classification": "Gasolina",
+        "doors": 4,
+        "fuelType": "Gasolina",
+        "trunkCapacity": 470
+      }
+    }
+    ```
+  * **Respuesta Esperada**: `201 Created` con la placa normalizada a `"PDF1234"` y la marca limpia a `"Toyota"` (sin espacios en extremos).
+* **Error: Placa con Formato Incorrecto (Caracteres inválidos o longitud)**:
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "type": "Auto",
+      "data": {
+        "plate": "PD123",
+        "brand": "Toyota",
+        "model": "Corolla",
+        "color": "Rojo",
+        "year": 2023,
+        "classification": "Gasolina",
+        "doors": 4,
+        "fuelType": "Gasolina",
+        "trunkCapacity": 470
       }
     }
     ```
   * **Respuesta Esperada**: `400 Bad Request` indicando "La placa debe tener el formato AAA1234".
+* **Error: Tipo de Vehículo Inválido**:
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "type": "Avion",
+      "data": {
+        "plate": "PDF1234",
+        "brand": "Boeing",
+        "model": "747",
+        "color": "Blanco",
+        "year": 2020,
+        "classification": "Gasolina"
+      }
+    }
+    ```
+  * **Respuesta Esperada**: `400 Bad Request` indicando "El tipo de vehículo debe ser uno de los siguientes valores: Auto, Moto, Camioneta, auto, moto, camioneta".
+* **Error: Placa Duplicada (Case-Insensitive)**:
+  * **Cuerpo (JSON)**: *(Intentando crear placa existente en mayúsculas/minúsculas distintas, ej: "pdf1234" cuando existe "PDF1234")*
+    ```json
+    {
+      "type": "Auto",
+      "data": {
+        "plate": "pdf1234",
+        "brand": "Toyota",
+        "model": "Corolla",
+        "color": "Rojo",
+        "year": 2023,
+        "classification": "Gasolina",
+        "doors": 4,
+        "fuelType": "Gasolina",
+        "trunkCapacity": 470
+      }
+    }
+    ```
+  * **Respuesta Esperada**: `409 Conflict` (El vehículo ya está registrado.).
+* **Error: Inyección SQL (Palabras clave reservadas en Marca o Modelo)**:
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "type": "Auto",
+      "data": {
+        "plate": "PDF9999",
+        "brand": "Toyota SELECT",
+        "model": "Corolla",
+        "color": "Rojo",
+        "year": 2023,
+        "classification": "Gasolina",
+        "doors": 4,
+        "fuelType": "Gasolina",
+        "trunkCapacity": 470
+      }
+    }
+    ```
+  * **Respuesta Esperada**: `400 Bad Request` indicando "La marca contiene caracteres o términos reservados no permitidos (Inyección SQL)".
+* **Error: Inyección SQL en Campos de Texto (Comentarios/Puntos y comas)**:
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "type": "Auto",
+      "data": {
+        "plate": "PDF9999",
+        "brand": "Toyota",
+        "model": "Corolla; DROP TABLE vehiculo; --",
+        "color": "Rojo",
+        "year": 2023,
+        "classification": "Gasolina",
+        "doors": 4,
+        "fuelType": "Gasolina",
+        "trunkCapacity": 470
+      }
+    }
+    ```
+  * **Respuesta Esperada**: `400 Bad Request`.
 * **Error: Clasificación No Válida**:
   * **Cuerpo (JSON)**: *(Clasificación no perteneciente a Electrico, Hibrido, Gasolina, Diesel)*
     ```json
     {
-      "tipo": "Auto",
-      "datos": {
-        "placa": "PDF1234",
-        "marca": "Toyota",
-        "modelo": "Corolla",
+      "type": "Auto",
+      "data": {
+        "plate": "PDF1234",
+        "brand": "Toyota",
+        "model": "Corolla",
         "color": "Rojo",
-        "anio": 2023,
-        "clasificacion": "Agua",
-        "puertas": 4,
-        "tipoCombustible": "Gasolina",
-        "capacidadMaletero": 470
+        "year": 2023,
+        "classification": "Agua",
+        "doors": 4,
+        "fuelType": "Gasolina",
+        "trunkCapacity": 470
       }
     }
     ```
-  * **Respuesta Esperada**: `400 Bad Request` indicando "La clasificación debe ser un valor válido".
+  * **Respuesta Esperada**: `400 Bad Request` indicando "La clasificación debe ser un valor válido (Electrico, Hibrido, Gasolina, Diesel)".
 * **Error: Número de Puertas Insuficiente**:
-  * **Cuerpo (JSON)**: `puertas: 1`
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "type": "Auto",
+      "data": {
+        "plate": "PDF1234",
+        "brand": "Toyota",
+        "model": "Corolla",
+        "color": "Rojo",
+        "year": 2023,
+        "classification": "Gasolina",
+        "doors": 1,
+        "fuelType": "Gasolina",
+        "trunkCapacity": 470
+      }
+    }
+    ```
   * **Respuesta Esperada**: `400 Bad Request` indicando "El número de puertas debe ser mayor o igual a 2".
+* **Error: Datos con Espacios Internos (ej. "T o y o t a")**:
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "type": "Auto",
+      "data": {
+        "plate": "PDF1234",
+        "brand": "T o y o t a",
+        "model": "Corolla",
+        "color": "Rojo",
+        "year": 2023,
+        "classification": "Gasolina",
+        "doors": 4,
+        "fuelType": "Gasolina",
+        "trunkCapacity": 470
+      }
+    }
+    ```
+  * **Respuesta Esperada**: `400 Bad Request` indicando "La marca no puede contener espacios".
 
 #### **Tipo: Moto**
 * **Caso Exitoso**:
@@ -298,22 +425,36 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
   * **Cuerpo (JSON)**:
     ```json
     {
-      "tipo": "Moto",
-      "datos": {
-        "placa": "AB-123A",
-        "marca": "Honda",
-        "modelo": "Cruiser",
+      "type": "Moto",
+      "data": {
+        "plate": "AB-123A",
+        "brand": "Honda",
+        "model": "Cruiser",
         "color": "Negro",
-        "anio": 2022,
-        "clasificacion": "Gasolina",
-        "tipo": "Deportiva"
+        "year": 2022,
+        "classification": "Gasolina",
+        "type": "Deportiva"
       }
     }
     ```
   * **Respuesta Esperada**: `201 Created`.
 * **Error: Placa de Moto con Formato Incorrecto**:
-  * **Cuerpo (JSON)**: `placa: "AB123A"` (Falta el guion)
-  * **Respuesta Esperada**: `400 Bad Request` indicando "La placa debe tener el formato AAA-123A".
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "type": "Moto",
+      "data": {
+        "plate": "AB123A",
+        "brand": "Honda",
+        "model": "Cruiser",
+        "color": "Negro",
+        "year": 2022,
+        "classification": "Gasolina",
+        "type": "Deportiva"
+      }
+    }
+    ```
+  * **Respuesta Esperada**: `400 Bad Request` indicando "La placa debe tener el formato AA-123A".
 
 #### **Tipo: Camioneta**
 * **Caso Exitoso**:
@@ -321,22 +462,37 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
   * **Cuerpo (JSON)**:
     ```json
     {
-      "tipo": "Camioneta",
-      "datos": {
-        "placa": "PBA9876",
-        "marca": "Ford",
-        "modelo": "Raptor",
+      "type": "Camioneta",
+      "data": {
+        "plate": "PBA9876",
+        "brand": "Ford",
+        "model": "Raptor",
         "color": "Gris",
-        "anio": 2024,
-        "clasificacion": "Diesel",
-        "cabina": 2,
-        "capacidadCarga": 1200
+        "year": 2024,
+        "classification": "Diesel",
+        "cabin": 2,
+        "loadCapacity": 1200
       }
     }
     ```
   * **Respuesta Esperada**: `201 Created`.
 * **Error: Cabina Inválida (Límite superior)**:
-  * **Cuerpo (JSON)**: `cabina: 3` (Máximo 2)
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "type": "Camioneta",
+      "data": {
+        "plate": "PBA9876",
+        "brand": "Ford",
+        "model": "Raptor",
+        "color": "Gris",
+        "year": 2024,
+        "classification": "Diesel",
+        "cabin": 3,
+        "loadCapacity": 1200
+      }
+    }
+    ```
   * **Respuesta Esperada**: `400 Bad Request` indicando "La cabina debe ser menor o igual a 2".
 
 ---
@@ -350,7 +506,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
   * **Respuesta Esperada**: `200 OK` con los detalles específicos del tipo.
 * **Error: ID No Existente**:
   * **URL**: `http://localhost:3000/vehiculos/00000000-0000-0000-0000-000000000000`
-  * **Respuesta Esperada**: `404 Not Found` indicando que el vehículo no existe.
+  * **Respuesta Esperada**: `404 Not Found` indicando "Vehículo no encontrado.".
 
 ---
 
@@ -360,7 +516,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
   * **Cuerpo (JSON)**:
     ```json
     {
-      "datos": {
+      "data": {
         "color": "Blanco Perlado"
       }
     }
@@ -370,12 +526,12 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
   * **Cuerpo (JSON)**:
     ```json
     {
-      "datos": {
-        "placa": "PDF9999" // Placa que ya tiene otra entidad asignada
+      "data": {
+        "plate": "PDF9999"
       }
     }
     ```
-  * **Respuesta Esperada**: `400 Bad Request` o `409 Conflict` por restricción de llave única.
+  * **Respuesta Esperada**: `409 Conflict` (La placa ya está registrada por otro vehículo.).
 
 ---
 
