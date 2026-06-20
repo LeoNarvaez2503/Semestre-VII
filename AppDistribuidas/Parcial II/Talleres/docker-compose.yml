@@ -24,8 +24,6 @@ services:
       dockerfile: Dockerfile
     container_name: usuarios_api_unificado
     restart: always
-    ports:
-      - "8000:8000"
     environment:
       DATABASE_URL: postgresql://postgres:admin@usuarios-db:5432/usuarios
       PORT: 8000
@@ -58,8 +56,6 @@ services:
       dockerfile: Dockerfile
     container_name: vehiculos_app_unificado
     restart: always
-    ports:
-      - "3000:3000"
     environment:
       PORT: 3000
       DB_HOST: vehiculos-db
@@ -105,11 +101,26 @@ services:
       ZONA_CODE: Z001
       ZONA_DESCRIPTION: Zona creada desde Docker Compose Unificado
       ZONA_TYPE: REGULAR
-    ports:
-      - "8080:8080"
     depends_on:
       zonas-db:
         condition: service_healthy
+
+  # --- API GATEWAY SEGURO ---
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api_gateway_seguro
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      usuarios-api:
+        condition: service_started
+      vehiculos-app:
+        condition: service_started
+      zonas-app:
+        condition: service_started
 
 volumes:
   usuarios_pgdata:

@@ -10,7 +10,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Crear Rol** (`POST /roles`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8000/roles`
+  * **URL**: `http://localhost/roles`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -36,24 +36,24 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Listar Roles** (`GET /roles`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8000/roles`
+  * **URL**: `http://localhost/roles`
   * **Respuesta Esperada**: `200 OK` con un arreglo JSON de roles activos.
 
 ---
 
 #### **Obtener Rol por ID** (`GET /roles/{id}`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8000/roles/550e8400-e29b-41d4-a716-446655440000`
+  * **URL**: `http://localhost/roles/550e8400-e29b-41d4-a716-446655440000`
   * **Respuesta Esperada**: `200 OK` con el objeto del rol.
 * **Error: ID no encontrado**:
-  * **URL**: `http://localhost:8000/roles/00000000-0000-0000-0000-000000000000`
+  * **URL**: `http://localhost/roles/00000000-0000-0000-0000-000000000000`
   * **Respuesta Esperada**: `404 Not Found`.
 
 ---
 
 #### **Actualizar Rol** (`PATCH /roles/{id}`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8000/roles/550e8400-e29b-41d4-a716-446655440000`
+  * **URL**: `http://localhost/roles/550e8400-e29b-41d4-a716-446655440000`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -66,7 +66,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Eliminar Rol** (`DELETE /roles/{id}`)
 * **Caso Exitoso (Inactivación Lógica)**:
-  * **URL**: `http://localhost:8000/roles/550e8400-e29b-41d4-a716-446655440000`
+  * **URL**: `http://localhost/roles/550e8400-e29b-41d4-a716-446655440000`
   * **Respuesta Esperada**: `200 OK` indicando la inactivación exitosa.
 
 ---
@@ -76,7 +76,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 #### **Crear Usuario** (`POST /usuarios`)
 * **Nota**: El campo `username` se genera automáticamente y **no** se debe enviar en la petición.
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8000/usuarios`
+  * **URL**: `http://localhost/usuarios`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -177,9 +177,25 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
+#### **Buscar Usuarios** (`GET /usuarios/buscar`)
+* **Caso Exitoso (Por username)**:
+  * **URL**: `http://localhost/usuarios/buscar?username=lvnarvaez`
+  * **Respuesta Esperada**: `200 OK` con un arreglo conteniendo el usuario con `username` igual a `lvnarvaez`.
+* **Caso Exitoso (Por apellido - parcial)**:
+  * **URL**: `http://localhost/usuarios/buscar?apellido=Narvaez`
+  * **Respuesta Esperada**: `200 OK` con un arreglo conteniendo los usuarios con apellido que coincida con "Narvaez".
+* **Caso Exitoso (Por username y apellido)**:
+  * **URL**: `http://localhost/usuarios/buscar?username=lvnarvaez&apellido=Narvaez`
+  * **Respuesta Esperada**: `200 OK` con la intersección de usuarios que coincidan con ambos parámetros.
+* **Error: Parámetros Vacíos**:
+  * **URL**: `http://localhost/usuarios/buscar`
+  * **Respuesta Esperada**: `400 Bad Request` con mensaje indicando "Debe proporcionar al menos un parámetro de búsqueda: 'username' o 'apellido'."
+
+---
+
 #### **Actualizar Usuario** (`PATCH /usuarios/{id}`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8000/usuarios/550e8400-e29b-41d4-a716-446655440000`
+  * **URL**: `http://localhost/usuarios/550e8400-e29b-41d4-a716-446655440000`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -203,7 +219,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Modificar Roles de un Usuario** (`PUT /usuarios/{id}/roles`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8000/usuarios/550e8400-e29b-41d4-a716-446655440000/roles`
+  * **URL**: `http://localhost/usuarios/550e8400-e29b-41d4-a716-446655440000/roles`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -212,7 +228,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
     ```
   * **Respuesta Esperada**: `200 OK` con el objeto del usuario y la lista de roles actualizada a `["Administrador", "Cliente"]`. *(Si "Cliente" no existía en el catálogo de roles, se crea automáticamente)*.
 * **Error: Usuario No Encontrado**:
-  * **URL**: `http://localhost:8000/usuarios/00000000-0000-0000-0000-000000000000/roles`
+  * **URL**: `http://localhost/usuarios/00000000-0000-0000-0000-000000000000/roles`
   * **Cuerpo (JSON)**: `{"roles": ["Administrador"]}`
   * **Respuesta Esperada**: `404 Not Found`.
 
@@ -220,7 +236,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Eliminar Usuario** (`DELETE /usuarios/{id}`)
 * **Caso Exitoso (Inactivación Lógica)**:
-  * **URL**: `http://localhost:8000/usuarios/550e8400-e29b-41d4-a716-446655440000`
+  * **URL**: `http://localhost/usuarios/550e8400-e29b-41d4-a716-446655440000`
   * **Respuesta Esperada**: `200 OK` con mensaje de inactivación exitosa.
 
 ---
@@ -231,7 +247,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Tipo: Auto**
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:3000/vehiculos`
+  * **URL**: `http://localhost/vehiculos`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -421,7 +437,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Tipo: Moto**
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:3000/vehiculos`
+  * **URL**: `http://localhost/vehiculos`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -458,7 +474,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Tipo: Camioneta**
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:3000/vehiculos`
+  * **URL**: `http://localhost/vehiculos`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -499,20 +515,20 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ### 2.2 Obtener/Listar Vehículos (`GET /vehiculos`)
 * **Listar todos**:
-  * **URL**: `http://localhost:3000/vehiculos`
+  * **URL**: `http://localhost/vehiculos`
   * **Respuesta Esperada**: `200 OK` con la lista de todos los vehículos (autos, motos, camionetas).
 * **Obtener por ID**:
-  * **URL**: `http://localhost:3000/vehiculos/{uuid}`
+  * **URL**: `http://localhost/vehiculos/{uuid}`
   * **Respuesta Esperada**: `200 OK` con los detalles específicos del tipo.
 * **Error: ID No Existente**:
-  * **URL**: `http://localhost:3000/vehiculos/00000000-0000-0000-0000-000000000000`
+  * **URL**: `http://localhost/vehiculos/00000000-0000-0000-0000-000000000000`
   * **Respuesta Esperada**: `404 Not Found` indicando "Vehículo no encontrado.".
 
 ---
 
 ### 2.3 Actualizar Vehículo (`PATCH /vehiculos/{id}`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:3000/vehiculos/{uuid}`
+  * **URL**: `http://localhost/vehiculos/{uuid}`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -537,7 +553,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ### 2.4 Eliminar Vehículo (`DELETE /vehiculos/{id}`)
 * **Caso Exitoso (Físico)**:
-  * **URL**: `http://localhost:3000/vehiculos/{uuid}`
+  * **URL**: `http://localhost/vehiculos/{uuid}`
   * **Respuesta Esperada**: `200 OK` o `204 No Content`.
 
 ---
@@ -548,7 +564,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Crear Zona** (`POST /api/v1/zonas/`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8080/api/v1/zonas/`
+  * **URL**: `http://localhost/api/v1/zonas/`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -567,7 +583,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Actualizar Zona** (`PUT /api/v1/zonas/{idZona}`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8080/api/v1/zonas/{uuid}`
+  * **URL**: `http://localhost/api/v1/zonas/{uuid}`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -583,7 +599,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Desactivar Zona** (`DELETE /api/v1/zonas/{idZona}`)
 * **Caso Exitoso (Desactivación en Cascada)**:
-  * **URL**: `http://localhost:8080/api/v1/zonas/{uuid}`
+  * **URL**: `http://localhost/api/v1/zonas/{uuid}`
   * **Respuesta Esperada**: `204 No Content`. *(Esto inactiva la Zona y coloca en estado INACTIVO todos los Espacios asociados)*.
 
 ---
@@ -592,7 +608,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Crear Espacio** (`POST /api/v1/espacios/`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8080/api/v1/espacios/`
+  * **URL**: `http://localhost/api/v1/espacios/`
   * **Cuerpo (JSON)**:
     ```json
     {
@@ -614,15 +630,15 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 #### **Cambiar Estado de un Espacio** (`PUT /api/v1/espacios/{idEspacio}/estado/{estado}`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8080/api/v1/espacios/{uuid_espacio}/estado/OCUPADO`
+  * **URL**: `http://localhost/api/v1/espacios/{uuid_espacio}/estado/OCUPADO`
   * **Respuesta Esperada**: `200 OK` con el espacio actualizado y el estado establecido como `OCUPADO`.
 * **Error: Estado Inválido (No enum)**:
-  * **URL**: `http://localhost:8080/api/v1/espacios/{uuid_espacio}/estado/DAÑADO`
+  * **URL**: `http://localhost/api/v1/espacios/{uuid_espacio}/estado/DAÑADO`
   * **Respuesta Esperada**: `400 Bad Request` (el estado no pertenece a `DISPONIBLE`, `OCUPADO`, `INACTIVO`, etc.).
 
 ---
 
 #### **Listar Espacios por Estado** (`GET /api/v1/espacios/estado/{estado}`)
 * **Caso Exitoso**:
-  * **URL**: `http://localhost:8080/api/v1/espacios/estado/DISPONIBLE`
+  * **URL**: `http://localhost/api/v1/espacios/estado/DISPONIBLE`
   * **Respuesta Esperada**: `200 OK` con todos los espacios disponibles de cualquier zona.

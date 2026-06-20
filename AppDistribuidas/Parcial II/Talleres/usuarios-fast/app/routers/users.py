@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from uuid import UUID
+from typing import Optional
 from app.core.database import get_db
 from app.schemas.user import UserCreate, UserUpdate, UserResponse, UserRolesUpdate
 from app.services.user_service import UserService
@@ -14,6 +15,14 @@ def create_user(user_in: UserCreate, db: Session = Depends(get_db)):
 @router.get("", response_model=list[UserResponse])
 def get_users(db: Session = Depends(get_db)):
     return UserService.get_users(db)
+
+@router.get("/buscar", response_model=list[UserResponse])
+def search_users(
+    username: Optional[str] = None,
+    apellido: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    return UserService.search_users(db, username=username, apellido=apellido)
 
 @router.get("/{id}", response_model=UserResponse)
 def get_user_by_id(id: UUID, db: Session = Depends(get_db)):

@@ -7,6 +7,7 @@ from app.models.user import User
 from app.models.role import Role
 from app.models.user_role import UserRole
 from app.schemas.user import UserCreate, UserUpdate
+from fastapi import HTTPException
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -21,6 +22,20 @@ class UserService:
     @staticmethod
     def get_users(db: Session) -> list[User]:
         return db.query(User).filter(User.active == True).all()
+
+    @staticmethod
+    def search_users(db: Session, username: Optional[str] = None, apellido: Optional[str] = None) -> list[User]:
+        if not username and not apellido:
+            raise HTTPException(status_code=400, detail="Debe proporcionar al menos un parámetro de búsqueda: 'username' o 'apellido'.")
+        
+        query = db.query(User).join(Person).filter(User.active == True)
+        
+        if username:
+            query = query.filter(func.lower(User.username) == username.strip().lower())
+        if apellido:
+            query = query.filter(Person.last_name.ilike(f"%{apellido.strip()}%"))
+            
+        return query.all()
 
     @staticmethod
     def _generate_unique_username(db: Session, first_name: str, middle_name: Optional[str], last_name: str) -> str:
