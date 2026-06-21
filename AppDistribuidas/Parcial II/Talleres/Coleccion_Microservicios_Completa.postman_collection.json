@@ -1,0 +1,254 @@
+{
+  "info": {
+    "name": "Microservicios - Proyecto",
+    "description": "Colección completa para probar los microservicios de Usuarios, Vehículos y Zonas a través del API Gateway (Puerto 9000).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Microservicio Usuarios",
+      "item": [
+        {
+          "name": "Roles",
+          "item": [
+            {
+              "name": "Crear Rol",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Administrador\",\n  \"description\": \"Acceso total a la configuración y gestión\"\n}"
+                },
+                "url": { "raw": "http://localhost:9000/roles", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["roles"] }
+              }
+            },
+            {
+              "name": "Listar Roles",
+              "request": {
+                "method": "GET",
+                "url": { "raw": "http://localhost:9000/roles", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["roles"] }
+              }
+            },
+            {
+              "name": "Actualizar Rol",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"description\": \"Acceso total actualizado\"\n}"
+                },
+                "url": { "raw": "http://localhost:9000/roles/REEMPLAZAR_ID_AQUI", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["roles", "REEMPLAZAR_ID_AQUI"] }
+              }
+            },
+            {
+              "name": "Eliminar Rol",
+              "request": {
+                "method": "DELETE",
+                "url": { "raw": "http://localhost:9000/roles/REEMPLAZAR_ID_AQUI", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["roles", "REEMPLAZAR_ID_AQUI"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Usuarios",
+          "item": [
+            {
+              "name": "Crear Usuario",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"password\": \"supersecurepassword123\",\n  \"person\": {\n    \"dni\": \"1723456789\",\n    \"email\": \"leo.narvaez@example.com\",\n    \"first_name\": \"Leonardo\",\n    \"last_name\": \"Narvaez\",\n    \"middle_name\": \"Vinicio\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0999999999\",\n    \"address\": \"Av. General Enríquez, Sangolquí\"\n  },\n  \"roles\": [\"Administrador\"]\n}"
+                },
+                "url": { "raw": "http://localhost:9000/usuarios", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["usuarios"] }
+              }
+            },
+            {
+              "name": "Buscar Usuarios",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "http://localhost:9000/usuarios/buscar?username=lvnarvaez",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "9000",
+                  "path": ["usuarios", "buscar"],
+                  "query": [{ "key": "username", "value": "lvnarvaez" }]
+                }
+              }
+            },
+            {
+              "name": "Actualizar Usuario",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"person\": {\n    \"phone\": \"0987654321\",\n    \"address\": \"Cumbayá, Quito\"\n  }\n}"
+                },
+                "url": { "raw": "http://localhost:9000/usuarios/REEMPLAZAR_ID_AQUI", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["usuarios", "REEMPLAZAR_ID_AQUI"] }
+              }
+            },
+            {
+              "name": "Modificar Roles de Usuario",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roles\": [\"Administrador\", \"Cliente\"]\n}"
+                },
+                "url": { "raw": "http://localhost:9000/usuarios/REEMPLAZAR_ID_AQUI/roles", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["usuarios", "REEMPLAZAR_ID_AQUI", "roles"] }
+              }
+            },
+            {
+              "name": "Eliminar Usuario",
+              "request": {
+                "method": "DELETE",
+                "url": { "raw": "http://localhost:9000/usuarios/REEMPLAZAR_ID_AQUI", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["usuarios", "REEMPLAZAR_ID_AQUI"] }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Microservicio Vehículos",
+      "item": [
+        {
+          "name": "Crear Vehículo (Auto)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Auto\",\n  \"data\": {\n    \"plate\": \"PDF1234\",\n    \"brand\": \"Toyota\",\n    \"model\": \"Corolla\",\n    \"color\": \"Rojo\",\n    \"year\": 2023,\n    \"classification\": \"Gasolina\",\n    \"doors\": 4,\n    \"fuelType\": \"Gasolina\",\n    \"trunkCapacity\": 470\n  }\n}"
+            },
+            "url": { "raw": "http://localhost:9000/vehiculos", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["vehiculos"] }
+          }
+        },
+        {
+          "name": "Listar Vehículos",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "http://localhost:9000/vehiculos", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["vehiculos"] }
+          }
+        },
+        {
+          "name": "Actualizar Vehículo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"color\": \"Blanco Perlado\"\n  }\n}"
+            },
+            "url": { "raw": "http://localhost:9000/vehiculos/REEMPLAZAR_ID_AQUI", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["vehiculos", "REEMPLAZAR_ID_AQUI"] }
+          }
+        },
+        {
+          "name": "Eliminar Vehículo",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "http://localhost:9000/vehiculos/REEMPLAZAR_ID_AQUI", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["vehiculos", "REEMPLAZAR_ID_AQUI"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Microservicio Zonas",
+      "item": [
+        {
+          "name": "Zonas",
+          "item": [
+            {
+              "name": "Crear Zona",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Zona Premium\",\n  \"description\": \"Ubicada en planta baja con cargador eléctrico\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 10\n}"
+                },
+                "url": { "raw": "http://localhost:9000/api/v1/zonas/", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["api", "v1", "zonas", ""] }
+              }
+            },
+            {
+              "name": "Actualizar Zona",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Zona Premium Renovada\",\n  \"description\": \"Ubicada en planta baja con cargador eléctrico rápido\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 15\n}"
+                },
+                "url": { "raw": "http://localhost:9000/api/v1/zonas/REEMPLAZAR_ID_AQUI", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["api", "v1", "zonas", "REEMPLAZAR_ID_AQUI"] }
+              }
+            },
+            {
+              "name": "Desactivar Zona",
+              "request": {
+                "method": "DELETE",
+                "url": { "raw": "http://localhost:9000/api/v1/zonas/REEMPLAZAR_ID_AQUI", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["api", "v1", "zonas", "REEMPLAZAR_ID_AQUI"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Espacios",
+          "item": [
+            {
+              "name": "Crear Espacio",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"zoneId\": \"REEMPLAZAR_CON_UUID_ZONA_CREADA\",\n  \"description\": \"Espacio E-101\",\n  \"type\": \"AUTO\",\n  \"estado\": \"DISPONIBLE\"\n}"
+                },
+                "url": { "raw": "http://localhost:9000/api/v1/espacios/", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["api", "v1", "espacios", ""] }
+              }
+            },
+            {
+              "name": "Cambiar Estado de Espacio",
+              "request": {
+                "method": "PUT",
+                "url": { "raw": "http://localhost:9000/api/v1/espacios/REEMPLAZAR_ID_ESPACIO_AQUI/estado/OCUPADO", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["api", "v1", "espacios", "REEMPLAZAR_ID_ESPACIO_AQUI", "estado", "OCUPADO"] }
+              }
+            },
+            {
+              "name": "Listar Espacios Disponibles",
+              "request": {
+                "method": "GET",
+                "url": { "raw": "http://localhost:9000/api/v1/espacios/estado/DISPONIBLE", "protocol": "http", "host": ["localhost"], "port": "9000", "path": ["api", "v1", "espacios", "estado", "DISPONIBLE"] }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

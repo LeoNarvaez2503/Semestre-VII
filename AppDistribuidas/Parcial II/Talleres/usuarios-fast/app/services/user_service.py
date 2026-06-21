@@ -108,15 +108,9 @@ class UserService:
             # Guardar roles
             if user_in.roles:
                 for role_name in user_in.roles:
-                    role_obj = db.query(Role).filter(Role.name == role_name).first()
+                    role_obj = db.query(Role).filter(Role.name == role_name, Role.active == True).first()
                     if not role_obj:
-                        role_obj = Role(
-                            name=role_name,
-                            active=True,
-                            description=f"Rol de {role_name}"
-                        )
-                        db.add(role_obj)
-                        db.flush()
+                        raise EntityNotFoundException(f"El rol '{role_name}' no existe o está inactivo.")
 
                     user_role_obj = UserRole(
                         id_user=user_obj.id_person,
@@ -169,15 +163,9 @@ class UserService:
                 db.query(UserRole).filter(UserRole.id_user == user_obj.id_person).delete()
                 
                 for role_name in user_in.roles:
-                    role_obj = db.query(Role).filter(Role.name == role_name).first()
+                    role_obj = db.query(Role).filter(Role.name == role_name, Role.active == True).first()
                     if not role_obj:
-                        role_obj = Role(
-                            name=role_name,
-                            active=True,
-                            description=f"Rol de {role_name}"
-                        )
-                        db.add(role_obj)
-                        db.flush()
+                        raise EntityNotFoundException(f"El rol '{role_name}' no existe o está inactivo.")
 
                     user_role_obj = UserRole(
                         id_user=user_obj.id_person,
@@ -220,15 +208,9 @@ class UserService:
             db.query(UserRole).filter(UserRole.id_user == user_obj.id_person).delete()
 
             for role_name in roles:
-                role_obj = db.query(Role).filter(Role.name == role_name).first()
+                role_obj = db.query(Role).filter(Role.name == role_name, Role.active == True).first()
                 if not role_obj:
-                    role_obj = Role(
-                        name=role_name,
-                        active=True,
-                        description=f"Rol de {role_name}"
-                    )
-                    db.add(role_obj)
-                    db.flush()
+                    raise EntityNotFoundException(f"El rol '{role_name}' no existe o está inactivo.")
 
                 user_role_obj = UserRole(
                     id_user=user_obj.id_person,
