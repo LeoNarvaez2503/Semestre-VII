@@ -112,7 +112,8 @@ public class EspacioServicioImpl implements EspacioServicio {
     @Override
     public EspacioResponseDTO cambiarEstado(
         UUID idEspacio,
-        EstadoEspacio estado
+        EstadoEspacio estado,
+        UUID vehiculoId
     ) {
         Espacio espacio = repositorioEspacio
             .findById(idEspacio)
@@ -129,6 +130,44 @@ public class EspacioServicioImpl implements EspacioServicio {
                 "No se puede ocupar un espacio en una zona inactiva"
             );
         }
+
+        // Reglas de negocio para vehículos
+        if (estado == EstadoEspacio.OCUPADO) {
+            if (vehiculoId == null) {
+                throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Debe proporcionar el ID del vehículo para ocupar el espacio"
+                );
+            }
+            
+            // Validar vehículo con contrato interno
+            try {
+                org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+                String url = "http://vehiculos-app:3000/vehiculos/internal/validar/" + vehiculoId;
+                java.util.Map<String, Object> response = restTemplate.getForObject(url, java.util.Map.class);
+                
+                if (response == null || !Boolean.TRUE.equals(response.get("exists"))) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El vehículo no existe");
+                }
+                
+                String tipoVehiculo = (String) response.get("type");
+                if (!tipoVehiculo.equalsIgnoreCase(espacio.getType().name())) {
+                    throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, 
+                        "El tipo de vehículo (" + tipoVehiculo + ") no coincide con el tipo de espacio (" + espacio.getType() + ")"
+                    );
+                }
+                
+                espacio.setVehiculoId(vehiculoId);
+            } catch (org.springframework.web.client.HttpClientErrorException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error al validar el vehículo", e);
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Servicio de vehículos no disponible", e);
+            }
+        } else if (estado == EstadoEspacio.DISPONIBLE) {
+            espacio.setVehiculoId(null);
+        }
+
         espacio.setEstado(estado);
         espacio.setDateModified(java.time.LocalDateTime.now());
         return mapper.toResponseDTO(repositorioEspacio.save(espacio));

@@ -54,6 +54,9 @@ public class Espacio {
     @JsonIgnore
     private Zona zone;
 
+    @Column(name = "vehiculo_id", nullable = true)
+    private UUID vehiculoId;
+
     @Column
     private LocalDateTime dateCreated;
 

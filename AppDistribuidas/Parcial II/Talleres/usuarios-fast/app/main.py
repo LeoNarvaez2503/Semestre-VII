@@ -13,7 +13,9 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="API de Usuarios (FastAPI)",
     description="Backend para la gestión de usuarios, personas y roles aplicando principios SOLID.",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url="/usuarios/docs",
+    openapi_url="/usuarios/openapi.json"
 )
 
 # Configuración de CORS

@@ -20,6 +20,13 @@ class UserService:
         return user
 
     @staticmethod
+    def validate_user_exists(db: Session, id_person: str) -> dict:
+        user = db.query(User).filter(User.id_person == id_person).first()
+        if not user:
+            return {"exists": False}
+        return {"exists": True, "active": user.active}
+
+    @staticmethod
     def get_users(db: Session) -> list[User]:
         return db.query(User).filter(User.active == True).all()
 

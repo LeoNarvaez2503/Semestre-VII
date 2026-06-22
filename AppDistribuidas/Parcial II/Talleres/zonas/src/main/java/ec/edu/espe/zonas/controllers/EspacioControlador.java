@@ -26,12 +26,12 @@ public class EspacioControlador {
 
     private final EspacioServicio espacioServicio;
 
-    @GetMapping("/")
+    @GetMapping("/listar")
     public ResponseEntity<List<EspacioResponseDTO>> listarEspacios() {
         return ResponseEntity.ok(espacioServicio.obtenerEspacios());
     }
 
-    @GetMapping("/{idEspacio}")
+    @GetMapping("/obtener/{idEspacio}")
     public ResponseEntity<EspacioResponseDTO> obtenerEspacio(@PathVariable UUID idEspacio) {
         return ResponseEntity.ok(espacioServicio.obtenerEspacioPorId(idEspacio));
     }
@@ -48,19 +48,20 @@ public class EspacioControlador {
         return ResponseEntity.ok(espacioServicio.obtenerEspaciosPorZonaEstado(idZona, estado));
     }
 
-    @PostMapping("/")
+    @PostMapping("/crear")
     public ResponseEntity<EspacioResponseDTO> crearEspacio(@Valid @RequestBody EspacioRequestDTO request) {
         return new ResponseEntity<>(espacioServicio.crearEspacio(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{idEspacio}/estado/{estado}")
+    @PutMapping("/actualizar/{idEspacio}/estado/{estado}")
     public ResponseEntity<EspacioResponseDTO> cambiarEstado(
             @PathVariable UUID idEspacio,
-            @PathVariable EstadoEspacio estado) {
-        return ResponseEntity.ok(espacioServicio.cambiarEstado(idEspacio, estado));
+            @PathVariable EstadoEspacio estado,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) UUID vehiculoId) {
+        return ResponseEntity.ok(espacioServicio.cambiarEstado(idEspacio, estado, vehiculoId));
     }
 
-    @DeleteMapping("/{idEspacio}")
+    @DeleteMapping("/eliminar/{idEspacio}")
     public ResponseEntity<Void> eliminarEspacio(@PathVariable UUID idEspacio) {
         espacioServicio.eliminarEspacio(idEspacio);
         return ResponseEntity.noContent().build();

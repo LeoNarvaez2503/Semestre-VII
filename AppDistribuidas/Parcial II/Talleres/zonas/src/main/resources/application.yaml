@@ -16,5 +16,11 @@ spring:
         format_sql: true
     show-sql: true
 
+springdoc:
+  swagger-ui:
+    path: /zonas/docs
+  api-docs:
+    path: /zonas/openapi.json
+
 server:
   port: ${PORT:8080}

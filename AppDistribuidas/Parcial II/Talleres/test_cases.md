@@ -8,7 +8,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ### 1.1 Gestión de Roles (`/roles`)
 
-#### **Crear Rol** (`POST /roles`)
+#### **Crear Rol** (`POST /roles/crear`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/rol/crear`
   * **Cuerpo (JSON)**:
@@ -34,14 +34,14 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-#### **Listar Roles** (`GET /roles`)
+#### **Listar Roles** (`GET /roles/listar`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/rol/listar`
   * **Respuesta Esperada**: `200 OK` con un arreglo JSON de roles activos.
 
 ---
 
-#### **Obtener Rol por ID** (`GET /roles/{id}`)
+#### **Obtener Rol por ID** (`GET /roles/obtener/{id}`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/rol/obtener/550e8400-e29b-41d4-a716-446655440000`
   * **Respuesta Esperada**: `200 OK` con el objeto del rol.
@@ -51,7 +51,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-#### **Actualizar Rol** (`PATCH /roles/{id}`)
+#### **Actualizar Rol** (`PATCH /roles/actualizar/{id}`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/rol/actualizar/550e8400-e29b-41d4-a716-446655440000`
   * **Cuerpo (JSON)**:
@@ -64,7 +64,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-#### **Eliminar Rol** (`DELETE /roles/{id}`)
+#### **Eliminar Rol** (`DELETE /roles/eliminar/{id}`)
 * **Caso Exitoso (Inactivación Lógica)**:
   * **URL**: `http://localhost:9000/rol/eliminar/550e8400-e29b-41d4-a716-446655440000`
   * **Respuesta Esperada**: `200 OK` indicando la inactivación exitosa.
@@ -73,7 +73,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ### 1.2 Gestión de Usuarios (`/usuarios`)
 
-#### **Crear Usuario** (`POST /usuarios`)
+#### **Crear Usuario** (`POST /usuarios/crear`)
 * **Nota**: El campo `username` se genera automáticamente y **no** se debe enviar en la petición.
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/usuario/crear`
@@ -193,7 +193,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-#### **Actualizar Usuario** (`PATCH /usuarios/{id}`)
+#### **Actualizar Usuario** (`PATCH /usuarios/actualizar/{id}`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/usuario/actualizar/550e8400-e29b-41d4-a716-446655440000`
   * **Cuerpo (JSON)**:
@@ -217,7 +217,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-#### **Modificar Roles de un Usuario** (`PUT /usuarios/{id}/roles`)
+#### **Modificar Roles de un Usuario** (`PUT /usuarios/roles/{id}`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/usuario/roles/550e8400-e29b-41d4-a716-446655440000`
   * **Cuerpo (JSON)**:
@@ -234,16 +234,106 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-#### **Eliminar Usuario** (`DELETE /usuarios/{id}`)
+#### **Eliminar Usuario** (`DELETE /usuarios/eliminar/{id}`)
 * **Caso Exitoso (Inactivación Lógica)**:
   * **URL**: `http://localhost:9000/usuario/eliminar/550e8400-e29b-41d4-a716-446655440000`
   * **Respuesta Esperada**: `200 OK` con mensaje de inactivación exitosa.
+* **Error: Usuario No Encontrado o Ya Inactivo**:
+  * **URL**: `http://localhost:9000/usuario/eliminar/00000000-0000-0000-0000-000000000000`
+  * **Respuesta Esperada**: `404 Not Found`.
+
+---
+
+#### **Crear Usuario con Rol Inexistente** (`POST /usuarios/crear`)
+* **Error: Rol no existe en el catálogo**:
+  * **URL**: `http://localhost:9000/usuario/crear`
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "password": "password12345",
+      "person": {
+        "dni": "1723456789",
+        "email": "nuevo@example.com",
+        "first_name": "Carlos",
+        "last_name": "Lopez"
+      },
+      "roles": ["RolQueNoExiste"]
+    }
+    ```
+  * **Respuesta Esperada**: `404 Not Found` con mensaje "El rol 'RolQueNoExiste' no existe o está inactivo."
+
+---
+
+#### **Actualizar Usuario — Email/DNI Duplicados** (`PATCH /usuarios/actualizar/{id}`)
+* **Error: Email ya registrado por otro usuario**:
+  * **URL**: `http://localhost:9000/usuario/actualizar/550e8400-e29b-41d4-a716-446655440000`
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "person": {
+        "email": "leo.narvaez@example.com"
+      }
+    }
+    ```
+  * **Respuesta Esperada**: `409 Conflict` con mensaje indicando que el correo ya está registrado.
+* **Error: DNI ya registrado por otro usuario**:
+  * **URL**: `http://localhost:9000/usuario/actualizar/550e8400-e29b-41d4-a716-446655440000`
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "person": {
+        "dni": "1723456789"
+      }
+    }
+    ```
+  * **Respuesta Esperada**: `409 Conflict` con mensaje indicando que el DNI ya está registrado.
+
+---
+
+### 1.3 Casos Adicionales de Roles
+
+#### **Reactivación de Rol Inactivo** (`POST /roles/crear`)
+* **Caso Exitoso (Reactivación)**:
+  * **Condición**: Un rol fue previamente eliminado (inactivado) y se intenta crear de nuevo con el mismo nombre.
+  * **URL**: `http://localhost:9000/rol/crear`
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "name": "Administrador",
+      "description": "Descripción actualizada tras reactivación"
+    }
+    ```
+  * **Respuesta Esperada**: `201 Created` con el rol reactivado (`active: true`) y la descripción actualizada.
+
+---
+
+#### **Actualizar Rol — Nombre Duplicado** (`PATCH /roles/actualizar/{id}`)
+* **Error: Nombre ya existente en otro rol**:
+  * **URL**: `http://localhost:9000/rol/actualizar/550e8400-e29b-41d4-a716-446655440000`
+  * **Cuerpo (JSON)**:
+    ```json
+    {
+      "name": "Administrador"
+    }
+    ```
+  * **Respuesta Esperada**: `409 Conflict` con mensaje indicando que el rol con ese nombre ya está registrado.
+
+---
+
+#### **Eliminar Rol — Cascada en Asociaciones** (`DELETE /roles/eliminar/{id}`)
+* **Caso Exitoso con Efecto Cascada**:
+  * **Condición**: El rol tiene usuarios asociados a través de `user_role`.
+  * **URL**: `http://localhost:9000/rol/eliminar/550e8400-e29b-41d4-a716-446655440000`
+  * **Respuesta Esperada**: `200 OK`. El rol queda inactivo y todas las relaciones `user_role` asociadas también se inactivan.
+* **Error: Rol No Encontrado**:
+  * **URL**: `http://localhost:9000/rol/eliminar/00000000-0000-0000-0000-000000000000`
+  * **Respuesta Esperada**: `404 Not Found`.
 
 ---
 
 ## 2. Microservicio de Vehículos (`vehiculos` - Puerto `3000`)
 
-### 2.1 Crear Vehículo (`POST /vehiculos`)
+### 2.1 Crear Vehículo (`POST /vehiculos/crear`)
 
 #### **Tipo: Auto**
 * **Caso Exitoso**:
@@ -443,6 +533,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
     {
       "type": "Moto",
       "data": {
+        "propietarioId": "550e8400-e29b-41d4-a716-446655440000",
         "plate": "AB-123A",
         "brand": "Honda",
         "model": "Cruiser",
@@ -513,7 +604,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-### 2.2 Obtener/Listar Vehículos (`GET /vehiculos`)
+### 2.2 Obtener/Listar Vehículos (`GET /vehiculos/listar`, `GET /vehiculos/obtener/{id}`)
 * **Listar todos**:
   * **URL**: `http://localhost:9000/vehiculo/listar`
   * **Respuesta Esperada**: `200 OK` con la lista de todos los vehículos (autos, motos, camionetas).
@@ -526,7 +617,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-### 2.3 Actualizar Vehículo (`PATCH /vehiculos/{id}`)
+### 2.3 Actualizar Vehículo (`PATCH /vehiculos/actualizar/{id}`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/vehiculo/actualizar/{uuid}`
   * **Cuerpo (JSON)**:
@@ -551,10 +642,128 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-### 2.4 Eliminar Vehículo (`DELETE /vehiculos/{id}`)
+### 2.4 Eliminar Vehículo (`DELETE /vehiculos/eliminar/{id}`)
 * **Caso Exitoso (Físico)**:
   * **URL**: `http://localhost:9000/vehiculo/eliminar/{uuid}`
   * **Respuesta Esperada**: `200 OK` o `204 No Content`.
+* **Error: Vehículo No Encontrado**:
+  * **URL**: `http://localhost:9000/vehiculo/eliminar/00000000-0000-0000-0000-000000000000`
+  * **Respuesta Esperada**: `404 Not Found` indicando "Vehículo no encontrado.".
+
+---
+
+### 2.5 Casos Adicionales de Validación
+
+#### **Error: Actualizar Vehículo No Existente** (`PATCH /vehiculos/actualizar/{id}`)
+* **URL**: `http://localhost:9000/vehiculo/actualizar/00000000-0000-0000-0000-000000000000`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "data": {
+      "color": "Azul"
+    }
+  }
+  ```
+* **Respuesta Esperada**: `404 Not Found` indicando "Vehículo no encontrado.".
+
+#### **Error: Año Inválido (Anterior a 1885)** (`POST /vehiculos/crear`)
+* **URL**: `http://localhost:9000/vehiculo/crear`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "type": "Auto",
+    "data": {
+      "plate": "ABC1234",
+      "brand": "Toyota",
+      "model": "Corolla",
+      "color": "Rojo",
+      "year": 1800,
+      "classification": "Gasolina",
+      "doors": 4,
+      "fuelType": "Gasolina",
+      "trunkCapacity": 470
+    }
+  }
+  ```
+* **Respuesta Esperada**: `400 Bad Request` indicando "El año debe ser mayor o igual a 1885".
+
+#### **Error: Body Vacío / Campos Obligatorios Faltantes** (`POST /vehiculos/crear`)
+* **URL**: `http://localhost:9000/vehiculo/crear`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "type": "Auto",
+    "data": {}
+  }
+  ```
+* **Respuesta Esperada**: `400 Bad Request` con múltiples errores de validación (placa, marca, modelo, color, año, clasificación, puertas, etc.).
+
+#### **Error: Camioneta con Cabina Inferior al Mínimo** (`POST /vehiculos/crear`)
+* **URL**: `http://localhost:9000/vehiculo/crear`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "type": "Camioneta",
+    "data": {
+      "plate": "XYZ1234",
+      "brand": "Ford",
+      "model": "Raptor",
+      "color": "Negro",
+      "year": 2024,
+      "classification": "Diesel",
+      "cabin": 0,
+      "loadCapacity": 1200
+    }
+  }
+  ```
+* **Respuesta Esperada**: `400 Bad Request` indicando "La cabina debe ser mayor o igual a 1".
+
+#### **Error: Inyección SQL en Color** (`POST /vehiculos/crear`)
+* **URL**: `http://localhost:9000/vehiculo/crear`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "type": "Auto",
+    "data": {
+      "plate": "QWE1234",
+      "brand": "Toyota",
+      "model": "Corolla",
+      "color": "Rojo; DROP TABLE vehiculo; --",
+      "year": 2023,
+      "classification": "Gasolina",
+      "doors": 4,
+      "fuelType": "Gasolina",
+      "trunkCapacity": 470
+    }
+  }
+  ```
+* **Respuesta Esperada**: `400 Bad Request` indicando "El color contiene caracteres o términos reservados no permitidos (Inyección SQL)".
+
+#### **Error: Inyección SQL en Tipo de Moto** (`POST /vehiculos/crear`)
+#### **Error: Inyección SQL en Tipo de Moto** (`POST /vehiculos/crear`)
+* **URL**: `http://localhost:9000/vehiculo/crear`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "type": "Moto",
+    "data": {
+      "propietarioId": "550e8400-e29b-41d4-a716-446655440000",
+      "plate": "AB-123A",
+      "brand": "Honda",
+      "model": "Cruiser",
+      "color": "Negro",
+      "year": 2022,
+      "classification": "Gasolina",
+      "type": "Deportiva; SELECT * FROM users; --"
+    }
+  }
+  ```
+* **Respuesta Esperada**: `400 Bad Request` indicando "El tipo contiene caracteres o términos reservados no permitidos (Inyección SQL)".
+
+#### **Error: Propietario Inexistente / Inactivo** (`POST /vehiculos/crear`)
+* **URL**: `http://localhost:9000/vehiculo/crear`
+* **Cuerpo (JSON)**: Igual a cualquier caso exitoso pero con un `propietarioId` inválido (ej. `00000000-0000-0000-0000-000000000000`).
+* **Respuesta Esperada**: `400 Bad Request` indicando "El usuario con ID ... no existe" o "está inactivo".
 
 ---
 
@@ -562,7 +771,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ### 3.1 Gestión de Zonas (`/zonas`)
 
-#### **Crear Zona** (`POST /zonas/`)
+#### **Crear Zona** (`POST /zonas/crear`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/zona/crear`
   * **Cuerpo (JSON)**:
@@ -581,7 +790,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-#### **Actualizar Zona** (`PUT /zonas/{idZona}`)
+#### **Actualizar Zona** (`PUT /zonas/actualizar/{idZona}`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/zona/actualizar/{uuid}`
   * **Cuerpo (JSON)**:
@@ -597,7 +806,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ---
 
-#### **Desactivar Zona** (`DELETE /zonas/{idZona}`)
+#### **Desactivar Zona** (`DELETE /zonas/eliminar/{idZona}`)
 * **Caso Exitoso (Desactivación en Cascada)**:
   * **URL**: `http://localhost:9000/zona/eliminar/{uuid}`
   * **Respuesta Esperada**: `204 No Content`. *(Esto inactiva la Zona y coloca en estado INACTIVO todos los Espacios asociados)*.
@@ -606,7 +815,7 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 
 ### 3.2 Gestión de Espacios (`/espacios`)
 
-#### **Crear Espacio** (`POST /espacios/`)
+#### **Crear Espacio** (`POST /espacios/crear`)
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/espacio/crear`
   * **Cuerpo (JSON)**:
@@ -624,17 +833,44 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
   * **Respuesta Esperada**: `404 Not Found` (indicando que la zona no existe).
 * **Error: Capacidad de Zona Superada**:
   * **Condición**: Agregar más espacios que el límite de `capacidad` configurado en la Zona.
-  * **Respuesta Esperada**: `400 Bad Request` indicando que se ha superado la capacidad máxima de la zona.
+  * **Respuesta Esperada**: `409 Conflict` indicando que la zona ya alcanzó su capacidad máxima.
+* **Error: Crear Espacio en Zona Inactiva**:
+  * **Condición**: La zona fue previamente desactivada con `DELETE /zona/eliminar/{uuid}`.
+  * **Cuerpo (JSON)**: `{"zoneId": "UUID_ZONA_INACTIVA", "description": "Espacio en zona inactiva", "type": "AUTO"}`
+  * **Respuesta Esperada**: `400 Bad Request` indicando "La zona está inactiva".
+* **Error: Tipo de Espacio Inválido (No enum)**:
+  * **Cuerpo (JSON)**: `{"zoneId": "UUID_ZONA_VALIDA", "description": "Espacio test", "type": "CAMION"}`
+  * **Respuesta Esperada**: `400 Bad Request` (el tipo no pertenece a `MOTO`, `AUTO`, `BUSETA`).
 
 ---
 
 #### **Cambiar Estado de un Espacio** (`PUT /espacios/{idEspacio}/estado/{estado}`)
-* **Caso Exitoso**:
-  * **URL**: `http://localhost:9000/espacio/estado/{uuid_espacio}/estado/OCUPADO`
-  * **Respuesta Esperada**: `200 OK` con el espacio actualizado y el estado establecido como `OCUPADO`.
+* **Caso Exitoso (Cambio a Ocupado)**:
+  * **URL**: `http://localhost:9000/espacio/estado/{uuid_espacio}/estado/OCUPADO?vehiculoId={uuid_vehiculo}`
+  * **Respuesta Esperada**: `200 OK` con el espacio actualizado y el `vehiculoId` asignado.
+* **Caso Exitoso (Cambio a Disponible)**:
+  * **URL**: `http://localhost:9000/espacio/estado/{uuid_espacio}/estado/DISPONIBLE`
+  * **Respuesta Esperada**: `200 OK` con el espacio actualizado y el `vehiculoId` limpio (`null`).
 * **Error: Estado Inválido (No enum)**:
   * **URL**: `http://localhost:9000/espacio/estado/{uuid_espacio}/estado/DAÑADO`
-  * **Respuesta Esperada**: `400 Bad Request` (el estado no pertenece a `DISPONIBLE`, `OCUPADO`, `INACTIVO`, etc.).
+  * **Respuesta Esperada**: `400 Bad Request` (el estado no pertenece a `DISPONIBLE`, `OCUPADO`, `RESERVADO`, `MANTENIMIENTO`).
+* **Error: Cambiar Estado en Zona Inactiva**:
+  * **Condición**: El espacio pertenece a una zona previamente desactivada.
+  * **URL**: `http://localhost:9000/espacio/estado/{uuid_espacio_en_zona_inactiva}/estado/OCUPADO`
+  * **Respuesta Esperada**: `400 Bad Request` indicando "No se puede ocupar un espacio en una zona inactiva".
+* **Error: Espacio No Encontrado**:
+  * **URL**: `http://localhost:9000/espacio/estado/00000000-0000-0000-0000-000000000000/estado/DISPONIBLE`
+  * **Respuesta Esperada**: `404 Not Found`.
+* **Error: Ocupar Espacio Sin Vehículo**:
+  * **URL**: `http://localhost:9000/espacio/estado/{uuid_espacio}/estado/OCUPADO` *(sin el query param vehiculoId)*
+  * **Respuesta Esperada**: `400 Bad Request` indicando "Debe proporcionar el ID del vehículo".
+* **Error: Ocupar Espacio con Vehículo Inexistente**:
+  * **URL**: `http://localhost:9000/espacio/estado/{uuid_espacio}/estado/OCUPADO?vehiculoId=00000000-0000-0000-0000-000000000000`
+  * **Respuesta Esperada**: `400 Bad Request` indicando "El vehículo no existe".
+* **Error: Tipo de Vehículo No Coincide con Espacio**:
+  * **Condición**: Intentar asignar un vehículo tipo MOTO a un espacio tipo AUTO.
+  * **URL**: `http://localhost:9000/espacio/estado/{uuid_espacio_auto}/estado/OCUPADO?vehiculoId={uuid_vehiculo_moto}`
+  * **Respuesta Esperada**: `400 Bad Request` indicando que el tipo de vehículo no coincide con el tipo de espacio.
 
 ---
 
@@ -642,3 +878,104 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 * **Caso Exitoso**:
   * **URL**: `http://localhost:9000/espacio/estado/DISPONIBLE`
   * **Respuesta Esperada**: `200 OK` con todos los espacios disponibles de cualquier zona.
+
+---
+
+### 3.3 Casos Adicionales de Zonas
+
+#### **Error: Zona con Nombre Duplicado** (`POST /zonas/crear`)
+* **Condición**: Enviar el mismo nombre de zona que ya existe.
+* **URL**: `http://localhost:9000/zona/crear`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "name": "Zona Premium",
+    "description": "Zona duplicada",
+    "type": "REGULAR",
+    "capacidad": 5
+  }
+  ```
+* **Respuesta Esperada**: `409 Conflict` indicando "Ya existe una zona con ese nombre".
+
+---
+
+#### **Error: Zona con Capacidad ≤ 0** (`POST /zonas/crear`)
+* **URL**: `http://localhost:9000/zona/crear`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "name": "Zona Cero",
+    "description": "Zona con capacidad inválida",
+    "type": "REGULAR",
+    "capacidad": 0
+  }
+  ```
+* **Respuesta Esperada**: `400 Bad Request` indicando "La capacidad debe ser mayor a 0".
+
+---
+
+#### **Error: Tipo de Zona Inválido** (`POST /zonas/crear`)
+* **URL**: `http://localhost:9000/zona/crear`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "name": "Zona Subterranea",
+    "description": "Tipo no válido",
+    "type": "SUBTERRANEA",
+    "capacidad": 5
+  }
+  ```
+* **Respuesta Esperada**: `400 Bad Request` (el tipo no pertenece a `VIP`, `REGULAR`, `INTERNA`, `EXTERNA`).
+
+---
+
+#### **Error: Actualizar Zona Inexistente** (`PUT /zonas/actualizar/{idZona}`)
+* **URL**: `http://localhost:9000/zona/actualizar/00000000-0000-0000-0000-000000000000`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "name": "Zona Fantasma",
+    "description": "No existe",
+    "type": "REGULAR",
+    "capacidad": 10
+  }
+  ```
+* **Respuesta Esperada**: `404 Not Found` indicando "Zona no encontrada".
+
+---
+
+#### **Error: Actualizar Zona con Nombre Duplicado** (`PUT /zonas/actualizar/{idZona}`)
+* **Condición**: Cambiar el nombre de una zona a uno que ya existe en otra zona.
+* **URL**: `http://localhost:9000/zona/actualizar/{uuid_zona}`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "name": "Zona Premium",
+    "description": "Nombre duplicado",
+    "type": "REGULAR",
+    "capacidad": 10
+  }
+  ```
+* **Respuesta Esperada**: `409 Conflict` indicando "Ya existe una zona con ese nombre".
+
+---
+
+#### **Error: Reducir Capacidad por Debajo de Espacios Existentes** (`PUT /zonas/actualizar/{idZona}`)
+* **Condición**: La zona tiene 5 espacios creados e intenta reducir la capacidad a 3.
+* **URL**: `http://localhost:9000/zona/actualizar/{uuid_zona_con_5_espacios}`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "name": "Zona Premium",
+    "description": "Reducción inválida",
+    "type": "REGULAR",
+    "capacidad": 3
+  }
+  ```
+* **Respuesta Esperada**: `409 Conflict` indicando "La capacidad no puede ser menor al número de espacios".
+
+---
+
+#### **Error: Desactivar Zona Inexistente** (`DELETE /zonas/eliminar/{idZona}`)
+* **URL**: `http://localhost:9000/zona/eliminar/00000000-0000-0000-0000-000000000000`
+* **Respuesta Esperada**: `404 Not Found` indicando "Zona no encontrada".

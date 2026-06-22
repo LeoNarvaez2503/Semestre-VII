@@ -15,22 +15,32 @@ import { UpdateVehicleDto } from '../dto/update-vehicle.dto';
 export class VehicleController {
   constructor(private readonly vehicleService: VehicleService) {}
 
-  @Post()
+  @Get('internal/validar/:id')
+  async validateVehicle(@Param('id') id: string) {
+    try {
+      const vehicle = await this.vehicleService.findOne(id);
+      return { exists: true, type: vehicle.getType().toUpperCase() };
+    } catch (e) {
+      return { exists: false };
+    }
+  }
+
+  @Post('crear')
   create(@Body() createVehicleDto: CreateVehicleDto) {
     return this.vehicleService.create(createVehicleDto);
   }
 
-  @Get()
+  @Get('listar')
   findAll() {
     return this.vehicleService.findAll();
   }
 
-  @Get(':id')
+  @Get('obtener/:id')
   findOne(@Param('id') id: string) {
     return this.vehicleService.findOne(id);
   }
 
-  @Patch(':id')
+  @Patch('actualizar/:id')
   update(
     @Param('id') id: string,
     @Body() updateVehicleDto: UpdateVehicleDto,
@@ -38,7 +48,7 @@ export class VehicleController {
     return this.vehicleService.update(id, updateVehicleDto);
   }
 
-  @Delete(':id')
+  @Delete('eliminar/:id')
   remove(@Param('id') id: string) {
     return this.vehicleService.remove(id);
   }
