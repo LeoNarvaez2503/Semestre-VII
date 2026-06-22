@@ -341,6 +341,45 @@ else
   echo -e "${RED}Saltando prueba de Zona Inactivada: no se obtuvo zoneId${NC}"
 fi
 
+# 39. Usuario - Caracteres Inválidos en Primer Nombre (HTTP 422)
+run_test_case "Usuario: Caracteres Invalidos en Primer Nombre (HTTP 422)" \
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "invalid.char@example.com", "first_name": "Juan123", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false"
+
+# 40. Usuario - Caracteres Inválidos en Apellido (HTTP 422)
+run_test_case "Usuario: Caracteres Invalidos en Apellido (HTTP 422)" \
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "invalid.char2@example.com", "first_name": "Juan", "last_name": "Perez@", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false"
+
+# 41. Usuario - Espacio en Primer Nombre (HTTP 422)
+run_test_case "Usuario: Espacio en Primer Nombre (HTTP 422)" \
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "space.name@example.com", "first_name": "Juan Carlos", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false"
+
+# 42. Usuario - Espacio en Teléfono (HTTP 422)
+run_test_case "Usuario: Espacio en Telefono (HTTP 422)" \
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "space.phone@example.com", "first_name": "Juan", "last_name": "Perez", "nationality": "Ecuatoriana", "phone": "099 999 999"}, "roles": ["Cliente"]}' 422 "false"
+
+# 43. Vehículo - Caracteres Inválidos en Marca (HTTP 400)
+run_test_case "Vehiculo: Caracteres Invalidos en Marca (HTTP 400)" \
+  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PBA9999", "brand": "Toyota123", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+
+# 44. Vehículo - Espacios en Marca (HTTP 400)"
+run_test_case "Vehiculo: Espacios en Marca (HTTP 400)" \
+  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PBA9999", "brand": "Toyota Motors", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+
+# 45. Vehículo - Espacios en Modelo (HTTP 400)
+run_test_case "Vehiculo: Espacios en Modelo (HTTP 400)" \
+  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PBA9999", "brand": "Toyota", "model": "Land Cruiser", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+
+# 46. Vehículo - Espacios en Placa (HTTP 400)
+run_test_case "Vehiculo: Espacios en Placa (HTTP 400)" \
+  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PD F9876", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+
+# 47. Zona - Tipo de Zona con Espacio (HTTP 400)
+run_test_case "Zona: Tipo de Zona con Espacio (HTTP 400)" \
+  "POST" "/zona/crear" '{"name": "Zona Invalida", "description": "Zona tipo invalido", "type": "REGU LAR", "capacidad": 10}' 400 "false"
+
+# 48. Espacio - Tipo de Espacio con Caracteres Inválidos (HTTP 400)
+run_test_case "Espacio: Tipo de Espacio con Caracteres Invalidos (HTTP 400)" \
+  "POST" "/espacio/crear" '{"zoneId": "550e8400-e29b-41d4-a716-446655440000", "description": "Espacio Invalido", "type": "AUTO!", "estado": "DISPONIBLE"}' 400 "false"
 
 # ========================================================
 # IMPRESIÓN DEL REPORTE FINAL DETALLADO
