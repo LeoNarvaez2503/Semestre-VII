@@ -159,6 +159,8 @@ public class EspacioServicioImpl implements EspacioServicio {
                 }
                 
                 espacio.setVehiculoId(vehiculoId);
+            } catch (ResponseStatusException e) {
+                throw e;
             } catch (org.springframework.web.client.HttpClientErrorException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error al validar el vehículo", e);
             } catch (Exception e) {
