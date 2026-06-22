@@ -113,7 +113,7 @@ services:
     container_name: api_gateway_seguro
     restart: always
     ports:
-      - "9000:80"
+      - "9000:8000"
     depends_on:
       usuarios-api:
         condition: service_started

@@ -18,7 +18,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EspacioResponseDTO {
 
-  private String name;
+    private UUID id;
+    private String name;
     private String code; 
     private String description;
     private TipoEspacio type;

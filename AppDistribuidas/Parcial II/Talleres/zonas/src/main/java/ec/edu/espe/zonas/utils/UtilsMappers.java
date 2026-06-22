@@ -10,6 +10,7 @@ public class UtilsMappers {
 
     public EspacioResponseDTO toResponseDTO(Espacio objEspacio) {
         return EspacioResponseDTO.builder()
+            .id(objEspacio.getId())
             .code(objEspacio.getCode())
             .description(objEspacio.getDescription())
             .type(objEspacio.getType())

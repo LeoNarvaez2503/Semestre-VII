@@ -1,0 +1,318 @@
+_format_version: "3.0"
+
+plugins:
+  - name: response-transformer
+    enabled: true
+    config:
+      add:
+        headers:
+          - "X-Frame-Options:DENY"
+          - "X-Content-Type-Options:nosniff"
+          - "X-XSS-Protection:1; mode=block"
+          - "Content-Security-Policy:default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:;"
+          - "Referrer-Policy:no-referrer"
+
+services:
+  - name: usuarios-service
+    url: http://usuarios-api:8000
+    routes:
+      - name: usuario-crear
+        paths:
+          - /usuario/crear
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/crear
+      - name: usuario-listar
+        paths:
+          - /usuario/listar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/listar
+      - name: usuario-buscar
+        paths:
+          - /usuario/buscar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/buscar
+      - name: usuario-obtener
+        paths:
+          - ~/usuario/obtener/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/obtener/$(uri_captures[1])
+      - name: usuario-actualizar
+        paths:
+          - ~/usuario/actualizar/([^/]+)$
+        methods:
+          - PATCH
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/actualizar/$(uri_captures[1])
+      - name: usuario-roles
+        paths:
+          - ~/usuario/roles/([^/]+)$
+        methods:
+          - PUT
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/roles/$(uri_captures[1])
+      - name: usuario-eliminar
+        paths:
+          - ~/usuario/eliminar/([^/]+)$
+        methods:
+          - DELETE
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/eliminar/$(uri_captures[1])
+      - name: rol-crear
+        paths:
+          - /rol/crear
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /roles/crear
+      - name: rol-listar
+        paths:
+          - /rol/listar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /roles/listar
+      - name: rol-obtener
+        paths:
+          - ~/rol/obtener/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /roles/obtener/$(uri_captures[1])
+      - name: rol-actualizar
+        paths:
+          - ~/rol/actualizar/([^/]+)$
+        methods:
+          - PATCH
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /roles/actualizar/$(uri_captures[1])
+      - name: rol-eliminar
+        paths:
+          - ~/rol/eliminar/([^/]+)$
+        methods:
+          - DELETE
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /roles/eliminar/$(uri_captures[1])
+      - name: usuarios-docs
+        paths:
+          - /usuarios/docs
+          - /usuarios/openapi.json
+        methods:
+          - GET
+        strip_path: false
+
+  - name: vehiculos-service
+    url: http://vehiculos-app:3000
+    routes:
+      - name: vehiculo-crear
+        paths:
+          - /vehiculo/crear
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /vehiculos/crear
+      - name: vehiculo-listar
+        paths:
+          - /vehiculo/listar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /vehiculos/listar
+      - name: vehiculo-obtener
+        paths:
+          - ~/vehiculo/obtener/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /vehiculos/obtener/$(uri_captures[1])
+      - name: vehiculo-actualizar
+        paths:
+          - ~/vehiculo/actualizar/([^/]+)$
+        methods:
+          - PATCH
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /vehiculos/actualizar/$(uri_captures[1])
+      - name: vehiculo-eliminar
+        paths:
+          - ~/vehiculo/eliminar/([^/]+)$
+        methods:
+          - DELETE
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /vehiculos/eliminar/$(uri_captures[1])
+      - name: vehiculos-docs
+        paths:
+          - /vehiculos/docs/
+          - /vehiculos/docs-json
+        methods:
+          - GET
+        strip_path: false
+
+  - name: zonas-service
+    url: http://zonas-app:8080
+    routes:
+      - name: zona-crear
+        paths:
+          - /zona/crear
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/zonas/crear
+      - name: zona-listar
+        paths:
+          - /zona/listar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/zonas/listar
+      - name: zona-actualizar
+        paths:
+          - ~/zona/actualizar/([^/]+)$
+        methods:
+          - PUT
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/zonas/actualizar/$(uri_captures[1])
+      - name: zona-eliminar
+        paths:
+          - ~/zona/eliminar/([^/]+)$
+        methods:
+          - DELETE
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/zonas/eliminar/$(uri_captures[1])
+      - name: espacio-crear
+        paths:
+          - /espacio/crear
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/espacios/crear
+      - name: espacio-listar
+        paths:
+          - /espacio/listar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/espacios/listar
+      - name: espacio-obtener
+        paths:
+          - ~/espacio/obtener/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/espacios/obtener/$(uri_captures[1])
+      - name: espacio-estado-cambiar
+        paths:
+          - ~/espacio/estado/([^/]+)/estado/([^/]+)$
+        methods:
+          - PUT
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/espacios/actualizar/$(uri_captures[1])/estado/$(uri_captures[2])
+      - name: espacio-estado-listar
+        paths:
+          - ~/espacio/estado/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/espacios/estado/$(uri_captures[1])
+      - name: espacio-eliminar
+        paths:
+          - ~/espacio/eliminar/([^/]+)$
+        methods:
+          - DELETE
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /api/v1/espacios/eliminar/$(uri_captures[1])
+      - name: zonas-docs
+        paths:
+          - /zonas/docs
+          - /zonas/swagger-ui/
+          - /zonas/openapi.json
+        methods:
+          - GET
+        strip_path: false

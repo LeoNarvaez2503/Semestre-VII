@@ -979,3 +979,55 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
 #### **Error: Desactivar Zona Inexistente** (`DELETE /zonas/eliminar/{idZona}`)
 * **URL**: `http://localhost:9000/zona/eliminar/00000000-0000-0000-0000-000000000000`
 * **Respuesta Esperada**: `404 Not Found` indicando "Zona no encontrada".
+
+---
+
+## 4. Casos de Prueba del API Gateway (Kong)
+
+Este apartado detalla los escenarios específicos para validar el correcto funcionamiento de las políticas aplicadas en **Kong Gateway** como punto único de entrada del sistema. Todos estos escenarios se pueden ejecutar de forma automatizada usando el script [test_gateway_flow.sh](file:///c:/Users/Jordan/Desktop/ESPE/Semestre-VII/AppDistribuidas/Parcial%20II/Talleres/test_gateway_flow.sh).
+
+### 4.1 Resumen de Casos de Prueba Automatizados
+
+| ID | Módulo / Caso de Prueba | Método | Endpoint Público | Target Interno | Código HTTP Esperado | Detalle / Validación |
+|----|---|---|---|---|---|---|
+| **1** | Validación de Cabeceras Globales | `GET` | `/usuario/listar` | `/usuarios/listar` | `200` | Inyección de CSP, X-Frame-Options, X-Content-Type, Referrer-Policy, y ocultación del server header `kong`. |
+| **2** | Crear Rol Cliente | `POST` | `/rol/crear` | `/roles/crear` | `201` | Creación exitosa en `usuarios-api` para validaciones de usuarios. |
+| **3** | Crear Rol Administrador | `POST` | `/rol/crear` | `/roles/crear` | `201` | Registro de rol con permisos totales. |
+| **4** | Conflicto de Rol Duplicado | `POST` | `/rol/crear` | `/roles/crear` | `409` | Control de unicidad de nombre de rol. |
+| **5** | Crear Usuario con DNI Válido | `POST` | `/usuario/crear` | `/usuarios/crear` | `201` | Validación de DNI ecuatoriano correcto (`1723456784`) y mapeo a rol `Cliente`. |
+| **6** | Error de DNI Ecuatoriano Inválido | `POST` | `/usuario/crear` | `/usuarios/crear` | `422` | Rechazo del DNI `1723456789` debido a fallo del dígito verificador. |
+| **7** | Crear Vehículo (Auto) Vinculado | `POST` | `/vehiculo/crear` | `/vehiculos/crear` | `201` | Validación de existencia de `propietarioId` contra `usuarios-api` mediante contrato interno. |
+| **8** | Crear Zona de Parqueo | `POST` | `/zona/crear` | `/api/v1/zonas/crear` | `201` | Registro en el microservicio `zonas-app`. |
+| **9** | Crear Espacio en Zona | `POST` | `/espacio/crear` | `/api/v1/espacios/crear` | `201` | Creación exitosa del espacio asociado al `zoneId` de la zona anterior. |
+| **10**| Ocupar Espacio (Vehículo Válido) | `PUT` | `/espacio/estado/{id}/estado/OCUPADO` | `/api/v1/espacios/actualizar/{id}/estado/OCUPADO` | `200` | Se pasa el query param `vehiculoId` y se verifica la existencia y tipo de vehículo (AUTO). |
+| **11**| Liberar Espacio (Disponible) | `PUT` | `/espacio/estado/{id}/estado/DISPONIBLE`| `/api/v1/espacios/actualizar/{id}/estado/DISPONIBLE`| `200` | Desvinculación de vehículo y cambio de estado. |
+| **12**| Límite Máximo de Payload (Max Body) | `POST` | `/usuario/crear` | - | `413` | Rechazo inmediato de peticiones de tamaño mayor a 10MB (ej. archivo de 11MB). |
+| **13**| Ruta Inexistente en Pasarela | `GET` | `/ruta-invalida` | - | `404` | Gestión de error nativo 404 por parte de la pasarela Kong. |
+| **14**| Swagger Docs: Usuarios | `GET` | `/usuarios/docs` | `/usuarios/docs` | `200` | Mapeo transparente de la documentación de FastAPI (`strip_path: false`). |
+| **15**| Swagger Docs: Vehículos | `GET` | `/vehiculos/docs/` | `/vehiculos/docs/` | `200` | Mapeo transparente de la documentación de NestJS (`strip_path: false`). |
+| **16**| Swagger Docs: Zonas | `GET` | `/zonas/docs` | `/zonas/docs` | `200` | Mapeo transparente de la documentación de Spring Boot (`strip_path: false`). |
+
+---
+
+### 4.2 Detalles de Casos Específicos
+
+#### **Validación de Límite de Payload** (`POST /usuario/crear` con payload > 10MB)
+* **Objetivo**: Garantizar que el API Gateway no consuma ancho de banda procesando cuerpos de petición maliciosos de gran tamaño.
+* **Comando**:
+  ```bash
+  dd if=/dev/zero of=large_file.json bs=1M count=11
+  curl -i -X POST http://localhost:9000/usuario/crear -H "Content-Type: application/json" -d @large_file.json
+  ```
+* **Respuesta Esperada**:
+  `HTTP/1.1 413 Request Entity Too Large` devuelto directamente por la cabecera del gateway de Kong.
+
+#### **Validación de Seguridad y Ocultamiento de la Pasarela**
+* **Objetivo**: Impedir a posibles atacantes realizar escaneos de vulnerabilidades dirigidos contra la versión de Kong.
+* **Comando**:
+  ```bash
+  curl -i -X GET http://localhost:9000/usuario/listar
+  ```
+* **Respuesta Esperada**:
+  Verificar que las cabeceras `Server: kong` y `Via` estén totalmente ausentes de la respuesta. La cabecera `Server` pasará la del upstream correspondiente (por ejemplo: `Server: uvicorn` o `Server: Apache-Coyote`).
+
+
