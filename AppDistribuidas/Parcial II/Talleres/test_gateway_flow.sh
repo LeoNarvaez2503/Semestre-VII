@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # Script de prueba del flujo de integración y reporte de casos de prueba del API Gateway (Kong)

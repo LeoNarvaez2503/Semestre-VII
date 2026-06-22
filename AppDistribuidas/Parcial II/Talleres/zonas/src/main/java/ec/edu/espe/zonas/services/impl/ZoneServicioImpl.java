@@ -52,7 +52,7 @@ public class ZoneServicioImpl implements ZonaServicio {
                 "Ya existe una zona con ese nombre"
             );
         }
-        if (request.getCapacidad() <= 0) {
+        if (request.getCapacidad() == null || request.getCapacidad() <= 0) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "La capacidad debe ser mayor a 0"
@@ -103,7 +103,13 @@ public class ZoneServicioImpl implements ZonaServicio {
             zona.setType(request.getType());
         }
 
-        if (request.getCapacidad() > 0) {
+        if (request.getCapacidad() != null) {
+            if (request.getCapacidad() <= 0) {
+                throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La capacidad debe ser mayor a 0"
+                );
+            }
             int espaciosActuales =
                 zona.getSpaces() == null ? 0 : zona.getSpaces().size();
             if (request.getCapacidad() < espaciosActuales) {

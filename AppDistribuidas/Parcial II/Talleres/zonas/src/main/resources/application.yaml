@@ -1,6 +1,9 @@
 spring:
   application:
     name: zonas
+  mvc:
+    problemdetails:
+      enabled: true
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/zonas_db}
@@ -24,3 +27,5 @@ springdoc:
 
 server:
   port: ${PORT:8080}
+  error:
+    include-message: always
