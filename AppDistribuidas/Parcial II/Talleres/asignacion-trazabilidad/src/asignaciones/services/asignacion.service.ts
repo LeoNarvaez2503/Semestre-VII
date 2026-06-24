@@ -32,17 +32,18 @@ export class AsignacionService {
   }
 
   async validateUser(userId: string): Promise<void> {
+    const trimmedUserId = userId.trim();
     try {
-      const response = await fetch(`${this.usuariosApiUrl}/usuarios/internal/validar/${userId}`);
+      const response = await fetch(`${this.usuariosApiUrl}/usuarios/internal/validar/${trimmedUserId}`);
       if (!response.ok) {
         throw new BadRequestException('Error al validar el propietario. Servicio de usuarios no disponible.');
       }
       const data = await response.json();
       if (!data.exists) {
-        throw new BadRequestException(`El usuario con ID ${userId} no existe.`);
+        throw new BadRequestException(`El usuario con ID ${trimmedUserId} no existe.`);
       }
       if (!data.active) {
-        throw new BadRequestException(`El usuario con ID ${userId} está inactivo.`);
+        throw new BadRequestException(`El usuario con ID ${trimmedUserId} está inactivo.`);
       }
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -53,14 +54,15 @@ export class AsignacionService {
   }
 
   async validateVehicle(vehicleId: string): Promise<void> {
+    const trimmedVehicleId = vehicleId.trim();
     try {
-      const response = await fetch(`${this.vehiculosApiUrl}/vehiculos/internal/validar/${vehicleId}`);
+      const response = await fetch(`${this.vehiculosApiUrl}/vehiculos/internal/validar/${trimmedVehicleId}`);
       if (!response.ok) {
         throw new BadRequestException('Error al validar el vehículo. Servicio de vehículos no disponible.');
       }
       const data = await response.json();
       if (!data.exists) {
-        throw new BadRequestException(`El vehículo con ID ${vehicleId} no existe.`);
+        throw new BadRequestException(`El vehículo con ID ${trimmedVehicleId} no existe.`);
       }
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -71,7 +73,8 @@ export class AsignacionService {
   }
 
   async create(createAsignacionDto: CreateAsignacionDto): Promise<Asignacion> {
-    const { userId, vehicleId } = createAsignacionDto;
+    const userId = createAsignacionDto.userId.trim();
+    const vehicleId = createAsignacionDto.vehicleId.trim();
 
     // 1. Validaciones externas
     await this.validateUser(userId);
@@ -113,21 +116,24 @@ export class AsignacionService {
     vehicleId: string,
     updateAsignacionDto: UpdateAsignacionDto,
   ): Promise<Asignacion> {
+    const trimmedUserId = userId.trim();
+    const trimmedVehicleId = vehicleId.trim();
+
     const assign = await this.asignacionRepository.findOne({
-      where: { userId, vehicleId },
+      where: { userId: trimmedUserId, vehicleId: trimmedVehicleId },
     });
     if (!assign) {
-      throw new NotFoundException(`Asignación no encontrada para el usuario ${userId} y vehículo ${vehicleId}.`);
+      throw new NotFoundException(`Asignación no encontrada para el usuario ${trimmedUserId} y vehículo ${trimmedVehicleId}.`);
     }
 
     if (updateAsignacionDto.active === true && !assign.active) {
       // Validar si el vehículo está activo en otra asignación
       const activeAssign = await this.asignacionRepository.findOne({
-        where: { vehicleId, active: true },
+        where: { vehicleId: trimmedVehicleId, active: true },
       });
-      if (activeAssign && activeAssign.userId !== userId) {
+      if (activeAssign && activeAssign.userId !== trimmedUserId) {
         throw new ConflictException(
-          `El vehículo con ID ${vehicleId} ya está asignado de forma activa a otro propietario.`,
+          `El vehículo con ID ${trimmedVehicleId} ya está asignado de forma activa a otro propietario.`,
         );
       }
     }
@@ -140,19 +146,26 @@ export class AsignacionService {
   }
 
   async remove(userId: string, vehicleId: string): Promise<void> {
+    const trimmedUserId = userId.trim();
+    const trimmedVehicleId = vehicleId.trim();
+
+    // La eliminación lógica busca que la asignación esté activa
     const assign = await this.asignacionRepository.findOne({
-      where: { userId, vehicleId },
+      where: { userId: trimmedUserId, vehicleId: trimmedVehicleId, active: true },
     });
     if (!assign) {
-      throw new NotFoundException(`Asignación no encontrada para el usuario ${userId} y vehículo ${vehicleId}.`);
+      throw new NotFoundException(`Asignación no encontrada para el usuario ${trimmedUserId} y vehículo ${trimmedVehicleId}.`);
     }
-    await this.asignacionRepository.remove(assign);
+    assign.active = false;
+    await this.asignacionRepository.save(assign);
   }
 
   async getFleetByOwner(propietarioId: string): Promise<any[]> {
+    const trimmedPropietarioId = propietarioId.trim();
+
     // 1. Obtener todas las asignaciones activas de este usuario
     const asignaciones = await this.asignacionRepository.find({
-      where: { userId: propietarioId, active: true },
+      where: { userId: trimmedPropietarioId, active: true },
     });
 
     const fleet: any[] = [];

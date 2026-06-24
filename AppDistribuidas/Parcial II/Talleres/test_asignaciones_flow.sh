@@ -184,13 +184,31 @@ run_test_case "Enviar UUID Inválido en la Creación (400)" \
 run_test_case "Actualizar Asignación Inexistente (404)" \
   "PUT" "/asignacion/actualizar/$USER_A_ID/$VEHICLE_B_ID" '{"active": false}' 404
 
-# Caso 17: Eliminar físicamente asignación existente (204)
-run_test_case "Eliminar Asignación de Vehículo A con Usuario B (204)" \
+# Caso 17: Eliminar lógicamente asignación existente (204)
+run_test_case "Eliminar Lógicamente Asignación de Vehículo A con Usuario B (204)" \
   "DELETE" "/asignacion/eliminar/$USER_B_ID/$VEHICLE_A_ID" "" 204
 
-# Caso 18: Eliminar asignación inexistente (404)
-run_test_case "Eliminar Asignación ya Inexistente (404)" \
+# Caso 17b: Verificar directamente en la BD que la asignación sigue existiendo pero inactiva (eliminación lógica)
+echo -e "\n${BOLD}[Verificación BD] Comprobando eliminación lógica...${NC}"
+DB_ACTIVE_STATUS=$(docker exec -i asignaciones_db_unificado psql -U admin -d asignaciones_db -t -A -c "SELECT active FROM asignaciones WHERE user_id = '$USER_B_ID' AND vehicle_id = '$VEHICLE_A_ID';")
+if [ "$DB_ACTIVE_STATUS" = "f" ]; then
+  echo -e "${GREEN}✔ Confirmado en BD: La asignación persiste y su estado es active = false (eliminada lógicamente).${NC}"
+else
+  echo -e "${RED}✘ Error en BD: La asignación no existe o sigue activa (${DB_ACTIVE_STATUS}).${NC}"
+fi
+
+# Caso 18: Eliminar asignación ya inactiva / inexistente (404)
+run_test_case "Eliminar Asignación ya Inactiva (404)" \
   "DELETE" "/asignacion/eliminar/$USER_B_ID/$VEHICLE_A_ID" "" 404
+
+# Caso 19: Crear asignación enviando UUIDs con espacios (debe recortarlos en DTO/Servicio y crearse - 201)
+run_test_case "Crear Asignación con espacios a los extremos del UUID (201)" \
+  "POST" "/asignacion/crear" '{"userId": "   '"$USER_A_ID"'   ", "vehicleId": "   '"$VEHICLE_B_ID"'   "}' 201
+
+# Caso 20: Consultar la flota de un propietario enviando el ID con espacios en la ruta (200)
+run_test_case "Consultar Flota con espacios en el UUID de la ruta (200)" \
+  "GET" "/asignacion/propietario/%20%20%20$USER_A_ID%20%20%20" "" 200
+
 
 
 # ========================================================

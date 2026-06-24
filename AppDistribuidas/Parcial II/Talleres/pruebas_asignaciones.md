@@ -139,15 +139,37 @@ Modifica los atributos modificables de una asignación (por ejemplo, desactivarl
 
 ---
 
-## 4. Eliminar Físicamente Asignación (`DELETE /asignacion/eliminar/{userId}/{vehicleId}`)
+## 4. Eliminar Lógicamente Asignación (`DELETE /asignacion/eliminar/{userId}/{vehicleId}`)
 
-Elimina el registro de la base de datos de manera física.
+Realiza una inactivación lógica de la asignación (cambiando el campo `active` a `false`). Para asegurar la consistencia, solo se permite eliminar asignaciones que se encuentren activas.
 
 *   **URL**: `http://localhost:9000/asignacion/eliminar/550e8400-e29b-41d4-a716-446655440000/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11`
 *   **Método**: `DELETE`
 
 ### 4.1 Caso Exitoso
-*   **Respuesta Esperada**: `204 No Content` (Sin cuerpo)
+*   **Respuesta Esperada**: `204 No Content` (Sin cuerpo. El campo `active` se ha modificado a `false` en base de datos).
 
-### 4.2 Error: Asignación No Encontrada
+### 4.2 Error: Asignación No Encontrada o Ya Inactiva
 *   **Respuesta Esperada**: `404 Not Found`
+
+---
+
+## 5. Recorte de Espacios en Blanco en los UUIDs (Trim)
+
+El servicio es inmune a espacios innecesarios colocados a la izquierda o derecha en los parámetros de tipo UUID.
+
+### 5.1 En el cuerpo (ej. `POST /asignacion/crear` o `PUT /asignacion/actualizar/...`)
+El DTO realiza un `@Transform` automático para eliminar los espacios antes de la validación.
+```json
+{
+  "userId": "  550e8400-e29b-41d4-a716-446655440000  ",
+  "vehicleId": "  a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11  "
+}
+```
+*   **Resultado**: Recorta a `"550e8400-e29b-41d4-a716-446655440000"` y `"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"` creando la asignación de manera exitosa (`201 Created`).
+
+### 5.2 En los parámetros de la URL (ej. `GET /asignacion/propietario/{propietarioId}`)
+Los controladores y el servicio aplican `.trim()` sobre el parámetro recibido.
+*   **URL de ejemplo**: `http://localhost:9000/asignacion/propietario/%20%20%20550e8400-e29b-41d4-a716-446655440000%20%20%20`
+*   **Resultado**: `200 OK` (retorna la flota ignorando los espacios de la URI).
+
