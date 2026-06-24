@@ -316,3 +316,85 @@ services:
         methods:
           - GET
         strip_path: false
+
+  - name: asignaciones-service
+    url: http://asignaciones-app:3001
+    routes:
+      - name: asignacion-crear
+        paths:
+          - /asignacion/crear
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/crear
+      - name: asignacion-listar
+        paths:
+          - /asignacion/listar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/listar
+      - name: asignacion-actualizar
+        paths:
+          - /asignacion/actualizar
+        methods:
+          - PATCH
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/actualizar
+      - name: asignacion-eliminar
+        paths:
+          - ~/asignacion/eliminar/([^/]+)/([^/]+)$
+        methods:
+          - DELETE
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/eliminar/$(uri_captures[1])/$(uri_captures[2])
+      - name: asignacion-flota
+        paths:
+          - ~/asignacion/flota/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/flota/$(uri_captures[1])
+      - name: asignacion-auditoria-listar
+        paths:
+          - /asignacion/auditoria/listar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/auditoria/listar
+      - name: asignacion-auditoria-detalle
+        paths:
+          - ~/asignacion/auditoria/([^/]+)/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/auditoria/$(uri_captures[1])/$(uri_captures[2])
+      - name: asignaciones-docs
+        paths:
+          - /asignaciones/docs/
+          - /asignaciones/docs-json
+        methods:
+          - GET
+        strip_path: false
+

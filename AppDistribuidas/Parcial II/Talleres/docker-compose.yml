@@ -105,6 +105,48 @@ services:
       zonas-db:
         condition: service_healthy
 
+  # --- MICROSERVICIO: ASIGNACIONES ---
+  asignaciones-db:
+    image: postgres:15-alpine
+    container_name: asignaciones_db_unificado
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: asignaciones_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - asignaciones_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d asignaciones_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  asignaciones-app:
+    build:
+      context: ./asignaciones
+      dockerfile: Dockerfile
+    container_name: asignaciones_app_unificado
+    restart: always
+    environment:
+      PORT: 3001
+      DB_HOST: asignaciones-db
+      DB_PORT: 5432
+      DB_USUARIO: admin
+      DB_CONTRASENA: adminpassword
+      DB_NOMBRE: asignaciones_db
+      USUARIOS_API_URL: http://usuarios-api:8000
+      VEHICULOS_API_URL: http://vehiculos-app:3000
+    depends_on:
+      asignaciones-db:
+        condition: service_healthy
+      usuarios-api:
+        condition: service_started
+      vehiculos-app:
+        condition: service_started
+
   # --- API GATEWAY SEGURO ---
   api-gateway:
     build:
@@ -121,8 +163,11 @@ services:
         condition: service_started
       zonas-app:
         condition: service_started
+      asignaciones-app:
+        condition: service_started
 
 volumes:
   usuarios_pgdata:
   vehiculos_pgdata:
   zonas_pgdata:
+  asignaciones_pgdata:

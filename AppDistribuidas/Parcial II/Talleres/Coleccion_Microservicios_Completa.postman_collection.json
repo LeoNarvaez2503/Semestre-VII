@@ -15,9 +15,14 @@
             "url": {
               "raw": "http://localhost:9000/usuario/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "listar"]
+              "path": [
+                "usuario",
+                "listar"
+              ]
             }
           }
         },
@@ -28,9 +33,13 @@
             "url": {
               "raw": "http://localhost:9000/ruta-no-existente",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["ruta-no-existente"]
+              "path": [
+                "ruta-no-existente"
+              ]
             }
           }
         },
@@ -41,9 +50,14 @@
             "url": {
               "raw": "http://localhost:9000/usuarios/docs",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuarios", "docs"]
+              "path": [
+                "usuarios",
+                "docs"
+              ]
             }
           }
         },
@@ -54,9 +68,15 @@
             "url": {
               "raw": "http://localhost:9000/vehiculos/docs/",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculos", "docs", ""]
+              "path": [
+                "vehiculos",
+                "docs",
+                ""
+              ]
             }
           }
         },
@@ -67,9 +87,14 @@
             "url": {
               "raw": "http://localhost:9000/zonas/docs",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zonas", "docs"]
+              "path": [
+                "zonas",
+                "docs"
+              ]
             }
           }
         }
@@ -83,7 +108,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -92,9 +120,14 @@
             "url": {
               "raw": "http://localhost:9000/rol/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "crear"]
+              "path": [
+                "rol",
+                "crear"
+              ]
             }
           }
         },
@@ -103,7 +136,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -112,9 +148,14 @@
             "url": {
               "raw": "http://localhost:9000/rol/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "crear"]
+              "path": [
+                "rol",
+                "crear"
+              ]
             }
           }
         },
@@ -125,9 +166,14 @@
             "url": {
               "raw": "http://localhost:9000/rol/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "listar"]
+              "path": [
+                "rol",
+                "listar"
+              ]
             }
           }
         },
@@ -138,9 +184,15 @@
             "url": {
               "raw": "http://localhost:9000/rol/obtener/{{role_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "obtener", "{{role_id}}"]
+              "path": [
+                "rol",
+                "obtener",
+                "{{role_id}}"
+              ]
             }
           }
         },
@@ -149,7 +201,10 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -158,9 +213,15 @@
             "url": {
               "raw": "http://localhost:9000/rol/actualizar/{{role_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "actualizar", "{{role_id}}"]
+              "path": [
+                "rol",
+                "actualizar",
+                "{{role_id}}"
+              ]
             }
           }
         },
@@ -171,9 +232,15 @@
             "url": {
               "raw": "http://localhost:9000/rol/eliminar/{{role_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "eliminar", "{{role_id}}"]
+              "path": [
+                "rol",
+                "eliminar",
+                "{{role_id}}"
+              ]
             }
           }
         }
@@ -187,7 +254,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -196,9 +266,14 @@
             "url": {
               "raw": "http://localhost:9000/usuario/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "crear"]
+              "path": [
+                "usuario",
+                "crear"
+              ]
             }
           }
         },
@@ -207,7 +282,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -216,9 +294,14 @@
             "url": {
               "raw": "http://localhost:9000/usuario/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "crear"]
+              "path": [
+                "usuario",
+                "crear"
+              ]
             }
           }
         },
@@ -229,9 +312,14 @@
             "url": {
               "raw": "http://localhost:9000/usuario/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "listar"]
+              "path": [
+                "usuario",
+                "listar"
+              ]
             }
           }
         },
@@ -242,11 +330,19 @@
             "url": {
               "raw": "http://localhost:9000/usuario/buscar?username=jcperez",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "buscar"],
+              "path": [
+                "usuario",
+                "buscar"
+              ],
               "query": [
-                { "key": "username", "value": "jcperez" }
+                {
+                  "key": "username",
+                  "value": "jcperez"
+                }
               ]
             }
           }
@@ -258,9 +354,15 @@
             "url": {
               "raw": "http://localhost:9000/usuario/obtener/{{user_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "obtener", "{{user_id}}"]
+              "path": [
+                "usuario",
+                "obtener",
+                "{{user_id}}"
+              ]
             }
           }
         },
@@ -269,7 +371,10 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -278,9 +383,15 @@
             "url": {
               "raw": "http://localhost:9000/usuario/actualizar/{{user_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "actualizar", "{{user_id}}"]
+              "path": [
+                "usuario",
+                "actualizar",
+                "{{user_id}}"
+              ]
             }
           }
         },
@@ -289,7 +400,10 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -298,9 +412,15 @@
             "url": {
               "raw": "http://localhost:9000/usuario/roles/{{user_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "roles", "{{user_id}}"]
+              "path": [
+                "usuario",
+                "roles",
+                "{{user_id}}"
+              ]
             }
           }
         },
@@ -311,9 +431,15 @@
             "url": {
               "raw": "http://localhost:9000/usuario/eliminar/{{user_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "eliminar", "{{user_id}}"]
+              "path": [
+                "usuario",
+                "eliminar",
+                "{{user_id}}"
+              ]
             }
           }
         }
@@ -327,7 +453,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -336,9 +465,14 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "crear"]
+              "path": [
+                "vehiculo",
+                "crear"
+              ]
             }
           }
         },
@@ -349,9 +483,14 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "listar"]
+              "path": [
+                "vehiculo",
+                "listar"
+              ]
             }
           }
         },
@@ -362,9 +501,15 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/obtener/{{vehicle_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "obtener", "{{vehicle_id}}"]
+              "path": [
+                "vehiculo",
+                "obtener",
+                "{{vehicle_id}}"
+              ]
             }
           }
         },
@@ -373,7 +518,10 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -382,9 +530,15 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/actualizar/{{vehicle_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "actualizar", "{{vehicle_id}}"]
+              "path": [
+                "vehiculo",
+                "actualizar",
+                "{{vehicle_id}}"
+              ]
             }
           }
         },
@@ -395,9 +549,15 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/eliminar/{{vehicle_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "eliminar", "{{vehicle_id}}"]
+              "path": [
+                "vehiculo",
+                "eliminar",
+                "{{vehicle_id}}"
+              ]
             }
           }
         }
@@ -411,7 +571,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -420,9 +583,14 @@
             "url": {
               "raw": "http://localhost:9000/zona/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zona", "crear"]
+              "path": [
+                "zona",
+                "crear"
+              ]
             }
           }
         },
@@ -433,9 +601,14 @@
             "url": {
               "raw": "http://localhost:9000/zona/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zona", "listar"]
+              "path": [
+                "zona",
+                "listar"
+              ]
             }
           }
         },
@@ -444,7 +617,10 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -453,9 +629,15 @@
             "url": {
               "raw": "http://localhost:9000/zona/actualizar/{{zone_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zona", "actualizar", "{{zone_id}}"]
+              "path": [
+                "zona",
+                "actualizar",
+                "{{zone_id}}"
+              ]
             }
           }
         },
@@ -466,9 +648,15 @@
             "url": {
               "raw": "http://localhost:9000/zona/eliminar/{{zone_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zona", "eliminar", "{{zone_id}}"]
+              "path": [
+                "zona",
+                "eliminar",
+                "{{zone_id}}"
+              ]
             }
           }
         },
@@ -477,7 +665,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -486,9 +677,14 @@
             "url": {
               "raw": "http://localhost:9000/espacio/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "crear"]
+              "path": [
+                "espacio",
+                "crear"
+              ]
             }
           }
         },
@@ -499,9 +695,14 @@
             "url": {
               "raw": "http://localhost:9000/espacio/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "listar"]
+              "path": [
+                "espacio",
+                "listar"
+              ]
             }
           }
         },
@@ -512,9 +713,15 @@
             "url": {
               "raw": "http://localhost:9000/espacio/obtener/{{space_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "obtener", "{{space_id}}"]
+              "path": [
+                "espacio",
+                "obtener",
+                "{{space_id}}"
+              ]
             }
           }
         },
@@ -525,11 +732,22 @@
             "url": {
               "raw": "http://localhost:9000/espacio/estado/{{space_id}}/estado/OCUPADO?vehiculoId={{vehicle_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "estado", "{{space_id}}", "estado", "OCUPADO"],
+              "path": [
+                "espacio",
+                "estado",
+                "{{space_id}}",
+                "estado",
+                "OCUPADO"
+              ],
               "query": [
-                { "key": "vehiculoId", "value": "{{vehicle_id}}" }
+                {
+                  "key": "vehiculoId",
+                  "value": "{{vehicle_id}}"
+                }
               ]
             }
           }
@@ -541,9 +759,17 @@
             "url": {
               "raw": "http://localhost:9000/espacio/estado/{{space_id}}/estado/DISPONIBLE",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "estado", "{{space_id}}", "estado", "DISPONIBLE"]
+              "path": [
+                "espacio",
+                "estado",
+                "{{space_id}}",
+                "estado",
+                "DISPONIBLE"
+              ]
             }
           }
         },
@@ -554,9 +780,15 @@
             "url": {
               "raw": "http://localhost:9000/espacio/estado/DISPONIBLE",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "estado", "DISPONIBLE"]
+              "path": [
+                "espacio",
+                "estado",
+                "DISPONIBLE"
+              ]
             }
           }
         },
@@ -567,9 +799,200 @@
             "url": {
               "raw": "http://localhost:9000/espacio/eliminar/{{space_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "eliminar", "{{space_id}}"]
+              "path": [
+                "espacio",
+                "eliminar",
+                "{{space_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Asignaciones y Trazabilidad",
+      "item": [
+        {
+          "name": "1. Crear Asignación (Éxito)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\",\n  \"notas\": \"Asignación de prueba\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Crear Asignación (Falla - Usuario no existe)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"00000000-0000-0000-0000-000000000000\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Listar Asignaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/listar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "listar"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Actualizar Asignación (Transferencia)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\",\n  \"nuevoUserId\": \"{{new_user_id}}\",\n  \"notas\": \"Transferencia por venta\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/actualizar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "actualizar"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Consultar Flota (RF3)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/flota/{{user_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "flota",
+                "{{user_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6. Listar Auditoría Global (RF2)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/auditoria/listar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "auditoria",
+                "listar"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7. Consultar Auditoría por Asignación",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/auditoria/{{user_id}}/{{vehicle_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "auditoria",
+                "{{user_id}}",
+                "{{vehicle_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8. Eliminar Asignación (Desactivar)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/eliminar/{{user_id}}/{{vehicle_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "eliminar",
+                "{{user_id}}",
+                "{{vehicle_id}}"
+              ]
             }
           }
         }
