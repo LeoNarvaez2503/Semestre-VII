@@ -1478,6 +1478,107 @@
               ]
             }
           }
+        },
+        {
+          "name": "15. Consultar Trazabilidad General (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Check trazabilidad array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/trazabilidad",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "trazabilidad"
+              ]
+            }
+          }
+        },
+        {
+          "name": "16. Consultar Trazabilidad por Vehículo (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/trazabilidad/vehiculo/{{vehicle_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "trazabilidad",
+                "vehiculo",
+                "{{vehicle_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "17. Consultar Trazabilidad por Propietario (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/trazabilidad/propietario/{{user_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "trazabilidad",
+                "propietario",
+                "{{user_id}}"
+              ]
+            }
+          }
         }
       ]
     }

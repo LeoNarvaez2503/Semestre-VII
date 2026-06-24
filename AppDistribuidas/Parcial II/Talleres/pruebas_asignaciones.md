@@ -173,3 +173,25 @@ Los controladores y el servicio aplican `.trim()` sobre el parámetro recibido.
 *   **URL de ejemplo**: `http://localhost:9000/asignacion/propietario/%20%20%20550e8400-e29b-41d4-a716-446655440000%20%20%20`
 *   **Resultado**: `200 OK` (retorna la flota ignorando los espacios de la URI).
 
+---
+
+## 6. Trazabilidad y Auditoría (`GET /asignacion/trazabilidad...`)
+
+Consulta el historial de acciones y cambios de estado (creación, modificación, inactivación) realizados sobre las asignaciones.
+
+### 6.1 Historial General de Trazabilidad
+*   **URL**: `http://localhost:9000/asignacion/trazabilidad`
+*   **Método**: `GET`
+*   **Respuesta Esperada**: `200 OK` con la lista de eventos ordenados por fecha en forma descendente (del más reciente al más antiguo).
+
+### 6.2 Historial de un Vehículo Específico
+*   **URL**: `http://localhost:9000/asignacion/trazabilidad/vehiculo/{vehicleId}`
+*   **Método**: `GET`
+*   **Respuesta Esperada**: `200 OK`
+
+### 6.3 Historial de un Propietario Específico
+*   **URL**: `http://localhost:9000/asignacion/trazabilidad/propietario/{userId}`
+*   **Método**: `GET`
+*   **Respuesta Esperada**: `200 OK`
+
+

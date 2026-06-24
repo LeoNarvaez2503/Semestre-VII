@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Asignacion } from '../entities/asignacion.entity';
+import { Auditoria } from '../entities/auditoria.entity';
 import { CreateAsignacionDto } from '../dto/create-asignacion.dto';
 import { UpdateAsignacionDto } from '../dto/update-asignacion.dto';
 
@@ -19,6 +20,8 @@ export class AsignacionService {
   constructor(
     @InjectRepository(Asignacion)
     private readonly asignacionRepository: Repository<Asignacion>,
+    @InjectRepository(Auditoria)
+    private readonly auditoriaRepository: Repository<Auditoria>,
     private readonly configService: ConfigService,
   ) {
     this.usuariosApiUrl = this.configService.get<string>(
@@ -232,5 +235,27 @@ export class AsignacionService {
     }
 
     return fleet;
+  }
+
+  async getAuditLogs(): Promise<Auditoria[]> {
+    return this.auditoriaRepository.find({
+      order: { timestamp: 'DESC' },
+    });
+  }
+
+  async getAuditLogsByVehicle(vehicleId: string): Promise<Auditoria[]> {
+    const trimmedVehicleId = vehicleId.trim();
+    return this.auditoriaRepository.find({
+      where: { vehicleId: trimmedVehicleId },
+      order: { timestamp: 'DESC' },
+    });
+  }
+
+  async getAuditLogsByOwner(userId: string): Promise<Auditoria[]> {
+    const trimmedUserId = userId.trim();
+    return this.auditoriaRepository.find({
+      where: { userId: trimmedUserId },
+      order: { timestamp: 'DESC' },
+    });
   }
 }

@@ -207,9 +207,17 @@ run_test_case "Crear Asignación con espacios a los extremos del UUID (201)" \
 
 # Caso 20: Consultar la flota de un propietario enviando el ID con espacios en la ruta (200)
 run_test_case "Consultar Flota con espacios en el UUID de la ruta (200)" \
-  "GET" "/asignacion/propietario/%20%20%20$USER_A_ID%20%20%20" "" 200
+# Caso 21: Consultar Trazabilidad General (200)
+run_test_case "Consultar Trazabilidad General (200)" \
+  "GET" "/asignacion/trazabilidad" "" 200
 
+# Caso 22: Consultar Trazabilidad por Vehículo (200)
+run_test_case "Consultar Trazabilidad de un Vehículo (200)" \
+  "GET" "/asignacion/trazabilidad/vehiculo/$VEHICLE_B_ID" "" 200
 
+# Caso 23: Consultar Trazabilidad por Propietario (200)
+run_test_case "Consultar Trazabilidad de un Propietario (200)" \
+  "GET" "/asignacion/trazabilidad/propietario/$USER_A_ID" "" 200
 
 # ========================================================
 # IMPRESIÓN DEL REPORTE FINAL DETALLADO

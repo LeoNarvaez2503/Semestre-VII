@@ -64,4 +64,25 @@ export class AsignacionController {
   getFleetByOwner(@Param('propietarioId') propietarioId: string) {
     return this.asignacionService.getFleetByOwner(propietarioId);
   }
+
+  @Get('trazabilidad')
+  @ApiOperation({ summary: 'Consultar todo el historial de trazabilidad/auditoría' })
+  @ApiResponse({ status: 200, description: 'Lista de logs de auditoría' })
+  getAuditLogs() {
+    return this.asignacionService.getAuditLogs();
+  }
+
+  @Get('trazabilidad/vehiculo/:vehicleId')
+  @ApiOperation({ summary: 'Consultar el historial de trazabilidad de un vehículo específico' })
+  @ApiResponse({ status: 200, description: 'Lista de logs de auditoría por vehículo' })
+  getAuditLogsByVehicle(@Param('vehicleId') vehicleId: string) {
+    return this.asignacionService.getAuditLogsByVehicle(vehicleId);
+  }
+
+  @Get('trazabilidad/propietario/:userId')
+  @ApiOperation({ summary: 'Consultar el historial de trazabilidad de un propietario específico' })
+  @ApiResponse({ status: 200, description: 'Lista de logs de auditoría por propietario' })
+  getAuditLogsByOwner(@Param('userId') userId: string) {
+    return this.asignacionService.getAuditLogsByOwner(userId);
+  }
 }

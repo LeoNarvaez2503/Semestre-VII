@@ -248,6 +248,36 @@ services:
             config:
               replace:
                 uri: /asignaciones/propietario/$(uri_captures[1])
+      - name: asignacion-trazabilidad-general
+        paths:
+          - /asignacion/trazabilidad
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/trazabilidad
+      - name: asignacion-trazabilidad-vehiculo
+        paths:
+          - ~/asignacion/trazabilidad/vehiculo/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/trazabilidad/vehiculo/$(uri_captures[1])
+      - name: asignacion-trazabilidad-propietario
+        paths:
+          - ~/asignacion/trazabilidad/propietario/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/trazabilidad/propietario/$(uri_captures[1])
       - name: asignaciones-docs
         paths:
           - /asignaciones/docs
