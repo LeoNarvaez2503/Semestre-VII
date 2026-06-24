@@ -205,6 +205,56 @@ services:
           - GET
         strip_path: false
 
+  - name: asignaciones-service
+    url: http://asignacion-app:3001
+    routes:
+      - name: asignacion-crear
+        paths:
+          - /asignacion/crear
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones
+      - name: asignacion-actualizar
+        paths:
+          - ~/asignacion/actualizar/([^/]+)/([^/]+)$
+        methods:
+          - PUT
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/$(uri_captures[1])/$(uri_captures[2])
+      - name: asignacion-eliminar
+        paths:
+          - ~/asignacion/eliminar/([^/]+)/([^/]+)$
+        methods:
+          - DELETE
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/$(uri_captures[1])/$(uri_captures[2])
+      - name: asignacion-propietario
+        paths:
+          - ~/asignacion/propietario/([^/]+)$
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /asignaciones/propietario/$(uri_captures[1])
+      - name: asignaciones-docs
+        paths:
+          - /asignaciones/docs
+        methods:
+          - GET
+        strip_path: false
+
   - name: zonas-service
     url: http://zonas-app:8080
     routes:
