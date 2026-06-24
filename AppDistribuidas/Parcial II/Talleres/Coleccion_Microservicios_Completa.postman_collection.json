@@ -460,7 +460,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"type\": \"Auto\",\n  \"data\": {\n    \"propietarioId\": \"{{propietario_id}}\",\n    \"plate\": \"PDF9876\",\n    \"brand\": \"Toyota\",\n    \"model\": \"Yaris\",\n    \"color\": \"Gris\",\n    \"year\": 2022,\n    \"classification\": \"Gasolina\",\n    \"doors\": 4,\n    \"fuelType\": \"Gasolina\",\n    \"trunkCapacity\": 350\n  }\n}"
+              "raw": "{\n  \"type\": \"Auto\",\n  \"data\": {\n    \"plate\": \"PDF9876\",\n    \"brand\": \"Toyota\",\n    \"model\": \"Yaris\",\n    \"color\": \"Gris\",\n    \"year\": 2022,\n    \"classification\": \"Gasolina\",\n    \"doors\": 4,\n    \"fuelType\": \"Gasolina\",\n    \"trunkCapacity\": 350\n  }\n}"
             },
             "url": {
               "raw": "http://localhost:9000/vehiculo/crear",

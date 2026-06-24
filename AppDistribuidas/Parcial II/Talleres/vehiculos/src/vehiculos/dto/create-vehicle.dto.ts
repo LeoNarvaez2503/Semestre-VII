@@ -20,14 +20,6 @@ import { IsNoSpaces, IsSafeText } from '../validators/custom-validators';
 
 export class BaseVehicleDto {
   @ApiProperty({
-    description: 'El ID del propietario (UUID)',
-    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-  })
-  @IsUUID('4', { message: 'El propietarioId debe ser un UUID válido' })
-  @IsNotEmpty({ message: 'El propietarioId no puede estar vacío' })
-  propietarioId!: string;
-
-  @ApiProperty({
     description: 'La placa del vehículo (AAA1234 para autos/camionetas)',
     example: 'PCG1234',
   })

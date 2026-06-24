@@ -533,7 +533,6 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
     {
       "type": "Moto",
       "data": {
-        "propietarioId": "550e8400-e29b-41d4-a716-446655440000",
         "plate": "AB-123A",
         "brand": "Honda",
         "model": "Cruiser",
@@ -747,7 +746,6 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
   {
     "type": "Moto",
     "data": {
-      "propietarioId": "550e8400-e29b-41d4-a716-446655440000",
       "plate": "AB-123A",
       "brand": "Honda",
       "model": "Cruiser",
@@ -759,11 +757,6 @@ Este documento detalla los casos de prueba exitosos y de error de usuario final 
   }
   ```
 * **Respuesta Esperada**: `400 Bad Request` indicando "El tipo contiene caracteres o términos reservados no permitidos (Inyección SQL)".
-
-#### **Error: Propietario Inexistente / Inactivo** (`POST /vehiculos/crear`)
-* **URL**: `http://localhost:9000/vehiculo/crear`
-* **Cuerpo (JSON)**: Igual a cualquier caso exitoso pero con un `propietarioId` inválido (ej. `00000000-0000-0000-0000-000000000000`).
-* **Respuesta Esperada**: `400 Bad Request` indicando "El usuario con ID ... no existe" o "está inactivo".
 
 ---
 
@@ -996,7 +989,7 @@ Este apartado detalla los escenarios específicos para validar el correcto funci
 | **4** | Conflicto de Rol Duplicado | `POST` | `/rol/crear` | `/roles/crear` | `409` | Control de unicidad de nombre de rol. |
 | **5** | Crear Usuario con DNI Válido | `POST` | `/usuario/crear` | `/usuarios/crear` | `201` | Validación de DNI ecuatoriano correcto (`1723456784`) y mapeo a rol `Cliente`. |
 | **6** | Error de DNI Ecuatoriano Inválido | `POST` | `/usuario/crear` | `/usuarios/crear` | `422` | Rechazo del DNI `1723456789` debido a fallo del dígito verificador. |
-| **7** | Crear Vehículo (Auto) Vinculado | `POST` | `/vehiculo/crear` | `/vehiculos/crear` | `201` | Validación de existencia de `propietarioId` contra `usuarios-api` mediante contrato interno. |
+| **7** | Crear Vehículo (Auto) | `POST` | `/vehiculo/crear` | `/vehiculos/crear` | `201` | Registro de vehículo (Auto) de forma independiente. |
 | **8** | Crear Zona de Parqueo | `POST` | `/zona/crear` | `/api/v1/zonas/crear` | `201` | Registro en el microservicio `zonas-app`. |
 | **9** | Crear Espacio en Zona | `POST` | `/espacio/crear` | `/api/v1/espacios/crear` | `201` | Creación exitosa del espacio asociado al `zoneId` de la zona anterior. |
 | **10**| Ocupar Espacio (Vehículo Válido) | `PUT` | `/espacio/estado/{id}/estado/OCUPADO` | `/api/v1/espacios/actualizar/{id}/estado/OCUPADO` | `200` | Se pasa el query param `vehiculoId` y se verifica la existencia y tipo de vehículo (AUTO). |
