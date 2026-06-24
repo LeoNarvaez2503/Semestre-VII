@@ -1,0 +1,8 @@
+Base: 10
+
+Asignacion: 2 -> Muestra id y no mas informacion
+Datos de prueba: 1.5
+Trazabilidad: 2
+Reasignacion: 2.5
+
+2 + 1.5 + 2 + 2.5 = 8
