@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Microservicios - Proyecto (Kong)",
-    "description": "Colección completa y actualizada para probar los microservicios de Usuarios, Vehículos y Zonas a través de Kong API Gateway (Puerto 9000).",
+    "description": "Colección completa y actualizada para probar los microservicios de Usuarios, Vehículos, Zonas, y Asignación-Trazabilidad a través de Kong API Gateway (Puerto 9000).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -15,9 +15,14 @@
             "url": {
               "raw": "http://localhost:9000/usuario/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "listar"]
+              "path": [
+                "usuario",
+                "listar"
+              ]
             }
           }
         },
@@ -28,9 +33,13 @@
             "url": {
               "raw": "http://localhost:9000/ruta-no-existente",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["ruta-no-existente"]
+              "path": [
+                "ruta-no-existente"
+              ]
             }
           }
         },
@@ -41,9 +50,14 @@
             "url": {
               "raw": "http://localhost:9000/usuarios/docs",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuarios", "docs"]
+              "path": [
+                "usuarios",
+                "docs"
+              ]
             }
           }
         },
@@ -54,9 +68,15 @@
             "url": {
               "raw": "http://localhost:9000/vehiculos/docs/",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculos", "docs", ""]
+              "path": [
+                "vehiculos",
+                "docs",
+                ""
+              ]
             }
           }
         },
@@ -67,9 +87,14 @@
             "url": {
               "raw": "http://localhost:9000/zonas/docs",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zonas", "docs"]
+              "path": [
+                "zonas",
+                "docs"
+              ]
             }
           }
         }
@@ -83,7 +108,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -92,9 +120,14 @@
             "url": {
               "raw": "http://localhost:9000/rol/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "crear"]
+              "path": [
+                "rol",
+                "crear"
+              ]
             }
           }
         },
@@ -103,7 +136,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -112,9 +148,14 @@
             "url": {
               "raw": "http://localhost:9000/rol/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "crear"]
+              "path": [
+                "rol",
+                "crear"
+              ]
             }
           }
         },
@@ -125,9 +166,14 @@
             "url": {
               "raw": "http://localhost:9000/rol/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "listar"]
+              "path": [
+                "rol",
+                "listar"
+              ]
             }
           }
         },
@@ -138,9 +184,15 @@
             "url": {
               "raw": "http://localhost:9000/rol/obtener/{{role_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "obtener", "{{role_id}}"]
+              "path": [
+                "rol",
+                "obtener",
+                "{{role_id}}"
+              ]
             }
           }
         },
@@ -149,7 +201,10 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -158,9 +213,15 @@
             "url": {
               "raw": "http://localhost:9000/rol/actualizar/{{role_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "actualizar", "{{role_id}}"]
+              "path": [
+                "rol",
+                "actualizar",
+                "{{role_id}}"
+              ]
             }
           }
         },
@@ -171,9 +232,15 @@
             "url": {
               "raw": "http://localhost:9000/rol/eliminar/{{role_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["rol", "eliminar", "{{role_id}}"]
+              "path": [
+                "rol",
+                "eliminar",
+                "{{role_id}}"
+              ]
             }
           }
         }
@@ -187,7 +254,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -196,9 +266,71 @@
             "url": {
               "raw": "http://localhost:9000/usuario/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "crear"]
+              "path": [
+                "usuario",
+                "crear"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"user_id\", jsonData.id_person || jsonData.id);",
+                  "    pm.collectionVariables.set(\"propietario_id\", jsonData.id_person || jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear Usuario B (Para Pruebas de Conflicto)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"other_user_id\", jsonData.id_person || jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"passwordGomez456\",\n  \"person\": {\n    \"dni\": \"1710034065\",\n    \"email\": \"test.maria@example.com\",\n    \"first_name\": \"Maria\",\n    \"last_name\": \"Gomez\",\n    \"middle_name\": \"Eugenia\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0988888888\",\n    \"address\": \"Guayaquil Centro\"\n  },\n  \"roles\": [\"Cliente\"]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/usuario/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "crear"
+              ]
             }
           }
         },
@@ -207,7 +339,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -216,9 +351,14 @@
             "url": {
               "raw": "http://localhost:9000/usuario/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "crear"]
+              "path": [
+                "usuario",
+                "crear"
+              ]
             }
           }
         },
@@ -229,9 +369,14 @@
             "url": {
               "raw": "http://localhost:9000/usuario/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "listar"]
+              "path": [
+                "usuario",
+                "listar"
+              ]
             }
           }
         },
@@ -242,11 +387,19 @@
             "url": {
               "raw": "http://localhost:9000/usuario/buscar?username=jcperez",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "buscar"],
+              "path": [
+                "usuario",
+                "buscar"
+              ],
               "query": [
-                { "key": "username", "value": "jcperez" }
+                {
+                  "key": "username",
+                  "value": "jcperez"
+                }
               ]
             }
           }
@@ -258,9 +411,15 @@
             "url": {
               "raw": "http://localhost:9000/usuario/obtener/{{user_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "obtener", "{{user_id}}"]
+              "path": [
+                "usuario",
+                "obtener",
+                "{{user_id}}"
+              ]
             }
           }
         },
@@ -269,7 +428,10 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -278,9 +440,15 @@
             "url": {
               "raw": "http://localhost:9000/usuario/actualizar/{{user_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "actualizar", "{{user_id}}"]
+              "path": [
+                "usuario",
+                "actualizar",
+                "{{user_id}}"
+              ]
             }
           }
         },
@@ -289,7 +457,10 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -298,9 +469,15 @@
             "url": {
               "raw": "http://localhost:9000/usuario/roles/{{user_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "roles", "{{user_id}}"]
+              "path": [
+                "usuario",
+                "roles",
+                "{{user_id}}"
+              ]
             }
           }
         },
@@ -311,9 +488,15 @@
             "url": {
               "raw": "http://localhost:9000/usuario/eliminar/{{user_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["usuario", "eliminar", "{{user_id}}"]
+              "path": [
+                "usuario",
+                "eliminar",
+                "{{user_id}}"
+              ]
             }
           }
         }
@@ -327,7 +510,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -336,11 +522,30 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "crear"]
+              "path": [
+                "vehiculo",
+                "crear"
+              ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"vehicle_id\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Listar Vehículos",
@@ -349,9 +554,14 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "listar"]
+              "path": [
+                "vehiculo",
+                "listar"
+              ]
             }
           }
         },
@@ -362,9 +572,15 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/obtener/{{vehicle_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "obtener", "{{vehicle_id}}"]
+              "path": [
+                "vehiculo",
+                "obtener",
+                "{{vehicle_id}}"
+              ]
             }
           }
         },
@@ -373,7 +589,10 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -382,9 +601,15 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/actualizar/{{vehicle_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "actualizar", "{{vehicle_id}}"]
+              "path": [
+                "vehiculo",
+                "actualizar",
+                "{{vehicle_id}}"
+              ]
             }
           }
         },
@@ -395,9 +620,15 @@
             "url": {
               "raw": "http://localhost:9000/vehiculo/eliminar/{{vehicle_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["vehiculo", "eliminar", "{{vehicle_id}}"]
+              "path": [
+                "vehiculo",
+                "eliminar",
+                "{{vehicle_id}}"
+              ]
             }
           }
         }
@@ -411,7 +642,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -420,11 +654,30 @@
             "url": {
               "raw": "http://localhost:9000/zona/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zona", "crear"]
+              "path": [
+                "zona",
+                "crear"
+              ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"zone_id\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Listar Zonas",
@@ -433,9 +686,14 @@
             "url": {
               "raw": "http://localhost:9000/zona/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zona", "listar"]
+              "path": [
+                "zona",
+                "listar"
+              ]
             }
           }
         },
@@ -444,7 +702,10 @@
           "request": {
             "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -453,9 +714,15 @@
             "url": {
               "raw": "http://localhost:9000/zona/actualizar/{{zone_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zona", "actualizar", "{{zone_id}}"]
+              "path": [
+                "zona",
+                "actualizar",
+                "{{zone_id}}"
+              ]
             }
           }
         },
@@ -466,9 +733,15 @@
             "url": {
               "raw": "http://localhost:9000/zona/eliminar/{{zone_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["zona", "eliminar", "{{zone_id}}"]
+              "path": [
+                "zona",
+                "eliminar",
+                "{{zone_id}}"
+              ]
             }
           }
         },
@@ -477,7 +750,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -486,11 +762,30 @@
             "url": {
               "raw": "http://localhost:9000/espacio/crear",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "crear"]
+              "path": [
+                "espacio",
+                "crear"
+              ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"space_id\", jsonData.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Listar Espacios",
@@ -499,9 +794,14 @@
             "url": {
               "raw": "http://localhost:9000/espacio/listar",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "listar"]
+              "path": [
+                "espacio",
+                "listar"
+              ]
             }
           }
         },
@@ -512,9 +812,15 @@
             "url": {
               "raw": "http://localhost:9000/espacio/obtener/{{space_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "obtener", "{{space_id}}"]
+              "path": [
+                "espacio",
+                "obtener",
+                "{{space_id}}"
+              ]
             }
           }
         },
@@ -525,11 +831,22 @@
             "url": {
               "raw": "http://localhost:9000/espacio/estado/{{space_id}}/estado/OCUPADO?vehiculoId={{vehicle_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "estado", "{{space_id}}", "estado", "OCUPADO"],
+              "path": [
+                "espacio",
+                "estado",
+                "{{space_id}}",
+                "estado",
+                "OCUPADO"
+              ],
               "query": [
-                { "key": "vehiculoId", "value": "{{vehicle_id}}" }
+                {
+                  "key": "vehiculoId",
+                  "value": "{{vehicle_id}}"
+                }
               ]
             }
           }
@@ -541,9 +858,17 @@
             "url": {
               "raw": "http://localhost:9000/espacio/estado/{{space_id}}/estado/DISPONIBLE",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "estado", "{{space_id}}", "estado", "DISPONIBLE"]
+              "path": [
+                "espacio",
+                "estado",
+                "{{space_id}}",
+                "estado",
+                "DISPONIBLE"
+              ]
             }
           }
         },
@@ -554,9 +879,15 @@
             "url": {
               "raw": "http://localhost:9000/espacio/estado/DISPONIBLE",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "estado", "DISPONIBLE"]
+              "path": [
+                "espacio",
+                "estado",
+                "DISPONIBLE"
+              ]
             }
           }
         },
@@ -567,13 +898,625 @@
             "url": {
               "raw": "http://localhost:9000/espacio/eliminar/{{space_id}}",
               "protocol": "http",
-              "host": ["localhost"],
+              "host": [
+                "localhost"
+              ],
               "port": "9000",
-              "path": ["espacio", "eliminar", "{{space_id}}"]
+              "path": [
+                "espacio",
+                "eliminar",
+                "{{space_id}}"
+              ]
             }
           }
         }
       ]
+    },
+    {
+      "name": "6. Asignacion y Trazabilidad",
+      "item": [
+        {
+          "name": "1. Asignar Vehículo A a Usuario A (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Check response fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.userId).to.eql(pm.collectionVariables.get(\"user_id\"));",
+                  "    pm.expect(jsonData.vehicleId).to.eql(pm.collectionVariables.get(\"vehicle_id\"));",
+                  "    pm.expect(jsonData.active).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Intentar Re-asignar Vehículo A a Usuario A (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Intentar Asignar Vehículo A a Usuario B - Conflicto (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{other_user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. Consultar Flota de Usuario A (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Check fleet size and details\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.at.least(1);",
+                  "    var item = jsonData.find(x => x.vehicleId === pm.collectionVariables.get(\"vehicle_id\"));",
+                  "    pm.expect(item).to.not.be.undefined;",
+                  "    pm.expect(item.type).to.eql(\"Automóvil\");",
+                  "    pm.expect(item.category).to.eql(\"Combustión\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/propietario/{{user_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "propietario",
+                "{{user_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Desactivar Asignación (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Check active is false\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.active).to.be.false;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"active\": false\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/actualizar/{{user_id}}/{{vehicle_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "actualizar",
+                "{{user_id}}",
+                "{{vehicle_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6. Asignar Vehículo A a Usuario B tras Desactivación (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{other_user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7. Intentar Reactivar Asignación de Usuario A con Vehículo en B (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"active\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/actualizar/{{user_id}}/{{vehicle_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "actualizar",
+                "{{user_id}}",
+                "{{vehicle_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8. Asignar a Usuario Inexistente (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"00000000-0000-0000-0000-000000000000\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9. Asignar Vehículo Inexistente (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"vehicleId\": \"00000000-0000-0000-0000-000000000000\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "10. Enviar UUID Inválido en la Creación (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"no-es-uuid\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "11. Actualizar Asignación Inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"active\": false\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/actualizar/{{user_id}}/00000000-0000-0000-0000-000000000000",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "actualizar",
+                "{{user_id}}",
+                "00000000-0000-0000-0000-000000000000"
+              ]
+            }
+          }
+        },
+        {
+          "name": "12. Eliminar Asignación de Vehículo A con Usuario B (204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/eliminar/{{other_user_id}}/{{vehicle_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "eliminar",
+                "{{other_user_id}}",
+                "{{vehicle_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "13. Eliminar Asignación ya Inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:9000/asignacion/eliminar/{{other_user_id}}/{{vehicle_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "eliminar",
+                "{{other_user_id}}",
+                "{{vehicle_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "14. Validar Docs Swagger: Asignaciones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:9000/asignaciones/docs",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignaciones",
+                "docs"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "other_user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "vehicle_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "propietario_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "role_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "zone_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "space_id",
+      "value": "",
+      "type": "string"
     }
   ]
 }
