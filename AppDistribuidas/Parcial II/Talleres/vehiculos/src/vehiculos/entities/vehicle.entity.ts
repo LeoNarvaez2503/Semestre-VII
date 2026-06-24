@@ -20,10 +20,6 @@ export default abstract class Vehicle {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ApiProperty({ example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', description: 'ID del propietario (UUID)' })
-  @Column({ type: 'uuid', name: 'propietario_id' })
-  propietarioId!: string;
-
   @ApiProperty({ example: 'PCG1234', description: 'Placa del vehículo' })
   @Column({ name: 'placa', unique: true })
   plate!: string;

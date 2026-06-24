@@ -161,10 +161,10 @@ PROPIETARIO_ID=$(extract_json_field "$USER_RESP" "id_person")
 run_test_case "Validar Error de Validación DNI Inválido (422)" \
   "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456789", "email": "test2.usuario@example.com", "first_name": "Juan", "last_name": "Perez", "middle_name": "Carlos", "nationality": "Ecuatoriana", "phone": "0999999999", "address": "Av. de los Granados, Quito"}, "roles": ["Cliente"]}' 422 "false"
 
-# 7. Crear Vehículo (Vinculado a propietarioId de paso 5)
+# 7. Crear Vehículo (Auto)
 if [ -n "$PROPIETARIO_ID" ]; then
-  run_test_case "Crear Vehículo (Auto) Vinculado a Propietario" \
-    "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "'"$PROPIETARIO_ID"'", "plate": "PDF9876", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 201 "false"
+  run_test_case "Crear Vehículo (Auto)" \
+    "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"plate": "PDF9876", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 201 "false"
   VEHICLE_RESP=$(cat last_response.json)
   VEHICLE_ID=$(extract_json_field "$VEHICLE_RESP" "id")
 else
@@ -240,13 +240,13 @@ run_test_case "Espacios Inyectados en campos Críticos (HTTP 422)" \
 run_test_case "Búsqueda sin Criterios de Filtro (HTTP 400)" \
   "GET" "/usuario/buscar" "" 400 "false"
 
-# 21. Registro de Vehículo con Propietario Inexistente (HTTP 400)"
-run_test_case "Registro de Vehículo con Propietario Inexistente (HTTP 400)" \
-  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "d3b07384-d113-4956-a5cc-9c60dfd29486", "plate": "PDF9999", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+# 21. Registro de Vehículo con Propietario Inexistente (HTTP 400) - ELIMINADO ya que no hay propietarioId en vehículos
+# run_test_case "Registro de Vehículo con Propietario Inexistente (HTTP 400)" \
+#   "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "d3b07384-d113-4956-a5cc-9c60dfd29486", "plate": "PDF9999", ...}}' 400 "false"
 
 # 22. Colisión de Tipos en DTO Polimórfico (HTTP 400)
 run_test_case "Colisión de Tipos en DTO Polimórfico (HTTP 400)" \
-  "POST" "/vehiculo/crear" '{"type": "Moto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PDF9999", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+  "POST" "/vehiculo/crear" '{"type": "Moto", "data": {"plate": "PDF9999", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
 
 # 23. Actualizar Capacidad de Zona a 0 o Menos (HTTP 400)
 if [ -n "$ZONE_ID" ]; then
@@ -285,7 +285,7 @@ run_test_case "Evasion de DNI con Provincia Invalida (HTTP 422)" \
 
 # 30. Desbordamiento Numérico en Atributos del Vehículo (HTTP 400)
 run_test_case "Desbordamiento Numerico en Atributos del Vehiculo (HTTP 400)" \
-  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PBA9999", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 2147483648, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"plate": "PBA9999", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 2147483648, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
 
 # 31. Fuzzing de UUID Inválido en Actualización de Zona (HTTP 404 / 400)
 run_test_case "Fuzzing de UUID Invalido en Actualizacion de Zona (HTTP 400)" \
@@ -302,7 +302,7 @@ fi
 # 33. Ocupar Espacio con Vehículo de Tipo Incorrecto (HTTP 400)
 if [ -n "$PROPIETARIO_ID" ]; then
   run_test_case "Crear Moto para Test de Tipo Incorrecto" \
-    "POST" "/vehiculo/crear" '{"type": "Moto", "data": {"propietarioId": "'"$PROPIETARIO_ID"'", "plate": "AB-123X", "brand": "Honda", "model": "Cruiser", "color": "Negro", "year": 2022, "classification": "Gasolina", "type": "Deportiva"}}' 201 "false"
+    "POST" "/vehiculo/crear" '{"type": "Moto", "data": {"plate": "AB-123X", "brand": "Honda", "model": "Cruiser", "color": "Negro", "year": 2022, "classification": "Gasolina", "type": "Deportiva"}}' 201 "false"
   MOTO_RESP=$(cat last_response.json)
   MOTO_ID=$(extract_json_field "$MOTO_RESP" "id")
 else
@@ -359,19 +359,19 @@ run_test_case "Usuario: Espacio en Telefono (HTTP 422)" \
 
 # 43. Vehículo - Caracteres Inválidos en Marca (HTTP 400)
 run_test_case "Vehiculo: Caracteres Invalidos en Marca (HTTP 400)" \
-  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PBA9999", "brand": "Toyota123", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"plate": "PBA9999", "brand": "Toyota123", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
 
-# 44. Vehículo - Espacios en Marca (HTTP 400)"
+# 44. Vehículo - Espacios en Marca (HTTP 400)
 run_test_case "Vehiculo: Espacios en Marca (HTTP 400)" \
-  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PBA9999", "brand": "Toyota Motors", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"plate": "PBA9999", "brand": "Toyota Motors", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
 
 # 45. Vehículo - Espacios en Modelo (HTTP 400)
 run_test_case "Vehiculo: Espacios en Modelo (HTTP 400)" \
-  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PBA9999", "brand": "Toyota", "model": "Land Cruiser", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"plate": "PBA9999", "brand": "Toyota", "model": "Land Cruiser", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
 
 # 46. Vehículo - Espacios en Placa (HTTP 400)
 run_test_case "Vehiculo: Espacios en Placa (HTTP 400)" \
-  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "550e8400-e29b-41d4-a716-446655440000", "plate": "PD F9876", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
+  "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"plate": "PD F9876", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 400 "false"
 
 # 47. Zona - Tipo de Zona con Espacio (HTTP 400)
 run_test_case "Zona: Tipo de Zona con Espacio (HTTP 400)" \

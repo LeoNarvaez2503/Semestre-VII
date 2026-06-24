@@ -112,18 +112,18 @@ run_test_case "Crear Usuario B (Maria Gomez)" \
 USER_B_RESP=$(cat last_response.json)
 USER_B_ID=$(extract_json_field "$USER_B_RESP" "id_person")
 
-# 4. Crear Vehículo A (Auto PDF9876) vinculado a Usuario A
+# 4. Crear Vehículo A (Auto PDF9876)
 if [ -n "$USER_A_ID" ]; then
   run_test_case "Crear Vehículo A (Auto PDF9876)" \
-    "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "'"$USER_A_ID"'", "plate": "PDF9876", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 201
+    "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"plate": "PDF9876", "brand": "Toyota", "model": "Yaris", "color": "Gris", "year": 2022, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 350}}' 201
   VEHICLE_A_RESP=$(cat last_response.json)
   VEHICLE_A_ID=$(extract_json_field "$VEHICLE_A_RESP" "id")
 fi
 
-# 5. Crear Vehículo B (Auto PDF9999) vinculado a Usuario A
+# 5. Crear Vehículo B (Auto PDF9999)
 if [ -n "$USER_A_ID" ]; then
   run_test_case "Crear Vehículo B (Auto PDF9999)" \
-    "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"propietarioId": "'"$USER_A_ID"'", "plate": "PDF9999", "brand": "Toyota", "model": "Corolla", "color": "Negro", "year": 2023, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 400}}' 201
+    "POST" "/vehiculo/crear" '{"type": "Auto", "data": {"plate": "PDF9999", "brand": "Toyota", "model": "Corolla", "color": "Negro", "year": 2023, "classification": "Gasolina", "doors": 4, "fuelType": "Gasolina", "trunkCapacity": 400}}' 201
   VEHICLE_B_RESP=$(cat last_response.json)
   VEHICLE_B_ID=$(extract_json_field "$VEHICLE_B_RESP" "id")
 fi

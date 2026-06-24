@@ -23,28 +23,7 @@ export class VehicleService {
       throw new ConflictException('El vehículo ya está registrado.');
     }
 
-    // Contrato Interno: Validar con usuarios-api
-    try {
-      const response = await fetch(`http://usuarios-api:8000/usuarios/internal/validar/${createVehicleDto.data.propietarioId}`);
-      if (!response.ok) {
-        throw new BadRequestException('Error al validar el propietario. Servicio de usuarios no disponible o error interno.');
-      }
-      const data = await response.json();
-      if (!data.exists) {
-        throw new BadRequestException(`El usuario con ID ${createVehicleDto.data.propietarioId} no existe.`);
-      }
-      if (!data.active) {
-        throw new BadRequestException(`El usuario con ID ${createVehicleDto.data.propietarioId} está inactivo.`);
-      }
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new BadRequestException('No se pudo comunicar con el servicio de usuarios para validar el propietarioId.');
-    }
-
     const vehicle = VehicleFactory.create(createVehicleDto);
-    vehicle.propietarioId = createVehicleDto.data.propietarioId; // Assign owner
     return this.vehicleRepository.save(vehicle);
   }
 
