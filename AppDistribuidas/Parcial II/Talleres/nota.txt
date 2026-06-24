@@ -1,0 +1,9 @@
+Base: 10
+
+Asignacion: 2.5
+
+Datos de Prueba: 2
+
+Reasignacion: 4
+
+Total: 18.5
