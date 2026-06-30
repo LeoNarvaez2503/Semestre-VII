@@ -1,0 +1,6 @@
+{
+  "name": "Cooperativa Mushuc Runa",
+  "description": "Plataforma de Banca Web moderna con arquitectura limpia que simula roles financieros de Cliente, Cajero, Auditor y Administrador.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
