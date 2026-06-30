@@ -1116,5 +1116,173 @@ Este apartado detalla los escenarios para validar la autenticación basada en JW
   * `Authorization`: `Bearer PEGAR_TOKEN_AQUI`
 * **Respuesta Esperada**: `200 OK` con el arreglo de los vehículos asignados al cliente (consumiendo el servicio de asignación).
 
+---
+
+## 6. Casos de Prueba de Asignación y Trazabilidad
+
+### 6.1 Crear Asignación (`POST /asignacion/crear`)
+Asocia un vehículo a un propietario de forma activa.
+* **URL**: `http://localhost:9000/asignacion/crear`
+* **Método**: `POST`
+* **Headers**:
+  * `Content-Type`: `application/json`
+  * `Authorization`: `Bearer PEGAR_TOKEN_AQUI` (Requiere Administrador o Root)
+
+#### **Caso Exitoso (Crear Asignación Nueva)**
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "userId": "550e8400-e29b-41d4-a716-446655440000",
+    "vehicleId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+  }
+  ```
+* **Respuesta Esperada**: `201 Created`
+
+#### **Error: Vehículo ya asignado activamente a otro propietario (Conflicto)**
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "userId": "999e8400-e29b-41d4-a716-446655449999",
+    "vehicleId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+  }
+  ```
+* **Respuesta Esperada**: `409 Conflict`
+
+#### **Error: Propietario/Usuario no existe**
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "userId": "00000000-0000-0000-0000-000000000000",
+    "vehicleId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+  }
+  ```
+* **Respuesta Esperada**: `400 Bad Request`
+
+---
+
+### 6.2 Consultar Flota de un Propietario (`GET /asignacion/propietario/{propietarioId}`)
+Obtiene todos los vehículos activos asignados a un propietario.
+* **URL**: `http://localhost:9000/asignacion/propietario/550e8400-e29b-41d4-a716-446655440000`
+* **Método**: `GET`
+* **Headers**:
+  * `Authorization`: `Bearer PEGAR_TOKEN_AQUI` (Root y Administrador pueden ver cualquier propietario; Cliente solo puede ver su propio ID)
+
+#### **Caso Exitoso**
+* **Respuesta Esperada**: `200 OK`
+
+---
+
+### 6.3 Modificar Asignación (`PUT /asignacion/actualizar/{userId}/{vehicleId}`)
+Modifica los atributos de una asignación.
+* **URL**: `http://localhost:9000/asignacion/actualizar/550e8400-e29b-41d4-a716-446655440000/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11`
+* **Método**: `PUT`
+* **Headers**:
+  * `Content-Type`: `application/json`
+  * `Authorization`: `Bearer PEGAR_TOKEN_AQUI` (Requiere Administrador o Root)
+
+#### **Caso Exitoso (Desactivar Asignación)**
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "active": false
+  }
+  ```
+* **Respuesta Esperada**: `200 OK`
+
+---
+
+### 6.4 Eliminar Lógicamente Asignación (`DELETE /asignacion/eliminar/{userId}/{vehicleId}`)
+Inactivación lógica de la asignación.
+* **URL**: `http://localhost:9000/asignacion/eliminar/550e8400-e29b-41d4-a716-446655440000/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11`
+* **Método**: `DELETE`
+* **Headers**:
+  * `Authorization`: `Bearer PEGAR_TOKEN_AQUI` (Requiere Administrador o Root)
+* **Respuesta Esperada**: `204 No Content`
+
+---
+
+### 6.5 Recorte de Espacios en Blanco en los UUIDs (Trim)
+El servicio es inmune a espacios innecesarios colocados en los parámetros UUID.
+* **URL de ejemplo**: `http://localhost:9000/asignacion/propietario/%20%20%20550e8400-e29b-41d4-a716-446655440000%20%20%20`
+* **Método**: `GET`
+* **Headers**:
+  * `Authorization`: `Bearer PEGAR_TOKEN_AQUI`
+* **Respuesta Esperada**: `200 OK`
+
+---
+
+### 6.6 Trazabilidad y Auditoría (`GET /asignacion/trazabilidad...`)
+Consulta el historial de acciones y cambios de estado sobre las asignaciones.
+* **Headers**:
+  * `Authorization`: `Bearer PEGAR_TOKEN_AQUI` (Requiere Administrador o Root)
+
+#### **Historial General de Trazabilidad**
+* **URL**: `http://localhost:9000/asignacion/trazabilidad`
+* **Método**: `GET`
+* **Respuesta Esperada**: `200 OK`
+
+#### **Historial de un Vehículo Específico**
+* **URL**: `http://localhost:9000/asignacion/trazabilidad/vehiculo/{vehicleId}`
+* **Método**: `GET`
+* **Respuesta Esperada**: `200 OK`
+
+#### **Historial de un Propietario Específico**
+* **URL**: `http://localhost:9000/asignacion/trazabilidad/propietario/{userId}`
+* **Método**: `GET`
+* **Respuesta Esperada**: `200 OK`
+
+---
+
+## 7. Casos de Prueba de Seguridad y Control de Acceso (RBAC)
+
+Este apartado detalla los escenarios para validar que las políticas de control de acceso se aplican correctamente según los roles de **Root**, **Administrador**, **Cliente** e **Invitado**.
+
+### 7.1 Acceso Privado Sin Token (Invitado Bloqueado)
+* **URL**: `http://localhost:9000/usuario/listar`
+* **Método**: `GET`
+* **Respuesta Esperada**: `401 Unauthorized` con el mensaje "Not authenticated" o "Token no proporcionado".
+
+### 7.2 Acceso Privado con Token de Bajo Privilegio (Cliente Bloqueado)
+* **URL**: `http://localhost:9000/usuario/listar`
+* **Método**: `GET`
+* **Headers**:
+  * `Authorization`: `Bearer TOKEN_DE_CLIENTE`
+* **Respuesta Esperada**: `403 Forbidden` con el mensaje "No tiene permisos suficientes para realizar esta acción."
+
+### 7.3 Consulta de Recursos Públicos Sin Token (Invitado Permitido)
+* **URL**: `http://localhost:9000/zona/listar` o `http://localhost:9000/espacio/listar`
+* **Método**: `GET`
+* **Respuesta Esperada**: `200 OK`
+
+### 7.4 Escritura de Zonas Sin Token (Invitado Bloqueado)
+* **URL**: `http://localhost:9000/zona/crear`
+* **Método**: `POST`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "name": "Zona Bloqueada",
+    "description": "No debe permitirse",
+    "type": "REGULAR",
+    "capacidad": 5
+  }
+  ```
+* **Respuesta Esperada**: `401 Unauthorized`
+
+### 7.5 Escritura de Zonas con Token de Cliente (Cliente Bloqueado)
+* **URL**: `http://localhost:9000/zona/crear`
+* **Método**: `POST`
+* **Headers**:
+  * `Authorization`: `Bearer TOKEN_DE_CLIENTE`
+* **Cuerpo (JSON)**: Mismo que el caso anterior
+* **Respuesta Esperada**: `403 Forbidden`
+
+### 7.6 Cliente Consulta su Propio Perfil y Vehículos (Cliente Permitido)
+* **Ver Perfil (`GET /usuario/me`)**:
+  * **Headers**: `Authorization: Bearer TOKEN_DE_CLIENTE`
+  * **Respuesta Esperada**: `200 OK`
+* **Ver Vehículos (`GET /usuario/me/vehiculos`)**:
+  * **Headers**: `Authorization: Bearer TOKEN_DE_CLIENTE`
+  * **Respuesta Esperada**: `200 OK`
+
 
 

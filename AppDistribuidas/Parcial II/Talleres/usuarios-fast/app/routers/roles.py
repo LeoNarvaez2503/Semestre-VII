@@ -5,7 +5,13 @@ from app.core.database import get_db
 from app.schemas.user import RoleCreate, RoleUpdate, RoleResponse
 from app.services.role_service import RoleService
 
-router = APIRouter(prefix="/roles", tags=["Roles"])
+from app.routers.auth import check_roles
+
+router = APIRouter(
+    prefix="/roles",
+    tags=["Roles"],
+    dependencies=[Depends(check_roles(["Administrador", "Root"]))]
+)
 
 @router.post("/crear", response_model=RoleResponse, status_code=status.HTTP_201_CREATED)
 def create_role(role_in: RoleCreate, db: Session = Depends(get_db)):

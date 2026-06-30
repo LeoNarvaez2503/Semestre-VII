@@ -25,6 +25,41 @@ cleanup_db() {
 # Ejecutar limpieza inicial
 cleanup_db
 
+# Función extractora de campos JSON simples
+extract_json_field() {
+  local json="$1"
+  local field="$2"
+  echo "$json" | sed -n 's/.*"'"$field"'":"\([^"]*\)".*/\1/p'
+}
+
+get_root_token() {
+  echo -e "\n${BOLD}Obteniendo token de Root para pruebas administrativas...${NC}"
+  local response=$(curl -s -X POST "$GATEWAY_URL/usuario/login" \
+    -H "Content-Type: application/json" \
+    -d '{"username": "root", "password": "rootpassword123"}')
+  ROOT_TOKEN=$(extract_json_field "$response" "access_token")
+  if [ -z "$ROOT_TOKEN" ]; then
+    echo -e "${RED}Error: No se pudo obtener el token de Root. Respuesta: $response${NC}"
+    exit 1
+  fi
+  echo -e "${GREEN}Token de Root obtenido exitosamente.${NC}"
+}
+
+get_client_token() {
+  echo -e "\n${BOLD}Obteniendo token de Cliente para pruebas de bajo privilegio...${NC}"
+  local response=$(curl -s -X POST "$GATEWAY_URL/usuario/login" \
+    -H "Content-Type: application/json" \
+    -d '{"username": "jcperez", "password": "miPasswordSeguro123"}')
+  CLIENT_TOKEN=$(extract_json_field "$response" "access_token")
+  if [ -z "$CLIENT_TOKEN" ]; then
+    echo -e "${RED}Error: No se pudo obtener el token del Cliente jcperez.${NC}"
+  else
+    echo -e "${GREEN}Token de Cliente obtenido exitosamente.${NC}"
+  fi
+}
+
+get_root_token
+
 # Inicializar arrays de reporte
 declare -a TEST_NAMES
 declare -a TEST_STATUSES
@@ -33,13 +68,6 @@ declare -a TEST_DETAILS
 
 test_index=0
 
-# Función extractora de campos JSON simples
-extract_json_field() {
-  local json="$1"
-  local field="$2"
-  echo "$json" | sed -n 's/.*"'"$field"'":"\([^"]*\)".*/\1/p'
-}
-
 # Función principal para ejecutar casos de prueba
 run_test_case() {
   local name="$1"
@@ -47,6 +75,7 @@ run_test_case() {
   local path="$3"
   local body="$4"
   local expected_code="$5"
+  local use_token="${6:-root}" # por defecto usa root si no se especifica
 
   echo -e "\n${BOLD}[Ejecutando] $name...${NC}"
   
@@ -54,6 +83,13 @@ run_test_case() {
   
   if [ -n "$body" ]; then
     curl_cmd+=(-H "Content-Type: application/json" -d "$body")
+  fi
+
+  # Agregar cabecera de autorización si corresponde
+  if [ "$use_token" = "root" ]; then
+    curl_cmd+=(-H "Authorization: Bearer $ROOT_TOKEN")
+  elif [ "$use_token" = "client" ]; then
+    curl_cmd+=(-H "Authorization: Bearer $CLIENT_TOKEN")
   fi
 
   # Ejecutar petición
@@ -102,13 +138,14 @@ run_test_case "Crear Rol 'Cliente'" \
 
 # 2. Crear Usuario A (Juan Perez)
 run_test_case "Crear Usuario A (Juan Perez)" \
-  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "test.usuario@example.com", "first_name": "Juan", "last_name": "Perez", "middle_name": "Carlos", "nationality": "Ecuatoriana", "phone": "0999999999", "address": "Av. de los Granados, Quito"}, "roles": ["Cliente"]}' 201
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "test.usuario@example.com", "first_name": "Juan", "last_name": "Perez", "middle_name": "Carlos", "nationality": "Ecuatoriana", "phone": "0999999999", "address": "Av. de los Granados, Quito"}, "roles": ["Cliente"]}' 201 "none"
 USER_A_RESP=$(cat last_response.json)
 USER_A_ID=$(extract_json_field "$USER_A_RESP" "id_person")
+get_client_token
 
 # 3. Crear Usuario B (Maria Gomez)
 run_test_case "Crear Usuario B (Maria Gomez)" \
-  "POST" "/usuario/crear" '{"password": "passwordGomez456", "person": {"dni": "1710034065", "email": "test.maria@example.com", "first_name": "Maria", "last_name": "Gomez", "middle_name": "Eugenia", "nationality": "Ecuatoriana", "phone": "0988888888", "address": "Guayaquil Centro"}, "roles": ["Cliente"]}' 201
+  "POST" "/usuario/crear" '{"password": "passwordGomez456", "person": {"dni": "1710034065", "email": "test.maria@example.com", "first_name": "Maria", "last_name": "Gomez", "middle_name": "Eugenia", "nationality": "Ecuatoriana", "phone": "0988888888", "address": "Guayaquil Centro"}, "roles": ["Cliente"]}' 201 "none"
 USER_B_RESP=$(cat last_response.json)
 USER_B_ID=$(extract_json_field "$USER_B_RESP" "id_person")
 
@@ -207,6 +244,8 @@ run_test_case "Crear Asignación con espacios a los extremos del UUID (201)" \
 
 # Caso 20: Consultar la flota de un propietario enviando el ID con espacios en la ruta (200)
 run_test_case "Consultar Flota con espacios en el UUID de la ruta (200)" \
+  "GET" "/asignacion/propietario/%20%20%20$USER_A_ID%20%20%20" "" 200
+
 # Caso 21: Consultar Trazabilidad General (200)
 run_test_case "Consultar Trazabilidad General (200)" \
   "GET" "/asignacion/trazabilidad" "" 200
@@ -218,6 +257,30 @@ run_test_case "Consultar Trazabilidad de un Vehículo (200)" \
 # Caso 23: Consultar Trazabilidad por Propietario (200)
 run_test_case "Consultar Trazabilidad de un Propietario (200)" \
   "GET" "/asignacion/trazabilidad/propietario/$USER_A_ID" "" 200
+
+# ========================================================
+# NUEVOS CASOS DE PRUEBA: CONTROL DE ACCESO (RBAC)
+# ========================================================
+
+# Caso 24: Intentar crear asignación sin token (401)
+run_test_case "Seguridad: Crear asignación sin token (401)" \
+  "POST" "/asignacion/crear" '{"userId": "'"$USER_A_ID"'", "vehicleId": "'"$VEHICLE_B_ID"'"}' 401 "none"
+
+# Caso 25: Intentar crear asignación con token de Cliente (403)
+run_test_case "Seguridad: Crear asignación con token de Cliente (403)" \
+  "POST" "/asignacion/crear" '{"userId": "'"$USER_A_ID"'", "vehicleId": "'"$VEHICLE_B_ID"'"}' 403 "client"
+
+# Caso 26: Cliente puede consultar su propia flota (200)
+run_test_case "Seguridad: Cliente consulta su propia flota (200)" \
+  "GET" "/asignacion/propietario/$USER_A_ID" "" 200 "client"
+
+# Caso 27: Cliente NO puede consultar la flota de otro usuario (403)
+run_test_case "Seguridad: Cliente consulta otra flota (403)" \
+  "GET" "/asignacion/propietario/$USER_B_ID" "" 403 "client"
+
+# Caso 28: Cliente NO puede consultar la trazabilidad general (403)
+run_test_case "Seguridad: Cliente consulta trazabilidad general (403)" \
+  "GET" "/asignacion/trazabilidad" "" 403 "client"
 
 # ========================================================
 # IMPRESIÓN DEL REPORTE FINAL DETALLADO

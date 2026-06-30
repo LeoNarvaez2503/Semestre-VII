@@ -1,110 +1,34 @@
 {
   "info": {
-    "name": "Microservicios - Proyecto (Kong)",
-    "description": "Colección completa y actualizada para probar los microservicios de Usuarios, Vehículos, Zonas, y Asignación-Trazabilidad a través de Kong API Gateway (Puerto 9000).",
+    "_postman_id": "4e1a0b33-d8c7-43c7-bc11-a8e0cb20e980",
+    "name": "Microservicios - Parqueadero Inteligente (RBAC & JWT)",
+    "description": "Colección completa y ordenada para probar el flujo de integración de microservicios y políticas de seguridad RBAC (Root, Administrador, Cliente, Invitado).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "1. Seguridad y Gateway",
+      "name": "1. Autenticación",
       "item": [
         {
-          "name": "Verificar Cabeceras de Seguridad",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/usuario/listar",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "usuario",
-                "listar"
-              ]
+          "name": "Login Root (Obtener root_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Root token saved\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.access_token).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"root_token\", jsonData.access_token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
-        },
-        {
-          "name": "Validar Ruta Inexistente (404)",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/ruta-no-existente",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "ruta-no-existente"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Validar Docs Swagger: Usuarios",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/usuarios/docs",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "usuarios",
-                "docs"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Validar Docs Swagger: Vehiculos",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/vehiculos/docs/",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "vehiculos",
-                "docs",
-                ""
-              ]
-            }
-          }
-        },
-        {
-          "name": "Validar Docs Swagger: Zonas",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/zonas/docs",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "zonas",
-                "docs"
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "2. Roles",
-      "item": [
-        {
-          "name": "Crear Rol Cliente",
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -115,7 +39,103 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Cliente\",\n  \"description\": \"Usuario regular\"\n}"
+              "raw": "{\n  \"username\": \"root\",\n  \"password\": \"rootpassword123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/usuario/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login Cliente (Obtener client_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Client token saved\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.access_token).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"client_token\", jsonData.access_token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"jcperez\",\n  \"password\": \"miPasswordSeguro123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/usuario/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Roles (Requiere root_token)",
+      "item": [
+        {
+          "name": "Crear Rol Cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Cliente\",\n  \"description\": \"Rol asignado para los clientes del parqueadero.\"\n}"
             },
             "url": {
               "raw": "http://localhost:9000/rol/crear",
@@ -133,17 +153,34 @@
         },
         {
           "name": "Crear Rol Administrador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Administrador\",\n  \"description\": \"Acceso total\"\n}"
+              "raw": "{\n  \"name\": \"Administrador\",\n  \"description\": \"Rol con acceso total al sistema.\"\n}"
             },
             "url": {
               "raw": "http://localhost:9000/rol/crear",
@@ -161,8 +198,27 @@
         },
         {
           "name": "Listar Roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
             "url": {
               "raw": "http://localhost:9000/rol/listar",
               "protocol": "http",
@@ -176,73 +232,6 @@
               ]
             }
           }
-        },
-        {
-          "name": "Obtener Rol por ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/rol/obtener/{{role_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "rol",
-                "obtener",
-                "{{role_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Actualizar Rol",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"description\": \"Acceso total actualizado\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/rol/actualizar/{{role_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "rol",
-                "actualizar",
-                "{{role_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Eliminar Rol",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "http://localhost:9000/rol/eliminar/{{role_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "rol",
-                "eliminar",
-                "{{role_id}}"
-              ]
-            }
-          }
         }
       ]
     },
@@ -250,59 +239,20 @@
       "name": "3. Usuarios",
       "item": [
         {
-          "name": "Crear Usuario DNI Valido",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"password\": \"miPasswordSeguro123\",\n  \"person\": {\n    \"dni\": \"1723456784\",\n    \"email\": \"test.usuario@example.com\",\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Perez\",\n    \"middle_name\": \"Carlos\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0999999999\",\n    \"address\": \"Av. de los Granados, Quito\"\n  },\n  \"roles\": [\"Cliente\"]\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/usuario/crear",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "usuario",
-                "crear"
-              ]
-            }
-          },
+          "name": "Registro Público (Crear Cliente - Sin Token)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 201) {",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Save user ID\", function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.collectionVariables.set(\"user_id\", jsonData.id_person || jsonData.id);",
-                  "    pm.collectionVariables.set(\"propietario_id\", jsonData.id_person || jsonData.id);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
-        },
-        {
-          "name": "Crear Usuario B (Para Pruebas de Conflicto)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.collectionVariables.set(\"other_user_id\", jsonData.id_person || jsonData.id);",
-                  "}"
+                  "    pm.expect(jsonData.id_person).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"user_id\", jsonData.id_person);",
+                  "});"
                 ],
                 "type": "text/javascript"
               }
@@ -318,7 +268,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"password\": \"passwordGomez456\",\n  \"person\": {\n    \"dni\": \"1710034065\",\n    \"email\": \"test.maria@example.com\",\n    \"first_name\": \"Maria\",\n    \"last_name\": \"Gomez\",\n    \"middle_name\": \"Eugenia\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0988888888\",\n    \"address\": \"Guayaquil Centro\"\n  },\n  \"roles\": [\"Cliente\"]\n}"
+              "raw": "{\n  \"password\": \"miPasswordSeguro123\",\n  \"person\": {\n    \"dni\": \"1723456784\",\n    \"email\": \"test.usuario@example.com\",\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Perez\",\n    \"middle_name\": \"Carlos\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0999999999\",\n    \"address\": \"Av. de los Granados, Quito\"\n  },\n  \"roles\": []\n}"
             },
             "url": {
               "raw": "http://localhost:9000/usuario/crear",
@@ -335,18 +285,40 @@
           }
         },
         {
-          "name": "Crear Usuario DNI Invalido (422)",
+          "name": "Crear Usuario B (Administrador - Requiere root_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Save other user ID\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id_person).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"other_user_id\", jsonData.id_person);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"password\": \"miPasswordSeguro123\",\n  \"person\": {\n    \"dni\": \"1723456789\",\n    \"email\": \"test2.usuario@example.com\",\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Perez\",\n    \"middle_name\": \"Carlos\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0999999999\",\n    \"address\": \"Av. de los Granados, Quito\"\n  },\n  \"roles\": [\"Cliente\"]\n}"
+              "raw": "{\n  \"password\": \"passwordGomez456\",\n  \"person\": {\n    \"dni\": \"1710034065\",\n    \"email\": \"test.maria@example.com\",\n    \"first_name\": \"Maria\",\n    \"last_name\": \"Gomez\",\n    \"middle_name\": \"Eugenia\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0988888888\",\n    \"address\": \"Guayaquil Centro\"\n  },\n  \"roles\": [\"Administrador\"]\n}"
             },
             "url": {
               "raw": "http://localhost:9000/usuario/crear",
@@ -363,9 +335,28 @@
           }
         },
         {
-          "name": "Listar Usuarios",
+          "name": "Listar Usuarios (Requiere root_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
             "url": {
               "raw": "http://localhost:9000/usuario/listar",
               "protocol": "http",
@@ -379,140 +370,42 @@
               ]
             }
           }
-        },
-        {
-          "name": "Buscar Usuarios",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/usuario/buscar?username=jcperez",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "usuario",
-                "buscar"
-              ],
-              "query": [
-                {
-                  "key": "username",
-                  "value": "jcperez"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Obtener Usuario por ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/usuario/obtener/{{user_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "usuario",
-                "obtener",
-                "{{user_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Actualizar Usuario",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"person\": {\n    \"phone\": \"0987654321\",\n    \"address\": \"Cumbayá, Quito\"\n  }\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/usuario/actualizar/{{user_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "usuario",
-                "actualizar",
-                "{{user_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Modificar Roles de Usuario",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"roles\": [\"Administrador\", \"Cliente\"]\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/usuario/roles/{{user_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "usuario",
-                "roles",
-                "{{user_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Eliminar Usuario",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "http://localhost:9000/usuario/eliminar/{{user_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "usuario",
-                "eliminar",
-                "{{user_id}}"
-              ]
-            }
-          }
         }
       ]
     },
     {
-      "name": "4. Vehiculos",
+      "name": "4. Vehículos (Requiere root_token)",
       "item": [
         {
-          "name": "Crear Vehículo (Auto)",
+          "name": "Crear Vehículo A (Auto)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Save vehicle ID\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"vehicle_id\", jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
               }
             ],
             "body": {
@@ -531,26 +424,81 @@
                 "crear"
               ]
             }
-          },
+          }
+        },
+        {
+          "name": "Crear Vehículo B (Moto)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 201) {",
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Save other vehicle ID\", function () {",
                   "    var jsonData = pm.response.json();",
-                  "    pm.collectionVariables.set(\"vehicle_id\", jsonData.id);",
-                  "}"
+                  "    pm.expect(jsonData.id).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"other_vehicle_id\", jsonData.id);",
+                  "});"
                 ],
                 "type": "text/javascript"
               }
             }
-          ]
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Moto\",\n  \"data\": {\n    \"plate\": \"AB-123X\",\n    \"brand\": \"Honda\",\n    \"model\": \"Cruiser\",\n    \"color\": \"Negro\",\n    \"year\": 2022,\n    \"classification\": \"Gasolina\",\n    \"type\": \"Deportiva\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/vehiculo/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "vehiculo",
+                "crear"
+              ]
+            }
+          }
         },
         {
           "name": "Listar Vehículos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
             "url": {
               "raw": "http://localhost:9000/vehiculo/listar",
               "protocol": "http",
@@ -564,73 +512,6 @@
               ]
             }
           }
-        },
-        {
-          "name": "Obtener Vehículo por ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/vehiculo/obtener/{{vehicle_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "vehiculo",
-                "obtener",
-                "{{vehicle_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Actualizar Vehículo",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"data\": {\n    \"color\": \"Blanco Perlado\"\n  }\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/vehiculo/actualizar/{{vehicle_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "vehiculo",
-                "actualizar",
-                "{{vehicle_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Eliminar Vehículo",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "http://localhost:9000/vehiculo/eliminar/{{vehicle_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "vehiculo",
-                "eliminar",
-                "{{vehicle_id}}"
-              ]
-            }
-          }
         }
       ]
     },
@@ -638,18 +519,40 @@
       "name": "5. Zonas y Espacios",
       "item": [
         {
-          "name": "Crear Zona",
+          "name": "Crear Zona de Parqueo (Requiere root_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Save zone ID\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.zoneId).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"zone_id\", jsonData.zoneId);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Zona A - Planta Baja\",\n  \"description\": \"Zona principal de de estacionamiento\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 10\n}"
+              "raw": "{\n  \"name\": \"Zona A - Planta Baja\",\n  \"description\": \"Zona principal de estacionamiento\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 10\n}"
             },
             "url": {
               "raw": "http://localhost:9000/zona/crear",
@@ -663,26 +566,26 @@
                 "crear"
               ]
             }
-          },
+          }
+        },
+        {
+          "name": "Listar Zonas (Invitado Permitido - Sin Token)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.collectionVariables.set(\"zone_id\", jsonData.id);",
-                  "}"
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
                 ],
                 "type": "text/javascript"
               }
             }
-          ]
-        },
-        {
-          "name": "Listar Zonas",
+          ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "http://localhost:9000/zona/listar",
               "protocol": "http",
@@ -698,61 +601,35 @@
           }
         },
         {
-          "name": "Actualizar Zona",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
+          "name": "Crear Espacio (Requiere root_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Save space ID\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"space_id\", jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
               }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Zona A - Modificada\",\n  \"description\": \"Nueva descripción de zona\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 15\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/zona/actualizar/{{zone_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "zona",
-                "actualizar",
-                "{{zone_id}}"
-              ]
             }
-          }
-        },
-        {
-          "name": "Desactivar Zona",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "http://localhost:9000/zona/eliminar/{{zone_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "zona",
-                "eliminar",
-                "{{zone_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Crear Espacio",
+          ],
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
               }
             ],
             "body": {
@@ -771,26 +648,26 @@
                 "crear"
               ]
             }
-          },
+          }
+        },
+        {
+          "name": "Listar Espacios (Invitado Permitido - Sin Token)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.collectionVariables.set(\"space_id\", jsonData.id);",
-                  "}"
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
                 ],
                 "type": "text/javascript"
               }
             }
-          ]
-        },
-        {
-          "name": "Listar Espacios",
+          ],
           "request": {
             "method": "GET",
+            "header": [],
             "url": {
               "raw": "http://localhost:9000/espacio/listar",
               "protocol": "http",
@@ -806,28 +683,28 @@
           }
         },
         {
-          "name": "Obtener Espacio por ID",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/espacio/obtener/{{space_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "espacio",
-                "obtener",
-                "{{space_id}}"
-              ]
+          "name": "Ocupar Espacio (Requiere root_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
-        },
-        {
-          "name": "Cambiar Estado (Ocupar)",
+          ],
           "request": {
             "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
             "url": {
               "raw": "http://localhost:9000/espacio/estado/{{space_id}}/estado/OCUPADO?vehiculoId={{vehicle_id}}",
               "protocol": "http",
@@ -852,9 +729,28 @@
           }
         },
         {
-          "name": "Cambiar Estado (Liberar)",
+          "name": "Liberar Espacio (Requiere root_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
             "url": {
               "raw": "http://localhost:9000/espacio/estado/{{space_id}}/estado/DISPONIBLE",
               "protocol": "http",
@@ -871,52 +767,14 @@
               ]
             }
           }
-        },
-        {
-          "name": "Listar Espacios por Estado",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/espacio/estado/DISPONIBLE",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "espacio",
-                "estado",
-                "DISPONIBLE"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Eliminar Espacio",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "http://localhost:9000/espacio/eliminar/{{space_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "espacio",
-                "eliminar",
-                "{{space_id}}"
-              ]
-            }
-          }
         }
       ]
     },
     {
-      "name": "6. Asignacion y Trazabilidad",
+      "name": "6. Asignacion y Trazabilidad (Requiere root_token)",
       "item": [
         {
-          "name": "1. Asignar Vehículo A a Usuario A (201)",
+          "name": "Crear Asignación",
           "event": [
             {
               "listen": "test",
@@ -924,12 +782,6 @@
                 "exec": [
                   "pm.test(\"Status code is 201\", function () {",
                   "    pm.response.to.have.status(201);",
-                  "});",
-                  "pm.test(\"Check response fields\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.userId).to.eql(pm.collectionVariables.get(\"user_id\"));",
-                  "    pm.expect(jsonData.vehicleId).to.eql(pm.collectionVariables.get(\"vehicle_id\"));",
-                  "    pm.expect(jsonData.active).to.be.true;",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -942,6 +794,10 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
               }
             ],
             "body": {
@@ -963,89 +819,7 @@
           }
         },
         {
-          "name": "2. Intentar Re-asignar Vehículo A a Usuario A (409)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 409\", function () {",
-                  "    pm.response.to.have.status(409);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/asignacion/crear",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "crear"
-              ]
-            }
-          }
-        },
-        {
-          "name": "3. Intentar Asignar Vehículo A a Usuario B - Conflicto (409)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 409\", function () {",
-                  "    pm.response.to.have.status(409);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"userId\": \"{{other_user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/asignacion/crear",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "crear"
-              ]
-            }
-          }
-        },
-        {
-          "name": "4. Consultar Flota de Usuario A (200)",
+          "name": "Consultar Flota de Usuario A",
           "event": [
             {
               "listen": "test",
@@ -1053,15 +827,6 @@
                 "exec": [
                   "pm.test(\"Status code is 200\", function () {",
                   "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Check fleet size and details\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.be.an('array');",
-                  "    pm.expect(jsonData.length).to.be.at.least(1);",
-                  "    var item = jsonData.find(x => x.vehicleId === pm.collectionVariables.get(\"vehicle_id\"));",
-                  "    pm.expect(item).to.not.be.undefined;",
-                  "    pm.expect(item.type).to.eql(\"Automóvil\");",
-                  "    pm.expect(item.category).to.eql(\"Combustión\");",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -1070,6 +835,12 @@
           ],
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
             "url": {
               "raw": "http://localhost:9000/asignacion/propietario/{{user_id}}",
               "protocol": "http",
@@ -1086,370 +857,7 @@
           }
         },
         {
-          "name": "5. Desactivar Asignación (200)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Check active is false\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.active).to.be.false;",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"active\": false\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/asignacion/actualizar/{{user_id}}/{{vehicle_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "actualizar",
-                "{{user_id}}",
-                "{{vehicle_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "6. Asignar Vehículo A a Usuario B tras Desactivación (201)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"userId\": \"{{other_user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/asignacion/crear",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "crear"
-              ]
-            }
-          }
-        },
-        {
-          "name": "7. Intentar Reactivar Asignación de Usuario A con Vehículo en B (409)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 409\", function () {",
-                  "    pm.response.to.have.status(409);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"active\": true\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/asignacion/actualizar/{{user_id}}/{{vehicle_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "actualizar",
-                "{{user_id}}",
-                "{{vehicle_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "8. Asignar a Usuario Inexistente (400)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 400\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"userId\": \"00000000-0000-0000-0000-000000000000\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/asignacion/crear",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "crear"
-              ]
-            }
-          }
-        },
-        {
-          "name": "9. Asignar Vehículo Inexistente (400)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 400\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"vehicleId\": \"00000000-0000-0000-0000-000000000000\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/asignacion/crear",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "crear"
-              ]
-            }
-          }
-        },
-        {
-          "name": "10. Enviar UUID Inválido en la Creación (400)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 400\", function () {",
-                  "    pm.response.to.have.status(400);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"userId\": \"no-es-uuid\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/asignacion/crear",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "crear"
-              ]
-            }
-          }
-        },
-        {
-          "name": "11. Actualizar Asignación Inexistente (404)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 404\", function () {",
-                  "    pm.response.to.have.status(404);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"active\": false\n}"
-            },
-            "url": {
-              "raw": "http://localhost:9000/asignacion/actualizar/{{user_id}}/00000000-0000-0000-0000-000000000000",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "actualizar",
-                "{{user_id}}",
-                "00000000-0000-0000-0000-000000000000"
-              ]
-            }
-          }
-        },
-        {
-          "name": "12. Eliminar Asignación de Vehículo A con Usuario B (204)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 204\", function () {",
-                  "    pm.response.to.have.status(204);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "http://localhost:9000/asignacion/eliminar/{{other_user_id}}/{{vehicle_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "eliminar",
-                "{{other_user_id}}",
-                "{{vehicle_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "13. Eliminar Asignación ya Inexistente (404)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 404\", function () {",
-                  "    pm.response.to.have.status(404);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "http://localhost:9000/asignacion/eliminar/{{other_user_id}}/{{vehicle_id}}",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignacion",
-                "eliminar",
-                "{{other_user_id}}",
-                "{{vehicle_id}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "14. Validar Docs Swagger: Asignaciones",
+          "name": "Consultar Trazabilidad General",
           "event": [
             {
               "listen": "test",
@@ -1465,41 +873,12 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "http://localhost:9000/asignaciones/docs",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "9000",
-              "path": [
-                "asignaciones",
-                "docs"
-              ]
-            }
-          }
-        },
-        {
-          "name": "15. Consultar Trazabilidad General (200)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "pm.test(\"Check trazabilidad array\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData).to.be.an('array');",
-                  "});"
-                ],
-                "type": "text/javascript"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
               }
-            }
-          ],
-          "request": {
-            "method": "GET",
+            ],
             "url": {
               "raw": "http://localhost:9000/asignacion/trazabilidad",
               "protocol": "http",
@@ -1513,9 +892,14 @@
               ]
             }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "7. Perfil de Cliente (Requiere client_token)",
+      "item": [
         {
-          "name": "16. Consultar Trazabilidad por Vehículo (200)",
+          "name": "Ver Mis Datos",
           "event": [
             {
               "listen": "test",
@@ -1531,24 +915,74 @@
           ],
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
             "url": {
-              "raw": "http://localhost:9000/asignacion/trazabilidad/vehiculo/{{vehicle_id}}",
+              "raw": "http://localhost:9000/usuario/me",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "9000",
               "path": [
-                "asignacion",
-                "trazabilidad",
-                "vehiculo",
-                "{{vehicle_id}}"
+                "usuario",
+                "me"
               ]
             }
           }
         },
         {
-          "name": "17. Consultar Trazabilidad por Propietario (200)",
+          "name": "Actualizar Mis Datos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"person\": {\n    \"phone\": \"0988888888\",\n    \"address\": \"Nueva direccion del cliente, Quito\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/usuario/me/actualizar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "me",
+                "actualizar"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Consultar Mis Vehículos",
           "event": [
             {
               "listen": "test",
@@ -1564,18 +998,183 @@
           ],
           "request": {
             "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
             "url": {
-              "raw": "http://localhost:9000/asignacion/trazabilidad/propietario/{{user_id}}",
+              "raw": "http://localhost:9000/usuario/me/vehiculos",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
               "port": "9000",
               "path": [
-                "asignacion",
-                "trazabilidad",
-                "propietario",
-                "{{user_id}}"
+                "usuario",
+                "me",
+                "vehiculos"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Control de Acceso (RBAC & Seguridad)",
+      "item": [
+        {
+          "name": "Listar Usuarios sin Token (Debe dar 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9000/usuario/listar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "listar"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar Usuarios con Token de Cliente (Debe dar 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9000/usuario/listar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "listar"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Zona sin Token (Debe dar 401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Zona Bloqueada\",\n  \"description\": \"No debe permitirse\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 5\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/zona/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "zona",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Zona con Token de Cliente (Debe dar 403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Zona Bloqueada\",\n  \"description\": \"No debe permitirse\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 5\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/zona/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "zona",
+                "crear"
               ]
             }
           }
@@ -1584,6 +1183,16 @@
     }
   ],
   "variable": [
+    {
+      "key": "root_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "client_token",
+      "value": "",
+      "type": "string"
+    },
     {
       "key": "user_id",
       "value": "",
@@ -1600,12 +1209,7 @@
       "type": "string"
     },
     {
-      "key": "propietario_id",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "role_id",
+      "key": "other_vehicle_id",
       "value": "",
       "type": "string"
     },

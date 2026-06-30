@@ -26,6 +26,41 @@ cleanup_db() {
 # Ejecutar limpieza inicial
 cleanup_db
 
+# Función extractora de campos JSON simples
+extract_json_field() {
+  local json="$1"
+  local field="$2"
+  echo "$json" | sed -n 's/.*"'"$field"'":"\([^"]*\)".*/\1/p'
+}
+
+get_root_token() {
+  echo -e "\n${BOLD}Obteniendo token de Root para pruebas administrativas...${NC}"
+  local response=$(curl -s -X POST "$GATEWAY_URL/usuario/login" \
+    -H "Content-Type: application/json" \
+    -d '{"username": "root", "password": "rootpassword123"}')
+  ROOT_TOKEN=$(extract_json_field "$response" "access_token")
+  if [ -z "$ROOT_TOKEN" ]; then
+    echo -e "${RED}Error: No se pudo obtener el token de Root. Respuesta: $response${NC}"
+    exit 1
+  fi
+  echo -e "${GREEN}Token de Root obtenido exitosamente.${NC}"
+}
+
+get_client_token() {
+  echo -e "\n${BOLD}Obteniendo token de Cliente para pruebas de bajo privilegio...${NC}"
+  local response=$(curl -s -X POST "$GATEWAY_URL/usuario/login" \
+    -H "Content-Type: application/json" \
+    -d '{"username": "jcperez", "password": "miPasswordSeguro123"}')
+  CLIENT_TOKEN=$(extract_json_field "$response" "access_token")
+  if [ -z "$CLIENT_TOKEN" ]; then
+    echo -e "${RED}Error: No se pudo obtener el token del Cliente jcperez.${NC}"
+  else
+    echo -e "${GREEN}Token de Cliente obtenido exitosamente.${NC}"
+  fi
+}
+
+get_root_token
+
 # Inicializar arrays de reporte
 declare -a TEST_NAMES
 declare -a TEST_STATUSES
@@ -33,13 +68,6 @@ declare -a TEST_CODES
 declare -a TEST_DETAILS
 
 test_index=0
-
-# Función extractora de campos JSON simples
-extract_json_field() {
-  local json="$1"
-  local field="$2"
-  echo "$json" | sed -n 's/.*"'"$field"'":"\([^"]*\)".*/\1/p'
-}
 
 # Función principal para ejecutar casos de prueba
 run_test_case() {
@@ -49,6 +77,7 @@ run_test_case() {
   local body="$4"
   local expected_code="$5"
   local check_headers="$6"
+  local use_token="${7:-root}" # por defecto usa root si no se especifica
 
   echo -e "\n${BOLD}[Ejecutando] $name...${NC}"
   
@@ -62,6 +91,13 @@ run_test_case() {
     else
       curl_cmd+=(-H "Content-Type: application/json" -d "$body")
     fi
+  fi
+  
+  # Agregar cabecera de autorización si corresponde
+  if [ "$use_token" = "root" ]; then
+    curl_cmd+=(-H "Authorization: Bearer $ROOT_TOKEN")
+  elif [ "$use_token" = "client" ]; then
+    curl_cmd+=(-H "Authorization: Bearer $CLIENT_TOKEN")
   fi
   
   if [ "$check_headers" = "true" ]; then
@@ -153,9 +189,10 @@ run_test_case "Validar Conflicto de Rol Duplicado (409)" \
 
 # 5. Crear Usuario (DNI Ecuatoriano Válido)
 run_test_case "Crear Usuario con DNI Ecuatoriano Válido" \
-  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "test.usuario@example.com", "first_name": "Juan", "last_name": "Perez", "middle_name": "Carlos", "nationality": "Ecuatoriana", "phone": "0999999999", "address": "Av. de los Granados, Quito"}, "roles": ["Cliente"]}' 201 "false"
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "test.usuario@example.com", "first_name": "Juan", "last_name": "Perez", "middle_name": "Carlos", "nationality": "Ecuatoriana", "phone": "0999999999", "address": "Av. de los Granados, Quito"}, "roles": ["Cliente"]}' 201 "false" "none"
 USER_RESP=$(cat last_response.json)
 PROPIETARIO_ID=$(extract_json_field "$USER_RESP" "id_person")
+get_client_token
 
 # 6. Intentar crear Usuario con DNI Ecuatoriano Inválido (Error 422)
 run_test_case "Validar Error de Validación DNI Inválido (422)" \
@@ -210,31 +247,31 @@ rm -f large_file.json
 
 # 13. Ruta Inexistente (Gateway 404)
 run_test_case "Validar Ruta Inexistente en Pasarela (404)" \
-  "GET" "/ruta-que-no-existe-en-el-sistema" "" 404 "false"
+  "GET" "/ruta-que-no-existe-en-el-sistema" "" 404 "false" "none"
 
 # 14. Swagger Docs - Usuarios (FastAPI)
 run_test_case "Validar Acceso Swagger Docs: Usuarios" \
-  "GET" "/usuarios/docs" "" 200 "false"
+  "GET" "/usuarios/docs" "" 200 "false" "none"
 
 # 15. Swagger Docs - Vehículos (NestJS)
 run_test_case "Validar Acceso Swagger Docs: Vehículos" \
-  "GET" "/vehiculos/docs/" "" 200 "false"
+  "GET" "/vehiculos/docs/" "" 200 "false" "none"
 
 # 16. Swagger Docs - Zonas (Spring Boot)
 run_test_case "Validar Acceso Swagger Docs: Zonas" \
-  "GET" "/zonas/docs" "" 200 "false"
+  "GET" "/zonas/docs" "" 200 "false" "none"
 
 # 17. Intento de bypass de HTTP Method (HTTP 405 / 404)
 run_test_case "Intento de bypass de HTTP Method (HTTP 405 / 404)" \
-  "POST" "/usuario/listar" "" 404 "false"
+  "POST" "/usuario/listar" "" 404 "false" "none"
 
 # 18. Intento de SQL Injection en Campos de Texto (HTTP 422)
 run_test_case "Intento de SQL Injection en Campos de Texto (HTTP 422)" \
-  "POST" "/usuario/crear" '{"password": "supersecurepassword123", "person": {"dni": "1723456784", "email": "hacker@example.com", "first_name": "Juan ORDER BY", "last_name": "Perez; DROP TABLE users; --", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false"
+  "POST" "/usuario/crear" '{"password": "supersecurepassword123", "person": {"dni": "1723456784", "email": "hacker@example.com", "first_name": "Juan ORDER BY", "last_name": "Perez; DROP TABLE users; --", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false" "none"
 
 # 19. Espacios Inyectados en campos Críticos (HTTP 422)
 run_test_case "Espacios Inyectados en campos Críticos (HTTP 422)" \
-  "POST" "/usuario/crear" '{"password": "somepassword123", "person": {"dni": "1723 456789", "email": "test @example.com", "first_name": "Juan", "last_name": "Perez"}, "roles": ["Cliente"]}' 422 "false"
+  "POST" "/usuario/crear" '{"password": "somepassword123", "person": {"dni": "1723 456789", "email": "test @example.com", "first_name": "Juan", "last_name": "Perez"}, "roles": ["Cliente"]}' 422 "false" "none"
 
 # 20. Búsqueda sin Criterios de Filtro (HTTP 400)
 run_test_case "Búsqueda sin Criterios de Filtro (HTTP 400)" \
@@ -277,11 +314,11 @@ fi
 # 28. Ataque Bcrypt DoS con Contrasena Gigante (HTTP 422)
 GIANT_PWD=$(printf 'a%.0s' {1..100})
 run_test_case "Ataque Bcrypt DoS con Contrasena Gigante (HTTP 422)" \
-  "POST" "/usuario/crear" '{"password": "'"$GIANT_PWD"'", "person": {"dni": "1723456784", "email": "giant.pwd@example.com", "first_name": "Juan", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false"
+  "POST" "/usuario/crear" '{"password": "'"$GIANT_PWD"'", "person": {"dni": "1723456784", "email": "giant.pwd@example.com", "first_name": "Juan", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false" "none"
 
 # 29. Evasión de DNI con Provincia Inválida (HTTP 422)
 run_test_case "Evasion de DNI con Provincia Invalida (HTTP 422)" \
-  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "9923456784", "email": "dni.prov@example.com", "first_name": "Juan", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false"
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "9923456784", "email": "dni.prov@example.com", "first_name": "Juan", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false" "none"
 
 # 30. Desbordamiento Numérico en Atributos del Vehículo (HTTP 400)
 run_test_case "Desbordamiento Numerico en Atributos del Vehiculo (HTTP 400)" \
@@ -343,19 +380,19 @@ fi
 
 # 39. Usuario - Caracteres Inválidos en Primer Nombre (HTTP 422)
 run_test_case "Usuario: Caracteres Invalidos en Primer Nombre (HTTP 422)" \
-  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "invalid.char@example.com", "first_name": "Juan123", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false"
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "invalid.char@example.com", "first_name": "Juan123", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false" "none"
 
 # 40. Usuario - Caracteres Inválidos en Apellido (HTTP 422)
 run_test_case "Usuario: Caracteres Invalidos en Apellido (HTTP 422)" \
-  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "invalid.char2@example.com", "first_name": "Juan", "last_name": "Perez@", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false"
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "invalid.char2@example.com", "first_name": "Juan", "last_name": "Perez@", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false" "none"
 
 # 41. Usuario - Espacio en Primer Nombre (HTTP 422)
 run_test_case "Usuario: Espacio en Primer Nombre (HTTP 422)" \
-  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "space.name@example.com", "first_name": "Juan Carlos", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false"
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "space.name@example.com", "first_name": "Juan Carlos", "last_name": "Perez", "nationality": "Ecuatoriana"}, "roles": ["Cliente"]}' 422 "false" "none"
 
 # 42. Usuario - Espacio en Teléfono (HTTP 422)
 run_test_case "Usuario: Espacio en Telefono (HTTP 422)" \
-  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "space.phone@example.com", "first_name": "Juan", "last_name": "Perez", "nationality": "Ecuatoriana", "phone": "099 999 999"}, "roles": ["Cliente"]}' 422 "false"
+  "POST" "/usuario/crear" '{"password": "miPasswordSeguro123", "person": {"dni": "1723456784", "email": "space.phone@example.com", "first_name": "Juan", "last_name": "Perez", "nationality": "Ecuatoriana", "phone": "099 999 999"}, "roles": ["Cliente"]}' 422 "false" "none"
 
 # 43. Vehículo - Caracteres Inválidos en Marca (HTTP 400)
 run_test_case "Vehiculo: Caracteres Invalidos en Marca (HTTP 400)" \
@@ -380,6 +417,42 @@ run_test_case "Zona: Tipo de Zona con Espacio (HTTP 400)" \
 # 48. Espacio - Tipo de Espacio con Caracteres Inválidos (HTTP 400)
 run_test_case "Espacio: Tipo de Espacio con Caracteres Invalidos (HTTP 400)" \
   "POST" "/espacio/crear" '{"zoneId": "550e8400-e29b-41d4-a716-446655440000", "description": "Espacio Invalido", "type": "AUTO!", "estado": "DISPONIBLE"}' 400 "false"
+
+# ========================================================
+# NUEVOS CASOS DE PRUEBA: CONTROL DE ACCESO (RBAC)
+# ========================================================
+
+# 49. Acceder a Ruta Privada sin Token (Debe dar 401)
+run_test_case "Seguridad: Listar Usuarios sin Token (Debe dar 401)" \
+  "GET" "/usuario/listar" "" 401 "false" "none"
+
+# 50. Acceder a Ruta Privada con Token de Cliente (Debe dar 403)
+run_test_case "Seguridad: Listar Usuarios con Token de Cliente (Debe dar 403)" \
+  "GET" "/usuario/listar" "" 403 "false" "client"
+
+# 51. Invitado: Listar Zonas sin Token (Debe dar 200)
+run_test_case "Seguridad Invitado: Listar Zonas sin Token (Debe dar 200)" \
+  "GET" "/zona/listar" "" 200 "false" "none"
+
+# 52. Invitado: Listar Espacios sin Token (Debe dar 200)
+run_test_case "Seguridad Invitado: Listar Espacios sin Token (Debe dar 200)" \
+  "GET" "/espacio/listar" "" 200 "false" "none"
+
+# 53. Invitado: Intentar Crear Zona sin Token (Debe dar 401)
+run_test_case "Seguridad Invitado: Crear Zona sin Token (Debe dar 401)" \
+  "POST" "/zona/crear" '{"name": "Zona Bloqueada", "description": "No debe permitirse", "type": "REGULAR", "capacidad": 5}' 401 "false" "none"
+
+# 54. Cliente: Intentar Crear Zona con Token de Cliente (Debe dar 403)
+run_test_case "Seguridad Cliente: Crear Zona con Token de Cliente (Debe dar 403)" \
+  "POST" "/zona/crear" '{"name": "Zona Bloqueada", "description": "No debe permitirse", "type": "REGULAR", "capacidad": 5}' 403 "false" "client"
+
+# 55. Cliente: Ver Datos Personales Propios (Debe dar 200)
+run_test_case "Seguridad Cliente: Ver Mis Datos (Debe dar 200)" \
+  "GET" "/usuario/me" "" 200 "false" "client"
+
+# 56. Cliente: Ver Mis Vehículos (Debe dar 200)
+run_test_case "Seguridad Cliente: Ver Mis Vehículos (Debe dar 200)" \
+  "GET" "/usuario/me/vehiculos" "" 200 "false" "client"
 
 # ========================================================
 # IMPRESIÓN DEL REPORTE FINAL DETALLADO

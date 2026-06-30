@@ -6,12 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { VehicleService } from '../services/vehicle.service';
 import { CreateVehicleDto } from '../dto/create-vehicle.dto';
 import { UpdateVehicleDto } from '../dto/update-vehicle.dto';
+import { RolesGuard } from '../validators/roles.guard';
 
 @Controller('vehiculos')
+@UseGuards(RolesGuard)
 export class VehicleController {
   constructor(private readonly vehicleService: VehicleService) {}
 

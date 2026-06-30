@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -56,6 +56,19 @@ async def get_current_user(
         )
     return user
 
+def check_roles(allowed_roles: List[str]):
+    def dependency(current_user: User = Depends(get_current_user)):
+        user_roles = [ur.role.name for ur in current_user.user_roles if ur.active]
+        if "Root" in user_roles:
+            return current_user
+        if not any(role in user_roles for role in allowed_roles):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tiene permisos suficientes para realizar esta acción."
+            )
+        return current_user
+    return dependency
+
 @router.post("/login", response_model=TokenResponse)
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     # Búsqueda de usuario case-insensitive
@@ -91,21 +104,25 @@ def update_user_me(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Proteger roles: Solo administradores pueden cambiar roles.
-    # Si el usuario actual no es Administrador, ignoramos cualquier intento de cambiar roles.
-    is_admin = any(ur.role.name == "Administrador" for ur in current_user.user_roles if ur.active)
-    if not is_admin:
+    # Proteger roles: Solo administradores o root pueden cambiar roles.
+    user_roles = [ur.role.name for ur in current_user.user_roles if ur.active]
+    is_admin_or_root = "Administrador" in user_roles or "Root" in user_roles
+    if not is_admin_or_root:
         user_in.roles = None
 
     return UserService.update_user(db, str(current_user.id_person), user_in)
 
 @router.get("/me/vehiculos")
 def read_my_vehicles(
+    request: Request,
     current_user: User = Depends(get_current_user)
 ):
     url = f"{ASIGNACIONES_API_URL}/asignaciones/propietario/{current_user.id_person}"
     try:
         req = urllib.request.Request(url)
+        auth_header = request.headers.get("Authorization")
+        if auth_header:
+            req.add_header("Authorization", auth_header)
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode())
             return data

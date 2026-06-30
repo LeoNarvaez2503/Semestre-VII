@@ -9,15 +9,18 @@ import {
   UseInterceptors,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { AsignacionService } from '../services/asignacion.service';
 import { CreateAsignacionDto } from '../dto/create-asignacion.dto';
 import { UpdateAsignacionDto } from '../dto/update-asignacion.dto';
 import { AuditInterceptor } from '../interceptors/audit.interceptor';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { RolesGuard } from '../interceptors/roles.guard';
 
 @ApiTags('Asignaciones')
 @Controller('asignaciones')
+@UseGuards(RolesGuard)
 export class AsignacionController {
   constructor(private readonly asignacionService: AsignacionService) {}
 
