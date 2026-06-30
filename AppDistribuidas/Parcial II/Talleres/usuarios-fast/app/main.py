@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.database import engine, Base
-from app.routers import users, roles
+from app.core.database import engine, Base, SessionLocal
+from app.routers import users, roles, auth
 from app.models.person import Person
 from app.models.user import User
 from app.models.role import Role
@@ -9,6 +9,27 @@ from app.models.user_role import UserRole
 
 # Auto-creación de tablas (opcional pero muy útil para pruebas rápidas)
 Base.metadata.create_all(bind=engine)
+
+def seed_roles():
+    db = SessionLocal()
+    try:
+        default_roles = [
+            ("Cliente", "Rol asignado para los clientes del parqueadero."),
+            ("Administrador", "Rol con acceso total al sistema.")
+        ]
+        for role_name, description in default_roles:
+            role = db.query(Role).filter(Role.name == role_name).first()
+            if not role:
+                new_role = Role(name=role_name, description=description, active=True)
+                db.add(new_role)
+        db.commit()
+    except Exception as e:
+        print(f"Error seeding roles: {e}")
+        db.rollback()
+    finally:
+        db.close()
+
+seed_roles()
 
 app = FastAPI(
     title="API de Usuarios (FastAPI)",
@@ -30,6 +51,7 @@ app.add_middleware(
 # Incluir ruteadores
 app.include_router(users.router)
 app.include_router(roles.router)
+app.include_router(auth.router)
 
 @app.get("/", tags=["General"])
 def read_root():

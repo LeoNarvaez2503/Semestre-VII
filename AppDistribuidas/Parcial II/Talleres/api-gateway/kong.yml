@@ -11,11 +11,72 @@ plugins:
           - "X-XSS-Protection:1; mode=block"
           - "Content-Security-Policy:default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:;"
           - "Referrer-Policy:no-referrer"
+  - name: cors
+    enabled: true
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - Keep-Alive
+        - User-Agent
+        - X-Requested-With
+        - If-Modified-Since
+        - Cache-Control
+        - Content-Type
+        - Authorization
+      credentials: true
 
 services:
   - name: usuarios-service
     url: http://usuarios-api:8000
     routes:
+      - name: usuario-login
+        paths:
+          - /usuario/login
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/login
+      - name: usuario-me
+        paths:
+          - /usuario/me
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/me
+      - name: usuario-me-actualizar
+        paths:
+          - /usuario/me/actualizar
+        methods:
+          - PATCH
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/me/actualizar
+      - name: usuario-me-vehiculos
+        paths:
+          - /usuario/me/vehiculos
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/me/vehiculos
       - name: usuario-crear
         paths:
           - /usuario/crear

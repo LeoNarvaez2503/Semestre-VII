@@ -1030,4 +1030,91 @@ Este apartado detalla los escenarios específicos para validar el correcto funci
 * **Respuesta Esperada**:
   Verificar que las cabeceras `Server: kong` y `Via` estén totalmente ausentes de la respuesta. La cabecera `Server` pasará la del upstream correspondiente (por ejemplo: `Server: uvicorn` o `Server: Apache-Coyote`).
 
+---
+
+## 5. Casos de Prueba de Autenticación JWT y Perfil de Cliente
+
+Este apartado detalla los escenarios para validar la autenticación basada en JWT y el acceso seguro a los datos del cliente logueado.
+
+### 5.1 Login de Usuario (`POST /usuario/login`)
+
+#### **Caso Exitoso**
+* **URL**: `http://localhost:9000/usuario/login`
+* **Método**: `POST`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "username": "jcperez",
+    "password": "miPasswordSeguro123"
+  }
+  ```
+* **Respuesta Esperada**: `200 OK` con el token JWT:
+  ```json
+  {
+    "access_token": "eyJhbGciOiJIUzI1Ni...",
+    "token_type": "bearer"
+  }
+  ```
+
+#### **Error: Credenciales Incorrectas**
+* **URL**: `http://localhost:9000/usuario/login`
+* **Método**: `POST`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "username": "jcperez",
+    "password": "passwordIncorrecto"
+  }
+  ```
+* **Respuesta Esperada**: `401 Unauthorized` con el mensaje "Credenciales incorrectas o usuario inactivo.".
+
+---
+
+### 5.2 Ver Mis Datos Personales (`GET /usuario/me`)
+
+#### **Caso Exitoso (Con Token)**
+* **URL**: `http://localhost:9000/usuario/me`
+* **Método**: `GET`
+* **Headers**:
+  * `Authorization`: `Bearer PEGAR_TOKEN_AQUI`
+* **Respuesta Esperada**: `200 OK` retornando el JSON del usuario autenticado (incluyendo datos de persona y roles).
+
+#### **Error: Sin Token o Token Inválido**
+* **URL**: `http://localhost:9000/usuario/me`
+* **Método**: `GET`
+* **Headers**: Ninguno (o `Authorization: Bearer tokenInvalido`)
+* **Respuesta Esperada**: `401 Unauthorized`.
+
+---
+
+### 5.3 Actualizar Mis Datos Personales (`PATCH /usuario/me/actualizar`)
+
+#### **Caso Exitoso (Con Token)**
+* **URL**: `http://localhost:9000/usuario/me/actualizar`
+* **Método**: `PATCH`
+* **Headers**:
+  * `Authorization`: `Bearer PEGAR_TOKEN_AQUI`
+* **Cuerpo (JSON)**:
+  ```json
+  {
+    "person": {
+      "phone": "0988888888",
+      "address": "Nueva direccion del cliente, Quito"
+    }
+  }
+  ```
+* **Respuesta Esperada**: `200 OK` con el objeto del usuario y la información de la persona actualizada.
+
+---
+
+### 5.4 Consultar Mis Vehículos (`GET /usuario/me/vehiculos`)
+
+#### **Caso Exitoso (Con Token)**
+* **URL**: `http://localhost:9000/usuario/me/vehiculos`
+* **Método**: `GET`
+* **Headers**:
+  * `Authorization`: `Bearer PEGAR_TOKEN_AQUI`
+* **Respuesta Esperada**: `200 OK` con el arreglo de los vehículos asignados al cliente (consumiendo el servicio de asignación).
+
+
 
