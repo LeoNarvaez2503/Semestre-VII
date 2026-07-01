@@ -12,7 +12,7 @@ from app.core.database import get_db
 from app.models.user import User
 from app.schemas.user import UserResponse, UserUpdate
 from app.services.user_service import UserService, pwd_context
-from app.utils.jwt_helper import create_access_token, decode_access_token
+from app.utils.jwt_helper import create_access_token, decode_access_token, create_refresh_token, decode_refresh_token
 
 router = APIRouter(prefix="/usuarios", tags=["Autenticación y Perfil"])
 
@@ -26,7 +26,11 @@ class LoginRequest(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
@@ -92,7 +96,54 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
         "roles": roles
     }
     access_token = create_access_token(data=token_data)
-    return {"access_token": access_token, "token_type": "bearer"}
+    refresh_token = create_refresh_token(data={"sub": str(user.id_person)})
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }
+
+@router.post("/refresh", response_model=TokenResponse)
+def refresh(refresh_data: RefreshRequest, db: Session = Depends(get_db)):
+    payload = decode_refresh_token(refresh_data.refresh_token)
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token de refresco inválido o expirado.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="El token no contiene información de usuario.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+    user = db.query(User).filter(User.id_person == user_id, User.active == True).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario no encontrado o inactivo.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+    roles = [ur.role.name for ur in user.user_roles if ur.active]
+    token_data = {
+        "sub": str(user.id_person),
+        "username": user.username,
+        "roles": roles
+    }
+    
+    access_token = create_access_token(data=token_data)
+    new_refresh_token = create_refresh_token(data={"sub": str(user.id_person)})
+    
+    return {
+        "access_token": access_token,
+        "refresh_token": new_refresh_token,
+        "token_type": "bearer"
+    }
 
 @router.get("/me", response_model=UserResponse)
 def read_user_me(current_user: User = Depends(get_current_user)):

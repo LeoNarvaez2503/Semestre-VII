@@ -23,6 +23,9 @@
                   "    var jsonData = pm.response.json();",
                   "    pm.expect(jsonData.access_token).to.not.be.undefined;",
                   "    pm.collectionVariables.set(\"root_token\", jsonData.access_token);",
+                  "    if (jsonData.refresh_token) {",
+                  "        pm.collectionVariables.set(\"root_refresh_token\", jsonData.refresh_token);",
+                  "    }",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -69,6 +72,9 @@
                   "    var jsonData = pm.response.json();",
                   "    pm.expect(jsonData.access_token).to.not.be.undefined;",
                   "    pm.collectionVariables.set(\"client_token\", jsonData.access_token);",
+                  "    if (jsonData.refresh_token) {",
+                  "        pm.collectionVariables.set(\"client_refresh_token\", jsonData.refresh_token);",
+                  "    }",
                   "});"
                 ],
                 "type": "text/javascript"
@@ -97,6 +103,104 @@
               "path": [
                 "usuario",
                 "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token Root",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Root token refreshed\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.access_token).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"root_token\", jsonData.access_token);",
+                  "    if (jsonData.refresh_token) {",
+                  "        pm.collectionVariables.set(\"root_refresh_token\", jsonData.refresh_token);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{root_refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/usuario/refresh",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "refresh"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token Cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Client token refreshed\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.access_token).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"client_token\", jsonData.access_token);",
+                  "    if (jsonData.refresh_token) {",
+                  "        pm.collectionVariables.set(\"client_refresh_token\", jsonData.refresh_token);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{client_refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/usuario/refresh",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "refresh"
               ]
             }
           }
@@ -1189,7 +1293,17 @@
       "type": "string"
     },
     {
+      "key": "root_refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
       "key": "client_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "client_refresh_token",
       "value": "",
       "type": "string"
     },

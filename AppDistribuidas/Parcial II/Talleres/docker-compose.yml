@@ -165,10 +165,55 @@ services:
         condition: service_started
       asignacion-app:
         condition: service_started
+      tickets-api:
+        condition: service_started
+
+  # --- MICROSERVICIO: TICKETS ---
+  tickets-db:
+    image: postgres:15-alpine
+    container_name: tickets_db_unificado
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: tickets
+    ports:
+      - "5435:5432"
+    volumes:
+      - tickets_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tickets"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  tickets-api:
+    build:
+      context: ./tickets
+      dockerfile: Dockerfile
+    container_name: tickets_api_unificado
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://postgres:admin@tickets-db:5432/tickets
+      PORT: 8001
+      USUARIOS_API_URL: http://usuarios-api:8000
+      VEHICULOS_API_URL: http://vehiculos-app:3000
+      ZONAS_API_URL: http://zonas-app:8080
+      ASIGNACIONES_API_URL: http://asignacion-app:3001
+    depends_on:
+      tickets-db:
+        condition: service_healthy
+      usuarios-api:
+        condition: service_started
+      vehiculos-app:
+        condition: service_started
+      zonas-app:
+        condition: service_started
 
 volumes:
   usuarios_pgdata:
   vehiculos_pgdata:
   zonas_pgdata:
   asignaciones_pgdata:
+  tickets_pgdata:
 

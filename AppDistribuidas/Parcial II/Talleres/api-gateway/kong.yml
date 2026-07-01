@@ -47,6 +47,16 @@ services:
             config:
               replace:
                 uri: /usuarios/login
+      - name: usuario-refresh
+        paths:
+          - /usuario/refresh
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /usuarios/refresh
       - name: usuario-me
         paths:
           - /usuario/me
@@ -454,6 +464,47 @@ services:
           - /zonas/docs
           - /zonas/swagger-ui/
           - /zonas/openapi.json
+        methods:
+          - GET
+        strip_path: false
+
+  - name: tickets-service
+    url: http://tickets-api:8001
+    routes:
+      - name: ticket-crear
+        paths:
+          - /ticket/crear
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /tickets/crear
+      - name: ticket-buscar
+        paths:
+          - /ticket/buscar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /tickets/buscar
+      - name: ticket-pagar
+        paths:
+          - ~/ticket/pagar/([^/]+)$
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /tickets/$(uri_captures[1])/pagar
+      - name: tickets-docs
+        paths:
+          - /tickets/docs
+          - /tickets/openapi.json
         methods:
           - GET
         strip_path: false
