@@ -37,7 +37,7 @@ services:
       PORT: ${APP_PORT:-8080}
       ZONA_NAME: ${ZONA_NAME:-Zona Principal}
       ZONA_CODE: ${ZONA_CODE:-Z001}
-      ZONA_DESCRIPTION: ${ZONA_DESCRIPTION:-Zona creada desde docker-compose}
+      ZONA_DESCRIPTION: ${ZONA_DESCRIPTION:-Zona creada desde compose.yaml}
       ZONA_TYPE: ${ZONA_TYPE:-REGULAR}
     ports:
       - "${APP_PORT:-8080}:8080"

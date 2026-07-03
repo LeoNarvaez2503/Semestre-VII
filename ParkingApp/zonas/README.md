@@ -9,7 +9,7 @@ API REST para gestionar zonas y espacios de parqueadero.
 
 ## Ejecución con Docker
 
-> **Importante:** este proyecto usa variables de entorno en `docker-compose.yml`, pero `application.yaml` tiene la conexión fija a `localhost`. Para que funcione en Docker, **descomenta** estas líneas en `src/main/resources/application.yaml`:
+> **Importante:** este proyecto usa variables de entorno en `compose.yaml`, pero `application.yaml` tiene la conexión fija a `localhost`. Para que funcione en Docker, **descomenta** estas líneas en `src/main/resources/application.yaml`:
 >
 > ```yaml
 > #url: ${DB_URL:jdbc:postgresql://localhost:5432/zonas_db}
