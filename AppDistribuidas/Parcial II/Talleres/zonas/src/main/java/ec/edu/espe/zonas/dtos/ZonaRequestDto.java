@@ -30,5 +30,5 @@ public class ZonaRequestDto {
     @Enumerated(EnumType.STRING)
     @NotNull(message = "El tipo de zona es obligatorio")
     private TipoZona type;
-    private int capacidad;
+    private Integer capacidad;
 }

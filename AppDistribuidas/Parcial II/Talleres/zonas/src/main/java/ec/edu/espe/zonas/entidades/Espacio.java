@@ -2,6 +2,7 @@ package ec.edu.espe.zonas.entidades;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,7 +51,11 @@ public class Espacio {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_zona")
+    @JsonIgnore
     private Zona zone;
+
+    @Column(name = "vehiculo_id", nullable = true)
+    private UUID vehiculoId;
 
     @Column
     private LocalDateTime dateCreated;

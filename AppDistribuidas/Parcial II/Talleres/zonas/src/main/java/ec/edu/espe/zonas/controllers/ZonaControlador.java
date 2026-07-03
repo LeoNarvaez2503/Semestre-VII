@@ -25,12 +25,12 @@ public class ZonaControlador {
 
     private final ZonaServicio zonaServicio;
 
-    @GetMapping("/")
+    @GetMapping("/listar")
     public ResponseEntity<List<ZonaResponseDTO>> listarZonas() {
         return ResponseEntity.ok(zonaServicio.obtenerZonas());
     }
 
-    @PostMapping("/")
+    @PostMapping("/crear")
     public ResponseEntity<ZonaResponseDTO> crearZona(
         @Valid @RequestBody ZonaRequestDto request
     ) {
@@ -40,7 +40,7 @@ public class ZonaControlador {
         );
     }
 
-    @PutMapping("/{idZona}")
+    @PutMapping("/actualizar/{idZona}")
     public ResponseEntity<ZonaResponseDTO> actualizarZona(
         @PathVariable UUID idZona,
         @Valid @RequestBody ZonaRequestDto request
@@ -48,7 +48,7 @@ public class ZonaControlador {
         return ResponseEntity.ok(zonaServicio.actualizarZona(idZona, request));
     }
 
-    @DeleteMapping("/{idZona}")
+    @DeleteMapping("/eliminar/{idZona}")
     public ResponseEntity<Void> desactivarZona(@PathVariable UUID idZona) {
         zonaServicio.desactivarZona(idZona);
         return ResponseEntity.noContent().build();

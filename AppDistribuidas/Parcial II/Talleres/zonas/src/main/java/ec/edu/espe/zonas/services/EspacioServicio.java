@@ -12,7 +12,7 @@ public interface EspacioServicio {
     EspacioResponseDTO crearEspacio(EspacioRequestDTO dto);
     EspacioRequestDTO actualizaEspacio(EspacioRequestDTO dto);
     void eliminarEspacio(UUID idEspacio);
-    EspacioResponseDTO cambiarEstado(UUID idEspacio, EstadoEspacio estado);
+    EspacioResponseDTO cambiarEstado(UUID idEspacio, EstadoEspacio estado, UUID vehiculoId);
     List<EspacioResponseDTO> obtenerEspacioPorEstado(EstadoEspacio estado);
     List<EspacioResponseDTO> obtenerEspaciosPorZonaEstado(
         UUID idZona,

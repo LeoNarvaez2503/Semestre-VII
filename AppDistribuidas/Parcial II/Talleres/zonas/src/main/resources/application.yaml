@@ -1,14 +1,14 @@
 spring:
   application:
     name: zonas
+  mvc:
+    problemdetails:
+      enabled: true
 
   datasource:
-    #url: ${DB_URL:jdbc:postgresql://localhost:5432/zonas_db}
-    #username: ${DB_USERNAME:zonas_user}
-    #password: ${DB_PASSWORD:zonas_pass}
-    url: jdbc:postgresql://localhost:5432/zonas_db
-    username: postgres
-    password: 
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/zonas_db}
+    username: ${DB_USERNAME:zonas_user}
+    password: ${DB_PASSWORD:zonas_pass}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -19,5 +19,13 @@ spring:
         format_sql: true
     show-sql: true
 
+springdoc:
+  swagger-ui:
+    path: /zonas/docs
+  api-docs:
+    path: /zonas/openapi.json
+
 server:
   port: ${PORT:8080}
+  error:
+    include-message: always
