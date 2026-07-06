@@ -1,0 +1,782 @@
+{
+  "info": {
+    "_postman_id": "0d52ec00-c97a-4284-9fb6-3a7e583b27b5",
+    "name": "Flujos Validación Tickets (ParkingApp) Completo",
+    "description": "Colección exhaustiva para validar flujos de negocio, casos borde, seguridad y ciclo de vida de los tickets.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Preparación",
+      "item": [
+        {
+          "name": "Login Root",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"root_token\", jsonData.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"root\",\n  \"password\": \"rootpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuario/login",
+              "host": ["{{base_url}}"],
+              "path": ["usuario", "login"]
+            }
+          }
+        },
+        {
+          "name": "Crear Rol Empleado (Opcional)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Empleado\",\n  \"description\": \"Rol Empleado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/rol/crear",
+              "host": ["{{base_url}}"],
+              "path": ["rol", "crear"]
+            }
+          }
+        },
+        {
+          "name": "Crear Empleado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"emp_user_id\", jsonData.id_person);",
+                  "pm.environment.set(\"emp_username\", jsonData.username);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"miPasswordSeguro123\",\n  \"person\": {\n    \"dni\": \"1723456784\",\n    \"email\": \"empleado.test@example.com\",\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Llumigusin\",\n    \"middle_name\": \"Carlos\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0987654321\",\n    \"address\": \"Quito\"\n  },\n  \"roles\": [\"Empleado\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuario/crear",
+              "host": ["{{base_url}}"],
+              "path": ["usuario", "crear"]
+            }
+          }
+        },
+        {
+          "name": "Login Empleado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"emp_token\", jsonData.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{emp_username}}\",\n  \"password\": \"miPasswordSeguro123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuario/login",
+              "host": ["{{base_url}}"],
+              "path": ["usuario", "login"]
+            }
+          }
+        },
+        {
+          "name": "Crear Vehículo Principal (Auto)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"auto_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Auto\",\n  \"data\": {\n    \"plate\": \"EMP1234\",\n    \"brand\": \"Chevrolet\",\n    \"model\": \"Aveo\",\n    \"color\": \"Blanco\",\n    \"year\": 2019,\n    \"classification\": \"Gasolina\",\n    \"doors\": 4,\n    \"trunkCapacity\": 300,\n    \"fuelType\": \"Gasolina\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/vehiculo/crear",
+              "host": ["{{base_url}}"],
+              "path": ["vehiculo", "crear"]
+            }
+          }
+        },
+        {
+          "name": "Crear Vehículo Extra (No asignado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"extra_auto_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Auto\",\n  \"data\": {\n    \"plate\": \"EXT9999\",\n    \"brand\": \"Ford\",\n    \"model\": \"Fiesta\",\n    \"color\": \"Rojo\",\n    \"year\": 2020,\n    \"classification\": \"Gasolina\",\n    \"doors\": 4,\n    \"trunkCapacity\": 300,\n    \"fuelType\": \"Gasolina\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/vehiculo/crear",
+              "host": ["{{base_url}}"],
+              "path": ["vehiculo", "crear"]
+            }
+          }
+        },
+        {
+          "name": "Asignar Vehículo Principal a Empleado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{emp_user_id}}\",\n  \"vehicleId\": \"{{auto_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/asignacion/crear",
+              "host": ["{{base_url}}"],
+              "path": ["asignacion", "crear"]
+            }
+          }
+        },
+        {
+          "name": "Crear Zona Empleados",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"zone_id\", jsonData.zoneId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Zona Empleados Prueba\",\n  \"description\": \"Zona PM\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/zona/crear",
+              "host": ["{{base_url}}"],
+              "path": ["zona", "crear"]
+            }
+          }
+        },
+        {
+          "name": "Crear Espacio Auto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"space_auto_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zoneId\": \"{{zone_id}}\",\n  \"description\": \"Espacio Auto PM\",\n  \"type\": \"AUTO\",\n  \"estado\": \"DISPONIBLE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/espacio/crear",
+              "host": ["{{base_url}}"],
+              "path": ["espacio", "crear"]
+            }
+          }
+        },
+        {
+          "name": "Crear Espacio Moto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"space_moto_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zoneId\": \"{{zone_id}}\",\n  \"description\": \"Espacio Moto PM\",\n  \"type\": \"MOTO\",\n  \"estado\": \"DISPONIBLE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/espacio/crear",
+              "host": ["{{base_url}}"],
+              "path": ["espacio", "crear"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Validaciones Cruzadas",
+      "item": [
+        {
+          "name": "Buscar Usuario por DNI",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usuario/buscar?dni=1723456784",
+              "host": ["{{base_url}}"],
+              "path": ["usuario", "buscar"],
+              "query": [
+                {
+                  "key": "dni",
+                  "value": "1723456784"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar Usuario por DNI Falso (Caso Borde)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usuario/buscar?dni=9999999999",
+              "host": ["{{base_url}}"],
+              "path": ["usuario", "buscar"],
+              "query": [
+                {
+                  "key": "dni",
+                  "value": "9999999999"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar Vehículo por Placa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/vehiculo/buscar?placa=EMP1234",
+              "host": ["{{base_url}}"],
+              "path": ["vehiculo", "buscar"],
+              "query": [
+                {
+                  "key": "placa",
+                  "value": "EMP1234"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Emisión de Tickets y Errores",
+      "item": [
+        {
+          "name": "1. Emitir Ticket Valido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set(\"ticket_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{space_auto_id}}\",\n  \"id_vehiculo\": \"{{auto_id}}\",\n  \"id_usuario\": \"{{emp_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ticket/crear",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "crear"]
+            }
+          }
+        },
+        {
+          "name": "2. Emitir Ticket Duplicado (Error 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{space_auto_id}}\",\n  \"id_vehiculo\": \"{{auto_id}}\",\n  \"id_usuario\": \"{{emp_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ticket/crear",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "crear"]
+            }
+          }
+        },
+        {
+          "name": "3. Incompatibilidad Moto en Auto (Error 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{space_moto_id}}\",\n  \"id_vehiculo\": \"{{auto_id}}\",\n  \"id_usuario\": \"{{emp_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ticket/crear",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "crear"]
+            }
+          }
+        },
+        {
+          "name": "4. Vehículo No Asignado al Empleado (Error 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{space_auto_id}}\",\n  \"id_vehiculo\": \"{{extra_auto_id}}\",\n  \"id_usuario\": \"{{emp_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ticket/crear",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "crear"]
+            }
+          }
+        },
+        {
+          "name": "5. Espacio Falso UUID (Error 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"00000000-0000-0000-0000-000000000000\",\n  \"id_vehiculo\": \"{{auto_id}}\",\n  \"id_usuario\": \"{{emp_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ticket/crear",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "crear"]
+            }
+          }
+        },
+        {
+          "name": "6. Espacio en Mantenimiento (1. Cambiar estado)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/espacio/estado/{{space_moto_id}}/estado/MANTENIMIENTO",
+              "host": ["{{base_url}}"],
+              "path": ["espacio", "estado", "{{space_moto_id}}", "estado", "MANTENIMIENTO"]
+            }
+          }
+        },
+        {
+          "name": "7. Espacio en Mantenimiento (2. Emitir Error)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{space_moto_id}}\",\n  \"id_vehiculo\": \"{{auto_id}}\",\n  \"id_usuario\": \"{{emp_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ticket/crear",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "crear"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Flujo Post-Pago y Seguridad",
+      "item": [
+        {
+          "name": "1. Pagar Ticket Activo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ticket/pagar/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "pagar", "{{ticket_id}}"]
+            }
+          }
+        },
+        {
+          "name": "2. Pagar Ticket Doble (Error 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/ticket/pagar/{{ticket_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "pagar", "{{ticket_id}}"]
+            }
+          }
+        },
+        {
+          "name": "3. Validar Espacio Liberado Tras Pago",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/espacio/obtener/{{space_auto_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["espacio", "obtener", "{{space_auto_id}}"]
+            },
+            "description": "Debe retornar el espacio en estado DISPONIBLE tras haber pagado."
+          }
+        },
+        {
+          "name": "4. Re-Emitir Ticket Tras Pago (Éxito)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{space_auto_id}}\",\n  \"id_vehiculo\": \"{{auto_id}}\",\n  \"id_usuario\": \"{{emp_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ticket/crear",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "crear"]
+            },
+            "description": "Como el ticket anterior ya se cerró, el usuario debe poder parquear de nuevo libremente."
+          }
+        },
+        {
+          "name": "Seguridad: Petición Sin Token (Error 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{space_auto_id}}\",\n  \"id_vehiculo\": \"{{auto_id}}\",\n  \"id_usuario\": \"{{emp_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ticket/crear",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "crear"]
+            }
+          }
+        },
+        {
+          "name": "Seguridad: Empleado intentando crear Zona (Error 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hack Zona\",\n  \"description\": \"Zona PM\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/zona/crear",
+              "host": ["{{base_url}}"],
+              "path": ["zona", "crear"]
+            },
+            "description": "Solo Administradores deberían poder crear zonas."
+          }
+        },
+        {
+          "name": "Formato: Crear Usuario con DNI Inválido (Error 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"pwd\",\n  \"person\": {\n    \"dni\": \"123\", \n    \"email\": \"bademail\",\n    \"first_name\": \"J\",\n    \"last_name\": \"L\",\n    \"nationality\": \"E\",\n    \"phone\": \"098\",\n    \"address\": \"Q\"\n  },\n  \"roles\": [\"Empleado\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuario/crear",
+              "host": ["{{base_url}}"],
+              "path": ["usuario", "crear"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:9000",
+      "type": "string"
+    }
+  ]
+}

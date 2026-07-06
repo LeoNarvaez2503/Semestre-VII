@@ -228,6 +228,16 @@ services:
             config:
               replace:
                 uri: /vehiculos/crear
+      - name: vehiculo-buscar
+        paths:
+          - /vehiculo/buscar
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /vehiculos/buscar
       - name: vehiculo-listar
         paths:
           - /vehiculo/listar

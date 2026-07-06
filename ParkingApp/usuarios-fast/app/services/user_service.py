@@ -31,9 +31,9 @@ class UserService:
         return db.query(User).filter(User.active == True).all()
 
     @staticmethod
-    def search_users(db: Session, username: Optional[str] = None, apellido: Optional[str] = None) -> list[User]:
-        if not username and not apellido:
-            raise HTTPException(status_code=400, detail="Debe proporcionar al menos un parámetro de búsqueda: 'username' o 'apellido'.")
+    def search_users(db: Session, username: Optional[str] = None, apellido: Optional[str] = None, dni: Optional[str] = None) -> list[User]:
+        if not username and not apellido and not dni:
+            raise HTTPException(status_code=400, detail="Debe proporcionar al menos un parámetro de búsqueda: 'username', 'apellido' o 'dni'.")
         
         query = db.query(User).join(Person).filter(User.active == True)
         
@@ -41,6 +41,8 @@ class UserService:
             query = query.filter(func.lower(User.username) == username.strip().lower())
         if apellido:
             query = query.filter(Person.last_name.ilike(f"%{apellido.strip()}%"))
+        if dni:
+            query = query.filter(Person.dni == dni.strip())
             
         return query.all()
 

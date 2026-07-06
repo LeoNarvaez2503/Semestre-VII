@@ -49,10 +49,11 @@ def get_users(db: Session = Depends(get_db), current_user: User = Depends(check_
 def search_users(
     username: Optional[str] = None,
     apellido: Optional[str] = None,
+    dni: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(check_roles(["Administrador", "Root"]))
 ):
-    return UserService.search_users(db, username=username, apellido=apellido)
+    return UserService.search_users(db, username=username, apellido=apellido, dni=dni)
 
 @router.get("/obtener/{id}", response_model=UserResponse)
 def get_user_by_id(id: UUID, db: Session = Depends(get_db), current_user: User = Depends(check_roles(["Administrador", "Root"]))):

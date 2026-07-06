@@ -12,6 +12,7 @@ import { VehicleService } from '../services/vehicle.service';
 import { CreateVehicleDto } from '../dto/create-vehicle.dto';
 import { UpdateVehicleDto } from '../dto/update-vehicle.dto';
 import { RolesGuard } from '../validators/roles.guard';
+import { Query } from '@nestjs/common';
 
 @Controller('vehiculos')
 @UseGuards(RolesGuard)
@@ -36,6 +37,11 @@ export class VehicleController {
   @Get('listar')
   findAll() {
     return this.vehicleService.findAll();
+  }
+
+  @Get('buscar')
+  findByPlate(@Query('placa') placa: string) {
+    return this.vehicleService.findByPlate(placa);
   }
 
   @Get('obtener/:id')

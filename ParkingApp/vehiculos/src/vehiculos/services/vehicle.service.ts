@@ -31,6 +31,17 @@ export class VehicleService {
     return this.vehicleRepository.find();
   }
 
+  async findByPlate(plate: string): Promise<Vehicle[]> {
+    if (!plate) {
+      throw new BadRequestException('Debe proporcionar una placa para buscar.');
+    }
+    return this.vehicleRepository.find({
+      where: {
+        plate: ILike(`%${plate}%`),
+      },
+    });
+  }
+
   async findOne(id: string): Promise<Vehicle> {
     const vehicle = await this.vehicleRepository.findOne({
       where: { id },
