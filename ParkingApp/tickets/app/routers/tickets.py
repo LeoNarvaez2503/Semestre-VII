@@ -9,7 +9,7 @@ from uuid import UUID
 from app.core.database import get_db
 from app.core.config import settings
 from app.models.ticket import Ticket
-from app.schemas.ticket import TicketCreate, TicketResponse
+from app.schemas.ticket import TicketCreate, TicketResponse, TicketExpressCreate
 
 router = APIRouter(prefix="/tickets", tags=["Gestión de Tickets"])
 
@@ -96,7 +96,7 @@ def generate_internal_token() -> str:
     
     header = {"alg": "HS256", "typ": "JWT"}
     payload = {
-        "sub": "tickets-service",
+        "sub": "00000000-0000-0000-0000-000000000000",
         "username": "tickets-service",
         "roles": ["Root"],
         "exp": int(time.time()) + 60,
@@ -132,6 +132,93 @@ def update_space_status(space_id: UUID, state: str, vehicle_id: Optional[UUID] =
         return response.status_code == 200
     except Exception:
         return False
+
+def get_or_create_user(dni: str) -> UUID:
+    token = generate_internal_token()
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    search_url = f"{settings.USUARIOS_API_URL}/usuarios/buscar?dni={dni}"
+    try:
+        resp = requests.get(search_url, headers=headers, timeout=5)
+        if resp.status_code == 200 and resp.json():
+            return UUID(resp.json()[0]["id_person"])
+    except Exception:
+        pass
+        
+    create_url = f"{settings.USUARIOS_API_URL}/usuarios/crear"
+    payload = {
+        "password": "invitado123",
+        "person": {
+            "dni": dni,
+            "email": f"invitado_{dni}@parking.com",
+            "first_name": "Invitado",
+            "last_name": "Parking",
+            "nationality": "Desconocida",
+            "phone": "0000000000",
+            "address": "Express"
+        },
+        "roles": ["Cliente"]
+    }
+    # Create public user without token
+    resp = requests.post(create_url, json=payload, timeout=5)
+    if resp.status_code == 201:
+        return UUID(resp.json()["id_person"])
+    
+    # Si falla, intentar ver por que falló (DEBUG)
+    raise HTTPException(status_code=500, detail=f"No se pudo crear el usuario express. Detalle: {resp.text}")
+
+def get_or_create_vehicle(placa: str) -> UUID:
+    token = generate_internal_token()
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    search_url = f"{settings.VEHICULOS_API_URL}/vehiculos/buscar?placa={placa}"
+    try:
+        resp = requests.get(search_url, headers=headers, timeout=5)
+        if resp.status_code == 200 and resp.json():
+            return UUID(resp.json()[0]["id"])
+    except Exception:
+        pass
+        
+    create_url = f"{settings.VEHICULOS_API_URL}/vehiculos/crear"
+    payload = {
+        "type": "Auto",
+        "data": {
+            "plate": placa,
+            "brand": "Invitado",
+            "model": "Generico",
+            "color": "Gris",
+            "year": 2000,
+            "classification": "Gasolina",
+            "doors": 4,
+            "trunkCapacity": 300,
+            "fuelType": "Gasolina"
+        }
+    }
+    resp = requests.post(create_url, json=payload, headers=headers, timeout=5)
+    if resp.status_code == 201:
+        return UUID(resp.json()["id"])
+    raise HTTPException(status_code=500, detail="No se pudo crear el vehículo express.")
+
+def ensure_assignment(user_id: UUID, vehicle_id: UUID):
+    token = generate_internal_token()
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    url_fleet = f"{settings.ASIGNACIONES_API_URL}/asignaciones/propietario/{user_id}"
+    try:
+        resp = requests.get(url_fleet, headers=headers, timeout=5)
+        if resp.status_code == 200:
+            fleet = resp.json()
+            if any(v.get("vehicleId") == str(vehicle_id) for v in fleet):
+                return
+    except Exception:
+        pass
+        
+    create_url = f"{settings.ASIGNACIONES_API_URL}/asignaciones"
+    payload = {
+        "userId": str(user_id),
+        "vehicleId": str(vehicle_id)
+    }
+    requests.post(create_url, json=payload, headers=headers, timeout=5)
 
 # Endpoints
 @router.post("/crear", response_model=TicketResponse, status_code=status.HTTP_201_CREATED)
@@ -317,3 +404,21 @@ def pagar_ticket(id_ticket: UUID, db: Session = Depends(get_db)):
         pass
 
     return ticket
+
+@router.post("/express", response_model=TicketResponse, status_code=status.HTTP_201_CREATED)
+def crear_ticket_express(ticket_express: TicketExpressCreate, db: Session = Depends(get_db)):
+    """Flujo Express para clientes invitados (sin cuenta)"""
+    # 1. Obtener/Crear usuario
+    user_id = get_or_create_user(ticket_express.dni)
+    # 2. Obtener/Crear vehículo
+    vehicle_id = get_or_create_vehicle(ticket_express.placa)
+    # 3. Asegurar asignación
+    ensure_assignment(user_id, vehicle_id)
+    
+    # 4. Crear Ticket usando el flujo normal
+    ticket_in = TicketCreate(
+        id_usuario=user_id,
+        id_vehiculo=vehicle_id,
+        id_espacio=ticket_express.id_espacio
+    )
+    return crear_ticket(ticket_in, db)

@@ -6,11 +6,11 @@ import time
 
 def clean_db():
     print("Limpiando base de datos...")
-    os.system('docker exec -i tickets_db_unificado psql -U postgres -d tickets -c "DELETE FROM tickets;"')
+    os.system('docker exec -i tickets_db_unificado psql -U admin -d tickets_db -c "DELETE FROM tickets;"')
     os.system('docker exec -i asignaciones_db_unificado psql -U admin -d asignaciones_db -c "DELETE FROM asignaciones;"')
-    os.system('docker exec -i vehiculos_db_unificado psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN (\'EMP1234\', \'EXT9999\');"')
-    os.system('docker exec -i zonas_db_unificado psql -U zonas_user -d zonas_db -c "DELETE FROM espacios WHERE description IN (\'Espacio de auto para empleado\', \'Espacio de moto\'); DELETE FROM zonas WHERE name = \'Zona Empleados\';"')
-    os.system('docker exec -i usuarios_db_unificado psql -U postgres -d usuarios -c "DELETE FROM persons WHERE email = \'empleado.test@example.com\';"')
+    os.system('docker exec -i vehiculos_db_unificado psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN (\'EMP1234\', \'EXT9999\', \'EXP1234\');"')
+    os.system('docker exec -i zonas_db_unificado psql -U zonas_user -d zonas_db -c "DELETE FROM espacios; DELETE FROM zonas;"')
+    os.system('docker exec -i usuarios_db_unificado psql -U postgres -d usuarios -c "DELETE FROM persons WHERE email IN (\'empleado.test@example.com\', \'invitado_1710034065@parking.com\');"')
     print("Limpieza completada.")
 
 def request(url, method="GET", body=None, token=None):
@@ -178,17 +178,18 @@ def run_tests():
     zone_id = zone_create.get("zoneId")
     
     status_code, space_auto = request("http://localhost:9000/espacio/crear", "POST", {
-      "zoneId": zone_id,
-      "description": "Espacio de auto para empleado",
+      "zoneId": str(zone_id),
+      "description": "Espacio de prueba EMP1234",
       "type": "AUTO",
       "estado": "DISPONIBLE"
     }, token=root_token)
+    print(f"Crear Espacio Auto: status={status_code}, response={space_auto}")
     space_id = space_auto.get("id")
     
     # Crear espacio de moto para probar incompatibilidad
     status_code, space_moto = request("http://localhost:9000/espacio/crear", "POST", {
-      "zoneId": zone_id,
-      "description": "Espacio de moto",
+      "zoneId": str(zone_id),
+      "description": "Espacio de moto EMP1234",
       "type": "MOTO",
       "estado": "DISPONIBLE"
     }, token=root_token)
@@ -307,6 +308,28 @@ def run_tests():
     }
     status_code, ticket_maint = request("http://localhost:9000/ticket/crear", "POST", maint_body, token=emp_token)
     print(f"Crear Ticket en Mantenimiento (Esperado: 400): status={status_code}, response={ticket_maint}")
+    
+    # 17. Registro Express
+    print("\n--- PRUEBA TICKET EXPRESS ---")
+    status_code, revert_maint = request(f"http://localhost:9000/espacio/estado/{space_id}/estado/DISPONIBLE", "PUT", token=root_token)
+    # Pagar el ticket anterior para liberar el espacio
+    if ticket_create and ticket_create.get('id_ticket'):
+        status_code, response = request(f"http://localhost:9000/ticket/pagar/{ticket_create['id_ticket']}", "POST", token=emp_token)
+        print(f"Liberando espacio (Pagando ticket activo)... status={status_code}")
+
+    print("Usando el espacio principal que ya esta disponible...")
+    
+    express_body = {
+        "dni": "1710034065",
+        "placa": "EXP1234",
+        "id_espacio": space_id
+    }
+    status_code, ticket_express = request("http://localhost:9000/ticket/express", "POST", express_body, token=emp_token)
+    print(f"Crear Ticket Express (Esperado: 201): status={status_code}")
+    if status_code == 201:
+        print(f"   - Ticket Express generado correctamente: {ticket_express.get('codigo_ticket')}")
+    else:
+        print(f"   - Error: {ticket_express}")
     
     print("\n--- FIN DE LAS PRUEBAS ---")
 

@@ -465,6 +465,31 @@
           }
         },
         {
+          "name": "1.5. Emitir Ticket Express (Invitado)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{emp_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dni\": \"1710034065\",\n  \"placa\": \"EXP1234\",\n  \"id_espacio\": \"{{space_auto_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ticket/express",
+              "host": ["{{base_url}}"],
+              "path": ["ticket", "express"]
+            }
+          }
+        },
+        {
           "name": "2. Emitir Ticket Duplicado (Error 400)",
           "request": {
             "method": "POST",

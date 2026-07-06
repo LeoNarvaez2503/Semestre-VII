@@ -14,8 +14,13 @@ Se añadieron capacidades de validación cruzada para cumplir con las reglas de 
    - Se creó el nuevo endpoint `GET /vehiculos/buscar?placa={placa}` (implementado en NestJS mediante el método `findByPlate` utilizando consultas `ILike` para mayor robustez).
    - Permite consultar la existencia de un vehículo registrado usando su placa.
 
-3. **API Gateway (Kong)**:
+3. **Microservicio de Tickets (`tickets`)**:
+   - Se implementó un flujo de **Registro Express para Invitados** (`POST /tickets/express`).
+   - Sigue el patrón Orquestador: Permite ingresar con un DNI y Placa y automáticamente crear al usuario (como Cliente) y al vehículo en la base de datos respectiva de manera síncrona si no existen, emitiendo el ticket inmediatamente.
+
+4. **API Gateway (Kong)**:
    - Se modificó la configuración de enrutamiento (`kong.yml`) para exponer públicamente la ruta `/vehiculo/buscar` que conecta con el microservicio correspondiente.
+   - Se agregó la ruta `/ticket/express` para acceder al flujo de registro de invitados.
 
 ## 🧪 Pruebas y Validación (QA)
 
@@ -25,11 +30,12 @@ Para garantizar la integridad y seguridad del sistema, se agregó una suite comp
 - Archivo: `verify_validation_flow.py`
 - Prueba el ciclo de vida completo: Creación de usuarios (rol Empleado), creación de zonas y vehículos, asignación, y **emisión de tickets**.
 - **Casos Borde Controlados:** Valida que el sistema rechace tickets duplicados (mismo vehículo), incompatibilidad de espacio (ej. Auto en espacio de Moto), vehículos no asignados y espacios en estado de mantenimiento.
+- **Flujo Express:** Valida la correcta creación de usuarios temporales, liberación de espacios (pagar tickets previos) y la generación del ticket express con código de zona.
 
 ### 2. Colección de Postman
 - Archivo: `Flujos_Validacion_Tickets.postman_collection.json`
 - Contiene una batería con variables de entorno automáticas listas para ser consumidas.
-- **Flujos incluidos:** Preparación de datos, Validaciones cruzadas de Placa/Cédula, Emisión de tickets y Flujo Post-Pago (dobles cobros y liberación de espacios), además de Pruebas de Seguridad (ataques sin token o de permisos insuficientes).
+- **Flujos incluidos:** Preparación de datos, Validaciones cruzadas de Placa/Cédula, Emisión de tickets (incluido flujo **Express para Invitados**) y Flujo Post-Pago (dobles cobros y liberación de espacios), además de Pruebas de Seguridad (ataques sin token o de permisos insuficientes).
 
 ## 🛠️ Cómo Probar Localmente
 

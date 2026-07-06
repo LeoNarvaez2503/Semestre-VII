@@ -491,6 +491,16 @@ services:
             config:
               replace:
                 uri: /tickets/crear
+      - name: ticket-express
+        paths:
+          - /ticket/express
+        methods:
+          - POST
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /tickets/express
       - name: ticket-buscar
         paths:
           - /ticket/buscar

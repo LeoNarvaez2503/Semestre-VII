@@ -20,3 +20,8 @@ class TicketResponse(BaseModel):
     valor_recaudado: float
 
     model_config = ConfigDict(from_attributes=True)
+
+class TicketExpressCreate(BaseModel):
+    dni: str
+    placa: str
+    id_espacio: UUID
