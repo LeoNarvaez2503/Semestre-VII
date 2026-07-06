@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from app.utils.exceptions import EntityNotFoundException, EntityAlreadyExistsException
 from app.models.role import Role
 from app.models.user_role import UserRole
@@ -19,10 +20,10 @@ class RoleService:
     @staticmethod
     def create_role(db: Session, role_in: RoleCreate) -> Role:
         # Validar si el rol con ese nombre ya existe
-        existing_role = db.query(Role).filter(Role.name == role_in.name).first()
+        existing_role = db.query(Role).filter(func.lower(Role.name) == role_in.name.lower()).first()
         if existing_role:
             if existing_role.active:
-                raise EntityAlreadyExistsException(f"El rol con nombre '{role_in.name}' ya está registrado.")
+                raise EntityAlreadyExistsException(f"El rol con nombre '{role_in.name.lower()}' ya está registrado.")
             else:
                 # Si existía inactivo, lo reactivamos y actualizamos la descripción
                 existing_role.active = True
