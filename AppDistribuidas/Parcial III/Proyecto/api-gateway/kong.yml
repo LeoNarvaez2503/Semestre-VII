@@ -481,6 +481,16 @@ services:
             config:
               replace:
                 uri: /tickets/crear
+      - name: ticket-listar-todos
+        paths:
+          - /ticket/listar-todos
+        methods:
+          - GET
+        plugins:
+          - name: request-transformer
+            config:
+              replace:
+                uri: /tickets/listar-todos
       - name: ticket-buscar
         paths:
           - /ticket/buscar

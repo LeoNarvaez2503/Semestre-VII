@@ -748,6 +748,43 @@
           }
         },
         {
+          "name": "Listar Todos los Tickets",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9000/ticket/listar-todos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "ticket",
+                "listar-todos"
+              ]
+            }
+          }
+        },
+        {
           "name": "Pagar Ticket",
           "event": [
             {

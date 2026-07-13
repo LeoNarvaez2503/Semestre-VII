@@ -27,6 +27,13 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:admin@usuarios-db:5432/usuarios
       PORT: 8000
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_EXCHANGE: audit_exchange
+      RABBITMQ_QUEUE: audit_queue
+      RABBITMQ_ROUTING_KEY: audit.#
     depends_on:
       usuarios-db:
         condition: service_healthy
@@ -63,6 +70,13 @@ services:
       DB_USUARIO: admin
       DB_CONTRASENA: adminpassword
       DB_NOMBRE: vehiculos_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_EXCHANGE: audit_exchange
+      RABBITMQ_QUEUE: audit_queue
+      RABBITMQ_ROUTING_KEY: audit.#
     depends_on:
       vehiculos-db:
         condition: service_healthy
@@ -101,6 +115,13 @@ services:
       ZONA_CODE: Z001
       ZONA_DESCRIPTION: Zona creada desde Docker Compose Unificado
       ZONA_TYPE: REGULAR
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_EXCHANGE: audit_exchange
+      RABBITMQ_QUEUE: audit_queue
+      RABBITMQ_ROUTING_KEY: audit.#
     depends_on:
       zonas-db:
         condition: service_healthy
@@ -139,6 +160,13 @@ services:
       DB_NOMBRE: asignaciones_db
       USUARIOS_API_URL: http://usuarios-api:8000
       VEHICULOS_API_URL: http://vehiculos-app:3000
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_EXCHANGE: audit_exchange
+      RABBITMQ_QUEUE: audit_queue
+      RABBITMQ_ROUTING_KEY: audit.#
     depends_on:
       asignaciones-db:
         condition: service_healthy
@@ -200,6 +228,13 @@ services:
       VEHICULOS_API_URL: http://vehiculos-app:3000
       ZONAS_API_URL: http://zonas-app:8080
       ASIGNACIONES_API_URL: http://asignacion-app:3001
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_EXCHANGE: audit_exchange
+      RABBITMQ_QUEUE: audit_queue
+      RABBITMQ_ROUTING_KEY: audit.#
     depends_on:
       tickets-db:
         condition: service_healthy
@@ -210,10 +245,74 @@ services:
       zonas-app:
         condition: service_started
 
+  # --- RABBITMQ ---
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-audit
+    restart: always
+    ports:
+      - "5672:5672"      # AMQP
+      - "15672:15672"    # Management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- MICROSERVICIO AUDITORIA ---
+  audit-db:
+    image: postgres:15-alpine
+    container_name: audit_db_unificado
+    restart: always
+    environment:
+      POSTGRES_USER: audit_user
+      POSTGRES_PASSWORD: audit_pass
+      POSTGRES_DB: audit_db
+    ports:
+      - "5436:5432"
+    volumes:
+      - audit_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U audit_user -d audit_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  audit-app:
+    build:
+      context: ../Talleres/ms-audit
+      dockerfile: Dockerfile
+    container_name: audit_app_unificado
+    restart: always
+    ports:
+      - "3002:3002"
+    environment:
+      DB_HOST: audit-db
+      DB_PORT: 5432
+      DB_USER: audit_user
+      DB_PASSWORD: audit_pass
+      DB_NAME: audit_db
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_QUEUE: audit_queue
+      RABBITMQ_EXCHANGE: audit_exchange
+      RABBITMQ_ROUTING_KEY: audit.#
+      THROTTLE_TTL: 60
+      THROTTLE_LIMIT: 100
+      PORT: 3002
+    depends_on:
+      audit-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
 volumes:
   usuarios_pgdata:
   vehiculos_pgdata:
   zonas_pgdata:
   asignaciones_pgdata:
   tickets_pgdata:
+  audit_pgdata:
 

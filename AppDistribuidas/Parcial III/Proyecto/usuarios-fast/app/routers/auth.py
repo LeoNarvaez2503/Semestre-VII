@@ -74,7 +74,7 @@ def check_roles(allowed_roles: List[str]):
     return dependency
 
 @router.post("/login", response_model=TokenResponse)
-def login(login_data: LoginRequest, db: Session = Depends(get_db)):
+def login(login_data: LoginRequest, request: Request, db: Session = Depends(get_db)):
     # Búsqueda de usuario case-insensitive
     user = db.query(User).filter(
         func.lower(User.username) == login_data.username.strip().lower(),
@@ -97,6 +97,20 @@ def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     }
     access_token = create_access_token(data=token_data)
     refresh_token = create_refresh_token(data={"sub": str(user.id_person)})
+
+    try:
+        from app.utils.rabbitmq_publisher import publish_audit_event
+        publish_audit_event(
+            servicio="ms-users",
+            accion="LOGIN",
+            entidad="USUARIO",
+            datos={"username": user.username, "roles": roles},
+            usuario=user.username,
+            request_ip=request.client.host if request.client else None
+        )
+    except Exception:
+        pass
+
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,

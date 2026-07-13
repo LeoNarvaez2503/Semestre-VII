@@ -39,7 +39,28 @@ def create_user(user_in: UserCreate, request: Request, db: Session = Depends(get
         # Public registration: force role to Cliente
         user_in.roles = ["Cliente"]
 
-    return UserService.create_user(db, user_in)
+    created_user = UserService.create_user(db, user_in)
+
+    try:
+        from app.utils.rabbitmq_publisher import publish_audit_event
+        current_username = "anonymous"
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            payload = decode_access_token(token)
+            if payload:
+                current_username = payload.get("username", "anonymous")
+        publish_audit_event(
+            servicio="ms-users",
+            accion="CREATE",
+            entidad="USUARIO",
+            datos={"username": created_user.username, "id_person": str(created_user.id_person)},
+            usuario=current_username,
+            request_ip=request.client.host if request.client else None
+        )
+    except Exception:
+        pass
+
+    return created_user
 
 @router.get("/listar", response_model=list[UserResponse])
 def get_users(db: Session = Depends(get_db), current_user: User = Depends(check_roles(["Administrador", "Root"]))):
@@ -59,13 +80,52 @@ def get_user_by_id(id: UUID, db: Session = Depends(get_db), current_user: User =
     return UserService.get_user_by_id(db, str(id))
 
 @router.patch("/actualizar/{id}", response_model=UserResponse)
-def update_user(id: UUID, user_in: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(check_roles(["Administrador", "Root"]))):
-    return UserService.update_user(db, str(id), user_in)
+def update_user(id: UUID, user_in: UserUpdate, request: Request, db: Session = Depends(get_db), current_user: User = Depends(check_roles(["Administrador", "Root"]))):
+    updated_user = UserService.update_user(db, str(id), user_in)
+    try:
+        from app.utils.rabbitmq_publisher import publish_audit_event
+        publish_audit_event(
+            servicio="ms-users",
+            accion="UPDATE",
+            entidad="USUARIO",
+            datos={"username": updated_user.username, "id_person": str(updated_user.id_person)},
+            usuario=current_user.username,
+            request_ip=request.client.host if request.client else None
+        )
+    except Exception:
+        pass
+    return updated_user
 
 @router.put("/roles/{id}", response_model=UserResponse)
-def update_user_roles(id: UUID, roles_in: UserRolesUpdate, db: Session = Depends(get_db), current_user: User = Depends(check_roles(["Administrador", "Root"]))):
-    return UserService.update_user_roles(db, str(id), roles_in.roles)
+def update_user_roles(id: UUID, roles_in: UserRolesUpdate, request: Request, db: Session = Depends(get_db), current_user: User = Depends(check_roles(["Administrador", "Root"]))):
+    updated_user = UserService.update_user_roles(db, str(id), roles_in.roles)
+    try:
+        from app.utils.rabbitmq_publisher import publish_audit_event
+        publish_audit_event(
+            servicio="ms-users",
+            accion="UPDATE",
+            entidad="USUARIO",
+            datos={"username": updated_user.username, "roles": roles_in.roles},
+            usuario=current_user.username,
+            request_ip=request.client.host if request.client else None
+        )
+    except Exception:
+        pass
+    return updated_user
 
 @router.delete("/eliminar/{id}")
-def delete_user(id: UUID, db: Session = Depends(get_db), current_user: User = Depends(check_roles(["Administrador", "Root"]))):
-    return UserService.delete_user(db, str(id))
+def delete_user(id: UUID, request: Request, db: Session = Depends(get_db), current_user: User = Depends(check_roles(["Administrador", "Root"]))):
+    res = UserService.delete_user(db, str(id))
+    try:
+        from app.utils.rabbitmq_publisher import publish_audit_event
+        publish_audit_event(
+            servicio="ms-users",
+            accion="DELETE",
+            entidad="USUARIO",
+            datos={"id_person": str(id)},
+            usuario=current_user.username,
+            request_ip=request.client.host if request.client else None
+        )
+    except Exception:
+        pass
+    return res

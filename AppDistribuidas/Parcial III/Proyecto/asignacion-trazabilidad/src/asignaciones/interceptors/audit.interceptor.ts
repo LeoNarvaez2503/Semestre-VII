@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Asignacion } from '../entities/asignacion.entity';
 import { Auditoria } from '../entities/auditoria.entity';
+import { RabbitMQPublisherService } from '../../rabbitmq/rabbitmq.service';
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
@@ -18,6 +19,7 @@ export class AuditInterceptor implements NestInterceptor {
     private readonly asignacionRepository: Repository<Asignacion>,
     @InjectRepository(Auditoria)
     private readonly auditoriaRepository: Repository<Auditoria>,
+    private readonly rabbitmqService: RabbitMQPublisherService,
   ) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
@@ -90,6 +92,33 @@ export class AuditInterceptor implements NestInterceptor {
               await this.auditoriaRepository.save(audit);
             } catch (auditError) {
               console.error('Error saving audit log:', auditError);
+            }
+
+            try {
+              let actionMapped = 'CREATE';
+              if (tipoAccion === 'MODIFICACION') actionMapped = 'UPDATE';
+              if (tipoAccion === 'ELIMINACION') actionMapped = 'DELETE';
+
+              const username = request.user?.username || 'anonymous';
+              const ip = this.rabbitmqService.getIpAddress();
+              const mac = this.rabbitmqService.getMacAddress();
+
+              await this.rabbitmqService.publish('audit.assignments', {
+                servicio: 'ms-assignments',
+                accion: actionMapped,
+                entidad: 'ASIGNACION',
+                datos: {
+                  userId,
+                  vehicleId,
+                  previousState,
+                  newState
+                },
+                usuario: username,
+                ip,
+                mac
+              });
+            } catch (rabbitError) {
+              console.error('Error publishing audit log to RabbitMQ:', rabbitError);
             }
           }
         },

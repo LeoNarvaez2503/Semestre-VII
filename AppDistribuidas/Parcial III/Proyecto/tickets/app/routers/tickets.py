@@ -2,7 +2,7 @@ import math
 import requests
 from datetime import datetime, timezone
 from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from sqlalchemy.orm import Session
 from uuid import UUID
 
@@ -135,7 +135,7 @@ def update_space_status(space_id: UUID, state: str, vehicle_id: Optional[UUID] =
 
 # Endpoints
 @router.post("/crear", response_model=TicketResponse, status_code=status.HTTP_201_CREATED)
-def crear_ticket(ticket_in: TicketCreate, db: Session = Depends(get_db)):
+def crear_ticket(ticket_in: TicketCreate, request: Request, db: Session = Depends(get_db)):
     try:
         # 1. Validar si el usuario ya tiene un ticket activo
         active_user_ticket = db.query(Ticket).filter(
@@ -230,11 +230,47 @@ def crear_ticket(ticket_in: TicketCreate, db: Session = Depends(get_db)):
                 detail="No se pudo actualizar el estado del espacio a OCUPADO en el servicio de zonas."
             )
 
+        try:
+            from app.utils.rabbitmq_publisher import publish_audit_event
+            username = "anonymous"
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+                import base64
+                import json
+                parts = token.split(".")
+                if len(parts) == 3:
+                    payload_b64 = parts[1]
+                    payload_b64 += "=" * ((4 - len(payload_b64) % 4) % 4)
+                    payload = json.loads(base64.b64decode(payload_b64).decode("utf-8"))
+                    username = payload.get("username", "anonymous")
+
+            publish_audit_event(
+                servicio="ms-tickets",
+                accion="CREATE",
+                entidad="TICKET",
+                datos={
+                    "id_ticket": str(nuevo_ticket.id_ticket),
+                    "codigo_ticket": nuevo_ticket.codigo_ticket,
+                    "id_espacio": str(nuevo_ticket.id_espacio),
+                    "id_vehiculo": str(nuevo_ticket.id_vehiculo),
+                    "id_usuario": str(nuevo_ticket.id_usuario)
+                },
+                usuario=username,
+                request_ip=request.client.host if request.client else None
+            )
+        except Exception:
+            pass
+
         return nuevo_ticket
     except Exception as e:
         import traceback
         traceback.print_exc()
         raise e
+
+@router.get("/listar-todos", response_model=List[TicketResponse])
+def listar_todos_los_tickets(db: Session = Depends(get_db)):
+    return db.query(Ticket).all()
 
 @router.get("/buscar", response_model=List[TicketResponse])
 def buscar_tickets(
@@ -258,7 +294,7 @@ def buscar_tickets(
     return query.all()
 
 @router.post("/{id_ticket}/pagar", response_model=TicketResponse)
-def pagar_ticket(id_ticket: UUID, db: Session = Depends(get_db)):
+def pagar_ticket(id_ticket: UUID, request: Request, db: Session = Depends(get_db)):
     # 1. Obtener ticket
     ticket = db.query(Ticket).filter(Ticket.id_ticket == id_ticket).first()
     if not ticket:
@@ -314,6 +350,37 @@ def pagar_ticket(id_ticket: UUID, db: Session = Depends(get_db)):
     if not update_ok:
         # No hacemos rollback del pago ya que el dinero fue recaudado,
         # pero logueamos/advertimos que el espacio debe ser liberado manualmente.
+        pass
+
+    try:
+        from app.utils.rabbitmq_publisher import publish_audit_event
+        username = "anonymous"
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            import base64
+            import json
+            parts = token.split(".")
+            if len(parts) == 3:
+                payload_b64 = parts[1]
+                payload_b64 += "=" * ((4 - len(payload_b64) % 4) % 4)
+                payload = json.loads(base64.b64decode(payload_b64).decode("utf-8"))
+                username = payload.get("username", "anonymous")
+
+        publish_audit_event(
+            servicio="ms-tickets",
+            accion="UPDATE",
+            entidad="TICKET",
+            datos={
+                "id_ticket": str(ticket.id_ticket),
+                "codigo_ticket": ticket.codigo_ticket,
+                "estado_ticket": ticket.estado_ticket,
+                "valor_recaudado": ticket.valor_recaudado
+            },
+            usuario=username,
+            request_ip=request.client.host if request.client else None
+        )
+    except Exception:
         pass
 
     return ticket

@@ -20,6 +20,8 @@ export class RolesGuard implements CanActivate {
       throw new HttpException('Token inválido o expirado', HttpStatus.UNAUTHORIZED);
     }
 
+    request.user = payload;
+
     const userRoles = payload.roles || [];
     const userId = payload.sub;
 

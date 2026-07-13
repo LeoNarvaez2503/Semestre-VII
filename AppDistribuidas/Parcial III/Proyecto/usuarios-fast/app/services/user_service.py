@@ -70,25 +70,41 @@ class UserService:
 
     @staticmethod
     def create_user(db: Session, user_in: UserCreate) -> User:
-        # 1. Validar unicidad (email, dni)
-        if db.query(Person).filter(Person.email == user_in.person.email).first():
-            raise EntityAlreadyExistsException(f"El correo electrónico '{user_in.person.email}' ya está registrado.")
+        # Validar y limpiar email
+        if not user_in.person.email or not user_in.person.email.strip():
+            raise HTTPException(status_code=400, detail="El correo electrónico no puede estar vacío o contener solo espacios en blanco.")
+        email_clean = user_in.person.email.strip()
 
-        if db.query(Person).filter(Person.dni == user_in.person.dni).first():
-            raise EntityAlreadyExistsException(f"El DNI '{user_in.person.dni}' ya está registrado.")
+        # Validar y limpiar dni
+        if not user_in.person.dni or not user_in.person.dni.strip():
+            raise HTTPException(status_code=400, detail="El DNI no puede estar vacío o contener solo espacios en blanco.")
+        dni_clean = user_in.person.dni.strip()
+
+        # Validar nombres obligatorios
+        if not user_in.person.first_name or not user_in.person.first_name.strip():
+            raise HTTPException(status_code=400, detail="El primer nombre no puede estar vacío o contener solo espacios en blanco.")
+        if not user_in.person.last_name or not user_in.person.last_name.strip():
+            raise HTTPException(status_code=400, detail="El apellido no puede estar vacío o contener solo espacios en blanco.")
+
+        # 1. Validar unicidad (email case-insensitive, dni exacto)
+        if db.query(Person).filter(func.lower(Person.email) == func.lower(email_clean)).first():
+            raise EntityAlreadyExistsException(f"El correo electrónico '{email_clean}' ya está registrado.")
+
+        if db.query(Person).filter(Person.dni == dni_clean).first():
+            raise EntityAlreadyExistsException(f"El DNI '{dni_clean}' ya está registrado.")
 
         # 2. Transacción
         try:
             # Crear Persona
             person_obj = Person(
-                dni=user_in.person.dni,
-                email=user_in.person.email,
-                first_name=user_in.person.first_name,
-                last_name=user_in.person.last_name,
-                middle_name=user_in.person.middle_name,
-                nationality=user_in.person.nationality,
-                phone=user_in.person.phone,
-                address=user_in.person.address,
+                dni=dni_clean,
+                email=email_clean,
+                first_name=user_in.person.first_name.strip(),
+                last_name=user_in.person.last_name.strip(),
+                middle_name=user_in.person.middle_name.strip() if user_in.person.middle_name else None,
+                nationality=user_in.person.nationality.strip() if user_in.person.nationality else None,
+                phone=user_in.person.phone.strip() if user_in.person.phone else None,
+                address=user_in.person.address.strip() if user_in.person.address else None,
                 active=True
             )
             db.add(person_obj)
@@ -106,7 +122,7 @@ class UserService:
             user_obj = User(
                 id_person=person_obj.id,
                 username=generated_username,
-                password_hash=pwd_context.hash(user_in.password), # En producción, hash con passlib/bcrypt
+                password_hash=pwd_context.hash(user_in.password),
                 active=True
             )
             db.add(user_obj)
@@ -138,32 +154,50 @@ class UserService:
         user_obj = UserService.get_user_by_id(db, id_person)
 
         # Validar unicidad si cambian campos únicos (case-insensitive)
-        if user_in.username:
-            username_lower = user_in.username.lower()
-            if username_lower != user_obj.username.lower():
-                if db.query(User).filter(func.lower(User.username) == username_lower).first():
-                    raise EntityAlreadyExistsException(f"El nombre de usuario '{user_in.username}' ya está registrado.")
+        if user_in.username is not None:
+            if not user_in.username.strip():
+                raise HTTPException(status_code=400, detail="El nombre de usuario no puede estar vacío o contener solo espacios en blanco.")
+            username_clean = user_in.username.strip()
+            if username_clean.lower() != user_obj.username.lower():
+                if db.query(User).filter(func.lower(User.username) == username_clean.lower()).first():
+                    raise EntityAlreadyExistsException(f"El nombre de usuario '{username_clean}' ya está registrado.")
+                user_obj.username = username_clean.lower()
 
         if user_in.person:
-            if user_in.person.email and user_in.person.email != user_obj.person.email:
-                if db.query(Person).filter(Person.email == user_in.person.email).first():
-                    raise EntityAlreadyExistsException(f"El correo electrónico '{user_in.person.email}' ya está registrado.")
-            if user_in.person.dni and user_in.person.dni != user_obj.person.dni:
-                if db.query(Person).filter(Person.dni == user_in.person.dni).first():
-                    raise EntityAlreadyExistsException(f"El DNI '{user_in.person.dni}' ya está registrado.")
+            if user_in.person.email is not None:
+                if not user_in.person.email.strip():
+                    raise HTTPException(status_code=400, detail="El correo electrónico no puede estar vacío o contener solo espacios en blanco.")
+                email_clean = user_in.person.email.strip()
+                if email_clean.lower() != user_obj.person.email.lower():
+                    if db.query(Person).filter(func.lower(Person.email) == email_clean.lower()).first():
+                        raise EntityAlreadyExistsException(f"El correo electrónico '{email_clean}' ya está registrado.")
+                    user_obj.person.email = email_clean
+            
+            if user_in.person.dni is not None:
+                if not user_in.person.dni.strip():
+                    raise HTTPException(status_code=400, detail="El DNI no puede estar vacío o contener solo espacios en blanco.")
+                dni_clean = user_in.person.dni.strip()
+                if dni_clean != user_obj.person.dni:
+                    if db.query(Person).filter(Person.dni == dni_clean).first():
+                        raise EntityAlreadyExistsException(f"El DNI '{dni_clean}' ya está registrado.")
+                    user_obj.person.dni = dni_clean
 
         try:
             # Actualizar Persona
             if user_in.person:
                 person_data = user_in.person.model_dump(exclude_unset=True)
                 for key, value in person_data.items():
+                    # No sobreescribir con email o dni si ya fueron validados y asignados arriba
+                    if key in ('email', 'dni'):
+                        continue
+                    if isinstance(value, str):
+                        value = value.strip()
                     setattr(user_obj.person, key, value)
 
             # Actualizar Usuario (guardar en minúsculas)
-            if user_in.username:
-                user_obj.username = user_in.username.lower()
             if user_in.password:
                 user_obj.password_hash=pwd_context.hash(user_in.password)
+
             # Actualizar Roles si se especifican
             if user_in.roles is not None:
                 # Eliminar asociaciones previas

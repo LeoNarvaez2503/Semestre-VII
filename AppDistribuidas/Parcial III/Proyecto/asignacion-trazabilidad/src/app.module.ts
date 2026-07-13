@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AsignacionesModule } from './asignaciones/asignaciones.module';
 import { Asignacion } from './asignaciones/entities/asignacion.entity';
 import { Auditoria } from './asignaciones/entities/auditoria.entity';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { Auditoria } from './asignaciones/entities/auditoria.entity';
       inject: [ConfigService],
     }),
     AsignacionesModule,
+    RabbitMQModule,
   ],
 })
 export class AppModule {}
