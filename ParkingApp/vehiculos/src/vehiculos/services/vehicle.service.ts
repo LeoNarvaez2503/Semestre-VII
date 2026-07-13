@@ -5,13 +5,31 @@ import { UpdateVehicleDto } from '../dto/update-vehicle.dto';
 import Vehicle from '../entities/vehicle.entity';
 import { Repository, ILike } from 'typeorm';
 import { VehicleFactory } from '../factory/vehicle.factory';
+import { AuditEvent, EventPublisher } from '../event-publisher.service';
 
 @Injectable()
 export class VehicleService {
   constructor(
     @InjectRepository(Vehicle)
     private readonly vehicleRepository: Repository<Vehicle>,
+    private eventPublisher: EventPublisher,
   ) {}
+
+  // Método auxiliar para publicar eventos
+  private async emitEvent(
+    accion: string,
+    vehiculo: Vehicle,
+    datosExtra?: any,
+  ) {
+    const event: AuditEvent = {
+      servicio: 'vehiculos',
+      accion,
+      entidad: 'Vehiculo',
+      datos: { ...vehiculo, ...datosExtra },
+      // usuario e ip se podrían obtener del contexto (request) si se inyecta
+    };
+    await this.eventPublisher.publish(event);
+  }
 
   async create(createVehicleDto: CreateVehicleDto): Promise<Vehicle> {
     const exists = await this.vehicleRepository.findOne({
@@ -24,7 +42,12 @@ export class VehicleService {
     }
 
     const vehicle = VehicleFactory.create(createVehicleDto);
-    return this.vehicleRepository.save(vehicle);
+
+    const saved = await this.vehicleRepository.save(vehicle);
+
+    await this.emitEvent('CREATE', saved);
+    
+    return saved;
   }
 
   async findAll(): Promise<Vehicle[]> {
@@ -73,11 +96,14 @@ export class VehicleService {
       if ('cabin' in data) anyVehicle.cabin = (data as any).cabin;
       if ('loadCapacity' in data) anyVehicle.loadCapacity = (data as any).loadCapacity;
     }
-    return this.vehicleRepository.save(vehicle);
+    const saved = await this.vehicleRepository.save(vehicle);
+    await this.emitEvent('UPDATE', saved);
+    return saved;
   }
 
   async remove(id: string): Promise<void> {
     const vehicle = await this.findOne(id);
     await this.vehicleRepository.remove(vehicle);
+    await this.emitEvent('DELETE', vehicle);
   }
 }

@@ -27,6 +27,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:admin@usuarios-db:5432/usuarios
       PORT: 8000
+      RABBITMQ_HOST: host.docker.internal
     depends_on:
       usuarios-db:
         condition: service_healthy
@@ -41,7 +42,7 @@ services:
       POSTGRES_PASSWORD: adminpassword
       POSTGRES_DB: vehiculos_db
     ports:
-      - "5432:5432"
+      - "5436:5432"
     volumes:
       - vehiculos_pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -58,6 +59,7 @@ services:
     restart: always
     environment:
       PORT: 3000
+      RABBITMQ_HOST: host.docker.internal
       DB_HOST: vehiculos-db
       DB_PORT: 5432
       DB_USUARIO: admin
@@ -97,6 +99,7 @@ services:
       DB_USERNAME: zonas_user
       DB_PASSWORD: zonas_pass
       PORT: 8080
+      RABBITMQ_HOST: host.docker.internal
       ZONA_NAME: Zona Principal
       ZONA_CODE: Z001
       ZONA_DESCRIPTION: Zona creada desde Docker Compose Unificado
@@ -132,6 +135,7 @@ services:
     restart: always
     environment:
       PORT: 3001
+      RABBITMQ_HOST: host.docker.internal
       DB_HOST: asignaciones-db
       DB_PORT: 5432
       DB_USUARIO: admin
@@ -196,6 +200,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:admin@tickets-db:5432/tickets
       PORT: 8001
+      RABBITMQ_HOST: host.docker.internal
       USUARIOS_API_URL: http://usuarios-api:8000
       VEHICULOS_API_URL: http://vehiculos-app:3000
       ZONAS_API_URL: http://zonas-app:8080

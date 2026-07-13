@@ -8,6 +8,7 @@ import ec.edu.espe.zonas.entidades.Zona;
 import ec.edu.espe.zonas.repositories.EspacioRepository;
 import ec.edu.espe.zonas.repositories.ZonaRepository;
 import ec.edu.espe.zonas.services.EspacioServicio;
+import ec.edu.espe.zonas.services.EventPublisher;
 import ec.edu.espe.zonas.utils.UtilsMappers;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +25,7 @@ public class EspacioServicioImpl implements EspacioServicio {
     private final EspacioRepository repositorioEspacio;
     private final ZonaRepository zonaRepository;
     private final UtilsMappers mapper;
+    private final EventPublisher eventPublisher;
 
     @Override
     public List<EspacioResponseDTO> obtenerEspacios() {
@@ -88,7 +90,9 @@ public class EspacioServicioImpl implements EspacioServicio {
         }
         newSpace.setDateCreated(java.time.LocalDateTime.now());
         newSpace.setDateModified(java.time.LocalDateTime.now());
-        return mapper.toResponseDTO(repositorioEspacio.save(newSpace));
+        Espacio savedSpace = repositorioEspacio.save(newSpace);
+        eventPublisher.publishEvent("CREATE", "Espacio", savedSpace.getId().toString(), savedSpace);
+        return mapper.toResponseDTO(savedSpace);
     }
 
     @Override
@@ -107,6 +111,7 @@ public class EspacioServicioImpl implements EspacioServicio {
                 )
             );
         repositorioEspacio.delete(espacio);
+        eventPublisher.publishEvent("DELETE", "Espacio", idEspacio.toString(), espacio);
     }
 
     @Override
@@ -144,6 +149,7 @@ public class EspacioServicioImpl implements EspacioServicio {
             try {
                 org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
                 String url = "http://vehiculos-app:3000/vehiculos/internal/validar/" + vehiculoId;
+                @SuppressWarnings("unchecked")
                 java.util.Map<String, Object> response = restTemplate.getForObject(url, java.util.Map.class);
                 
                 if (response == null || !Boolean.TRUE.equals(response.get("exists"))) {
@@ -172,7 +178,9 @@ public class EspacioServicioImpl implements EspacioServicio {
 
         espacio.setEstado(estado);
         espacio.setDateModified(java.time.LocalDateTime.now());
-        return mapper.toResponseDTO(repositorioEspacio.save(espacio));
+        Espacio savedSpace = repositorioEspacio.save(espacio);
+        eventPublisher.publishEvent("UPDATE_ESTADO", "Espacio", savedSpace.getId().toString(), savedSpace);
+        return mapper.toResponseDTO(savedSpace);
     }
 
     @Override
@@ -213,7 +221,10 @@ public class EspacioServicioImpl implements EspacioServicio {
             espacio.setStatus(false);
             espacio.setDateModified(java.time.LocalDateTime.now());
         });
-        repositorioEspacio.saveAll(espacios);
+        List<Espacio> savedSpaces = repositorioEspacio.saveAll(espacios);
+        savedSpaces.forEach(espacio -> {
+            eventPublisher.publishEvent("DELETE", "Espacio", espacio.getId().toString(), espacio);
+        });
     }
 
     private String generarCodigoUnico() {

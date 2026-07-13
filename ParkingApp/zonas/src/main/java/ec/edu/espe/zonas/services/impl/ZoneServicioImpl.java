@@ -6,6 +6,7 @@ import ec.edu.espe.zonas.entidades.Zona;
 import ec.edu.espe.zonas.repositories.ZonaRepository;
 import ec.edu.espe.zonas.services.EspacioServicio;
 import ec.edu.espe.zonas.services.ZonaServicio;
+import ec.edu.espe.zonas.services.EventPublisher;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
@@ -22,6 +23,7 @@ public class ZoneServicioImpl implements ZonaServicio {
 
     private final ZonaRepository zonaRepository;
     private final EspacioServicio espacioServicio;
+    private final EventPublisher eventPublisher;
 
     @Override
     public List<ZonaResponseDTO> obtenerZonas() {
@@ -69,7 +71,9 @@ public class ZoneServicioImpl implements ZonaServicio {
         objZona.setDateCreated(LocalDateTime.now());
         objZona.setDateModified(LocalDateTime.now());
 
-        return toResponse(zonaRepository.save(objZona));
+        Zona savedZona = zonaRepository.save(objZona);
+        eventPublisher.publishEvent("CREATE", "Zona", savedZona.getId().toString(), objZona);
+        return toResponse(savedZona);
     }
 
     @Override
@@ -123,7 +127,9 @@ public class ZoneServicioImpl implements ZonaServicio {
 
         zona.setDateModified(LocalDateTime.now());
 
-        return toResponse(zonaRepository.save(zona));
+        Zona updatedZona = zonaRepository.save(zona);
+        eventPublisher.publishEvent("UPDATE", "Zona", updatedZona.getId().toString(), updatedZona);
+        return toResponse(updatedZona);
     }
 
     @Override
@@ -140,6 +146,7 @@ public class ZoneServicioImpl implements ZonaServicio {
         zona.setStatus(0);
         zona.setDateModified(LocalDateTime.now());
         zonaRepository.save(zona);
+        eventPublisher.publishEvent("DELETE", "Zona", zona.getId().toString(), zona);
         espacioServicio.desactivarEspaciosPorZona(idZone);
     }
 

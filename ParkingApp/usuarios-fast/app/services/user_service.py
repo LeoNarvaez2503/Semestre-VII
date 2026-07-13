@@ -9,6 +9,7 @@ from app.models.user_role import UserRole
 from app.schemas.user import UserCreate, UserUpdate
 from fastapi import HTTPException
 from passlib.context import CryptContext
+from app.core.event_publisher import publish_audit_event
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class UserService:
@@ -128,6 +129,14 @@ class UserService:
 
             db.commit()
             db.refresh(user_obj)
+            
+            publish_audit_event(
+                accion="CREATE",
+                entidad="User",
+                entidad_id=str(user_obj.id_person),
+                datos={"username": user_obj.username, "roles": user_in.roles}
+            )
+            
             return user_obj
         except Exception as e:
             db.rollback()
@@ -183,6 +192,14 @@ class UserService:
 
             db.commit()
             db.refresh(user_obj)
+
+            publish_audit_event(
+                accion="UPDATE",
+                entidad="User",
+                entidad_id=str(user_obj.id_person),
+                datos={"username": user_obj.username}
+            )
+
             return user_obj
         except Exception as e:
             db.rollback()
@@ -202,6 +219,14 @@ class UserService:
                 ur.active = False
 
             db.commit()
+
+            publish_audit_event(
+                accion="DELETE",
+                entidad="User",
+                entidad_id=str(user_obj.id_person),
+                datos={"active": False}
+            )
+
             return {"message": f"Usuario con ID {id_person} inactivado exitosamente (eliminación lógica)."}
         except Exception as e:
             db.rollback()
@@ -228,6 +253,14 @@ class UserService:
 
             db.commit()
             db.refresh(user_obj)
+
+            publish_audit_event(
+                accion="UPDATE_ROLES",
+                entidad="User",
+                entidad_id=str(user_obj.id_person),
+                datos={"roles": roles}
+            )
+
             return user_obj
         except Exception as e:
             db.rollback()

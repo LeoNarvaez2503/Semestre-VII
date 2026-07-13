@@ -5,11 +5,12 @@ import { Auditoria } from './entities/auditoria.entity';
 import { AsignacionService } from './services/asignacion.service';
 import { AsignacionController } from './controllers/asignacion.controller';
 import { AuditInterceptor } from './interceptors/audit.interceptor';
+import { EventPublisher } from './services/event-publisher.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Asignacion, Auditoria])],
   controllers: [AsignacionController],
-  providers: [AsignacionService, AuditInterceptor],
-  exports: [AsignacionService],
+  providers: [AsignacionService, AuditInterceptor, EventPublisher],
+  exports: [AsignacionService, EventPublisher],
 })
 export class AsignacionesModule {}

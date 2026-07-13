@@ -11,6 +11,7 @@ import { Asignacion } from '../entities/asignacion.entity';
 import { Auditoria } from '../entities/auditoria.entity';
 import { CreateAsignacionDto } from '../dto/create-asignacion.dto';
 import { UpdateAsignacionDto } from '../dto/update-asignacion.dto';
+import { EventPublisher, AuditEvent } from './event-publisher.service';
 
 @Injectable()
 export class AsignacionService {
@@ -23,6 +24,7 @@ export class AsignacionService {
     @InjectRepository(Auditoria)
     private readonly auditoriaRepository: Repository<Auditoria>,
     private readonly configService: ConfigService,
+    private readonly eventPublisher: EventPublisher,
   ) {
     this.usuariosApiUrl = this.configService.get<string>(
       'USUARIOS_API_URL',
@@ -32,6 +34,19 @@ export class AsignacionService {
       'VEHICULOS_API_URL',
       'http://localhost:3000',
     );
+  }
+
+  private async emitEvent(
+    accion: string,
+    asignacion: Asignacion,
+  ) {
+    const event: AuditEvent = {
+      servicio: 'asignacion-trazabilidad',
+      accion,
+      entidad: 'Asignacion',
+      datos: asignacion,
+    };
+    await this.eventPublisher.publish(event);
   }
 
   async validateUser(userId: string): Promise<void> {
@@ -103,7 +118,9 @@ export class AsignacionService {
         throw new ConflictException('Esta asignación ya existe y se encuentra activa.');
       }
       existing.active = true;
-      return this.asignacionRepository.save(existing);
+      const updated = await this.asignacionRepository.save(existing);
+      await this.emitEvent('UPDATE', updated);
+      return updated;
     }
 
     const newAssign = this.asignacionRepository.create({
@@ -111,7 +128,9 @@ export class AsignacionService {
       vehicleId,
       active: true,
     });
-    return this.asignacionRepository.save(newAssign);
+    const saved = await this.asignacionRepository.save(newAssign);
+    await this.emitEvent('CREATE', saved);
+    return saved;
   }
 
   async update(
@@ -145,7 +164,9 @@ export class AsignacionService {
       assign.active = updateAsignacionDto.active;
     }
 
-    return this.asignacionRepository.save(assign);
+    const saved = await this.asignacionRepository.save(assign);
+    await this.emitEvent('UPDATE', saved);
+    return saved;
   }
 
   async remove(userId: string, vehicleId: string): Promise<void> {
@@ -160,7 +181,8 @@ export class AsignacionService {
       throw new NotFoundException(`Asignación no encontrada para el usuario ${trimmedUserId} y vehículo ${trimmedVehicleId}.`);
     }
     assign.active = false;
-    await this.asignacionRepository.save(assign);
+    const saved = await this.asignacionRepository.save(assign);
+    await this.emitEvent('DELETE', saved);
   }
 
   async getFleetByOwner(propietarioId: string): Promise<any[]> {

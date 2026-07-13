@@ -10,6 +10,7 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.models.ticket import Ticket
 from app.schemas.ticket import TicketCreate, TicketResponse
+from app.core.event_publisher import publish_audit_event
 
 router = APIRouter(prefix="/tickets", tags=["Gestión de Tickets"])
 
@@ -230,6 +231,13 @@ def crear_ticket(ticket_in: TicketCreate, db: Session = Depends(get_db)):
                 detail="No se pudo actualizar el estado del espacio a OCUPADO en el servicio de zonas."
             )
 
+        publish_audit_event(
+            accion="CREATE",
+            entidad="Ticket",
+            entidad_id=str(nuevo_ticket.id_ticket),
+            datos={"codigo_ticket": codigo_ticket, "estado": "activo"}
+        )
+
         return nuevo_ticket
     except Exception as e:
         import traceback
@@ -315,5 +323,12 @@ def pagar_ticket(id_ticket: UUID, db: Session = Depends(get_db)):
         # No hacemos rollback del pago ya que el dinero fue recaudado,
         # pero logueamos/advertimos que el espacio debe ser liberado manualmente.
         pass
+
+    publish_audit_event(
+        accion="UPDATE",
+        entidad="Ticket",
+        entidad_id=str(ticket.id_ticket),
+        datos={"estado": "pagado", "valor_recaudado": valor_recaudado}
+    )
 
     return ticket
