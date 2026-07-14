@@ -131,7 +131,7 @@ class UserService:
             # Guardar roles
             if user_in.roles:
                 for role_name in user_in.roles:
-                    role_obj = db.query(Role).filter(Role.name == role_name, Role.active == True).first()
+                    role_obj = db.query(Role).filter(func.lower(Role.name) == func.lower(role_name), Role.active == True).first()
                     if not role_obj:
                         raise EntityNotFoundException(f"El rol '{role_name}' no existe o está inactivo.")
 
@@ -204,7 +204,7 @@ class UserService:
                 db.query(UserRole).filter(UserRole.id_user == user_obj.id_person).delete()
                 
                 for role_name in user_in.roles:
-                    role_obj = db.query(Role).filter(Role.name == role_name, Role.active == True).first()
+                    role_obj = db.query(Role).filter(func.lower(Role.name) == func.lower(role_name), Role.active == True).first()
                     if not role_obj:
                         raise EntityNotFoundException(f"El rol '{role_name}' no existe o está inactivo.")
 
@@ -249,7 +249,7 @@ class UserService:
             db.query(UserRole).filter(UserRole.id_user == user_obj.id_person).delete()
 
             for role_name in roles:
-                role_obj = db.query(Role).filter(Role.name == role_name, Role.active == True).first()
+                role_obj = db.query(Role).filter(func.lower(Role.name) == func.lower(role_name), Role.active == True).first()
                 if not role_obj:
                     raise EntityNotFoundException(f"El rol '{role_name}' no existe o está inactivo.")
 

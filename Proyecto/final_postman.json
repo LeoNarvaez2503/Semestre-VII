@@ -1,0 +1,1848 @@
+{
+    "info": {
+        "_postman_id": "bfd89551-7f99-4d6d-8888-eb8285a21001",
+        "name": "Microservicios - Parqueadero Inteligente (Coleccion Completa)",
+        "description": "Colección completa que incluye absolutamente TODOS los endpoints del sistema (Gateway seguro, endpoints internos, documentación de API y flujos de negocio).",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Autenticación y Perfil",
+            "item": [
+                {
+                    "name": "Login Root (Guardar root_token)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"root_token\", jsonData.access_token);",
+                                    "if(jsonData.refresh_token) pm.collectionVariables.set(\"root_refresh_token\", jsonData.refresh_token);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"root\",\n  \"password\": \"rootpassword123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/login",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login Cliente (Guardar client_token)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"client_token\", jsonData.access_token);",
+                                    "if(jsonData.refresh_token) pm.collectionVariables.set(\"client_refresh_token\", jsonData.refresh_token);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"jcperez\",\n  \"password\": \"miPasswordSeguro123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/login",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Refresh Token Root",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"root_token\", jsonData.access_token);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refresh_token\": \"{{root_refresh_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/refresh",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "refresh"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Refresh Token Cliente",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"client_token\", jsonData.access_token);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refresh_token\": \"{{client_refresh_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/refresh",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "refresh"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Ver Mis Datos (Autenticado)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{client_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/me",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "me"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Actualizar Mis Datos",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{client_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"person\": {\n    \"phone\": \"0987654321\",\n    \"address\": \"Quito Norte, Nueva Direccion\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/me/actualizar",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "me",
+                                "actualizar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Consultar Mis Vehículos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{client_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/me/vehiculos",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "me",
+                                "vehiculos"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. Usuarios y Roles (Admin o Root)",
+            "item": [
+                {
+                    "name": "Registro Público (Crear Cliente - Sin Token)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"user_id\", jsonData.id_person);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"password\": \"miPasswordSeguro123\",\n  \"person\": {\n    \"dni\": \"1723456784\",\n    \"email\": \"test.usuario@example.com\",\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Perez\",\n    \"middle_name\": \"Carlos\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0999999999\",\n    \"address\": \"Av. de los Granados, Quito\"\n  },\n  \"roles\": []\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/crear",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "crear"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Usuario Administrador (Requiere root_token)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"other_user_id\", jsonData.id_person);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"password\": \"passwordGomez456\",\n  \"person\": {\n    \"dni\": \"1710034065\",\n    \"email\": \"test.maria@example.com\",\n    \"first_name\": \"Maria\",\n    \"last_name\": \"Gomez\",\n    \"middle_name\": \"Eugenia\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0988888888\",\n    \"address\": \"Guayaquil Centro\"\n  },\n  \"roles\": [\n    \"Administrador\"\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/crear",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "crear"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Usuarios (Admin/Root)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/listar",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "listar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Buscar Usuarios (Admin/Root)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/buscar?username=root&apellido=Super",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "buscar"
+                            ],
+                            "query": [
+                                {
+                                    "key": "username",
+                                    "value": "root"
+                                },
+                                {
+                                    "key": "apellido",
+                                    "value": "Super"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Usuario por ID (Admin/Root)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/obtener/{{user_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "obtener",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Actualizar Usuario por ID (Admin/Root)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"person\": {\n    \"phone\": \"0981112223\",\n    \"address\": \"Direccion modificada por Admin\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/actualizar/{{user_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "actualizar",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Modificar Roles de Usuario (Admin/Root)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"roles\": [\n    \"Cliente\",\n    \"Administrador\"\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/roles/{{user_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "roles",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Eliminar Usuario (Baja Logica - Admin/Root)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/usuario/eliminar/{{user_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuario",
+                                "eliminar",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Rol (Admin/Root)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Invitado\",\n  \"description\": \"Acceso limitado a consultas publicas.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/rol/crear",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "rol",
+                                "crear"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Roles (Admin/Root)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/rol/listar",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "rol",
+                                "listar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Rol por ID (Admin/Root)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/rol/obtener/{{role_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "rol",
+                                "obtener",
+                                "{{role_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Actualizar Rol (Admin/Root)",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"description\": \"Descripcion de rol editada por Admin.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/rol/actualizar/{{role_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "rol",
+                                "actualizar",
+                                "{{role_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Eliminar Rol (Admin/Root)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/rol/eliminar/{{role_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "rol",
+                                "eliminar",
+                                "{{role_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "[INTERNO/DIRECTO] Validar Usuario Existente",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8000/usuarios/internal/validar/{{user_id}}",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8000",
+                            "path": [
+                                "usuarios",
+                                "internal",
+                                "validar",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "[INTERNO/DIRECTO] API Root Usuarios",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8000/",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8000",
+                            "path": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Swagger UI Documentacion Usuarios",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/usuarios/docs",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "usuarios",
+                                "docs"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Vehículos",
+            "item": [
+                {
+                    "name": "Crear Vehículo A (Auto)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"vehicle_id\", jsonData.id);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"Auto\",\n  \"data\": {\n    \"plate\": \"PDF9876\",\n    \"brand\": \"Toyota\",\n    \"model\": \"Yaris\",\n    \"color\": \"Gris\",\n    \"year\": 2022,\n    \"classification\": \"Gasolina\",\n    \"doors\": 4,\n    \"fuelType\": \"Gasolina\",\n    \"trunkCapacity\": 350\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/vehiculo/crear",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "vehiculo",
+                                "crear"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Vehículo B (Moto)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"other_vehicle_id\", jsonData.id);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"type\": \"Moto\",\n  \"data\": {\n    \"plate\": \"AB-123X\",\n    \"brand\": \"Honda\",\n    \"model\": \"Cruiser\",\n    \"color\": \"Negro\",\n    \"year\": 2022,\n    \"classification\": \"Gasolina\",\n    \"motorcycleType\": \"Deportiva\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/vehiculo/crear",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "vehiculo",
+                                "crear"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Vehículos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/vehiculo/listar",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "vehiculo",
+                                "listar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Vehículo por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/vehiculo/obtener/{{vehicle_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "vehiculo",
+                                "obtener",
+                                "{{vehicle_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Actualizar Vehículo",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"color\": \"Azul Metalico\",\n  \"year\": 2023\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/vehiculo/actualizar/{{vehicle_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "vehiculo",
+                                "actualizar",
+                                "{{vehicle_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Eliminar Vehículo",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/vehiculo/eliminar/{{vehicle_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "vehiculo",
+                                "eliminar",
+                                "{{vehicle_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "[INTERNO/DIRECTO] Validar Vehículo",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:3000/vehiculos/internal/validar/{{vehicle_id}}",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000",
+                            "path": [
+                                "vehiculos",
+                                "internal",
+                                "validar",
+                                "{{vehicle_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "[INTERNO/DIRECTO] API Root Vehículos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:3000/",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "3000",
+                            "path": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Swagger UI Documentacion Vehículos",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/vehiculos/docs/",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "vehiculos",
+                                "docs",
+                                ""
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. Zonas y Espacios",
+            "item": [
+                {
+                    "name": "Crear Zona de Parqueo",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"zone_id\", jsonData.zoneId);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Zona A - Planta Baja\",\n  \"description\": \"Zona principal de estacionamiento\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 10\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/zona/crear",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "zona",
+                                "crear"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Zonas (Acceso Publico - Sin Token)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/zona/listar",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "zona",
+                                "listar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Actualizar Zona",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Zona Principal Modificada\",\n  \"description\": \"Zona de alta capacidad\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 25\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/zona/actualizar/{{zone_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "zona",
+                                "actualizar",
+                                "{{zone_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Eliminar/Desactivar Zona",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/zona/eliminar/{{zone_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "zona",
+                                "eliminar",
+                                "{{zone_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Crear Espacio",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"space_id\", jsonData.id);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"zoneId\": \"{{zone_id}}\",\n  \"description\": \"Espacio E-101\",\n  \"type\": \"AUTO\",\n  \"estado\": \"DISPONIBLE\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/espacio/crear",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "espacio",
+                                "crear"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Espacios (Acceso Publico - Sin Token)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/espacio/listar",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "espacio",
+                                "listar"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Obtener Espacio por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/espacio/obtener/{{space_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "espacio",
+                                "obtener",
+                                "{{space_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Ocupar Espacio (Cambiar Estado - Admin/Root)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/espacio/estado/{{space_id}}/estado/OCUPADO?vehiculoId={{vehicle_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "espacio",
+                                "estado",
+                                "{{space_id}}",
+                                "estado",
+                                "OCUPADO"
+                            ],
+                            "query": [
+                                {
+                                    "key": "vehiculoId",
+                                    "value": "{{vehicle_id}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Liberar Espacio (Cambiar Estado - Admin/Root)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/espacio/estado/{{space_id}}/estado/DISPONIBLE",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "espacio",
+                                "estado",
+                                "{{space_id}}",
+                                "estado",
+                                "DISPONIBLE"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Espacios por Estado",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/espacio/estado/DISPONIBLE",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "espacio",
+                                "estado",
+                                "DISPONIBLE"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Eliminar Espacio por ID",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/espacio/eliminar/{{space_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "espacio",
+                                "eliminar",
+                                "{{space_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "[INTERNO/DIRECTO] Listar Espacios por Zona y Estado",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8080/api/v1/espacios/zona/{{zone_id}}/estado/DISPONIBLE",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8080",
+                            "path": [
+                                "api",
+                                "v1",
+                                "espacios",
+                                "zona",
+                                "{{zone_id}}",
+                                "estado",
+                                "DISPONIBLE"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Swagger UI Documentacion Zonas y Espacios",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/zonas/docs",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "zonas",
+                                "docs"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5. Asignaciones y Trazabilidad",
+            "item": [
+                {
+                    "name": "Crear Asignación (Vincular vehículo a propietario)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"userId\": \"{{user_id}}\",\n  \"vehicleId\": \"{{vehicle_id}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/asignacion/crear",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "asignacion",
+                                "crear"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Actualizar Asignación",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"active\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/asignacion/actualizar/{{user_id}}/{{vehicle_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "asignacion",
+                                "actualizar",
+                                "{{user_id}}",
+                                "{{vehicle_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Eliminar Asignación (Borrado Fisico)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/asignacion/eliminar/{{user_id}}/{{vehicle_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "asignacion",
+                                "eliminar",
+                                "{{user_id}}",
+                                "{{vehicle_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Consultar Flota de un Propietario (Enriquecida)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/asignacion/propietario/{{user_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "asignacion",
+                                "propietario",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Consultar Trazabilidad / Auditoría General",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/asignacion/trazabilidad",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "asignacion",
+                                "trazabilidad"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Consultar Trazabilidad por Vehículo",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/asignacion/trazabilidad/vehiculo/{{vehicle_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "asignacion",
+                                "trazabilidad",
+                                "vehiculo",
+                                "{{vehicle_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Consultar Trazabilidad por Propietario",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{root_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/asignacion/trazabilidad/propietario/{{user_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "asignacion",
+                                "trazabilidad",
+                                "propietario",
+                                "{{user_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "[SSE - DIRECTO] Stream en Tiempo Real (Server-Sent Events)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{asignaciones_url}}/sse/espacios",
+                            "host": [
+                                "{{asignaciones_url}}"
+                            ],
+                            "path": [
+                                "sse",
+                                "espacios"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Swagger UI Documentacion Asignaciones",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/asignaciones/docs",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "asignaciones",
+                                "docs"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "6. Tickets de Parqueadero",
+            "item": [
+                {
+                    "name": "Crear Ticket (Auto Exitoso)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () { pm.response.to.have.status(201); });",
+                                    "var jsonData = pm.response.json();",
+                                    "pm.collectionVariables.set(\"ticket_id\", jsonData.id_ticket);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{client_token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"id_espacio\": \"{{space_id}}\",\n  \"id_vehiculo\": \"{{vehicle_id}}\",\n  \"id_usuario\": \"{{user_id}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/ticket/crear",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "ticket",
+                                "crear"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Listar Todos los Tickets",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{client_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/ticket/listar-todos",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "ticket",
+                                "listar-todos"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Buscar Ticket (Usuario o Vehiculo)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{client_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/ticket/buscar?id_usuario={{user_id}}&id_vehiculo={{vehicle_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "ticket",
+                                "buscar"
+                            ],
+                            "query": [
+                                {
+                                    "key": "id_usuario",
+                                    "value": "{{user_id}}"
+                                },
+                                {
+                                    "key": "id_vehiculo",
+                                    "value": "{{vehicle_id}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Pagar y Cerrar Ticket",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{client_token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{gateway_url}}/ticket/pagar/{{ticket_id}}",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "ticket",
+                                "pagar",
+                                "{{ticket_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "[INTERNO/DIRECTO] API Root Tickets",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://localhost:8001/",
+                            "host": [
+                                "localhost"
+                            ],
+                            "port": "8001",
+                            "path": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Swagger UI Documentacion Tickets",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/tickets/docs",
+                            "host": [
+                                "{{gateway_url}}"
+                            ],
+                            "path": [
+                                "tickets",
+                                "docs"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "gateway_url",
+            "value": "http://localhost:9000",
+            "type": "string"
+        },
+        {
+            "key": "asignaciones_url",
+            "value": "http://localhost:3001",
+            "type": "string"
+        },
+        {
+            "key": "root_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "client_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "root_refresh_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "client_refresh_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "other_user_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "vehicle_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "other_vehicle_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "zone_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "space_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "ticket_id",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}

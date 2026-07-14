@@ -22,7 +22,7 @@ export class VehicleService {
 
     const exists = await this.vehicleRepository.findOne({
       where: {
-        plate: cleanPlate,
+        plate: ILike(cleanPlate),
       },
     });
     if (exists) {
@@ -59,7 +59,7 @@ export class VehicleService {
         const cleanPlate = data.plate.trim().toLowerCase();
         if (cleanPlate !== vehicle.plate) {
           const exists = await this.vehicleRepository.findOne({
-            where: { plate: cleanPlate },
+            where: { plate: ILike(cleanPlate) },
           });
           if (exists && exists.id !== id) {
             throw new ConflictException(

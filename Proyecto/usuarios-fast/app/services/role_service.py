@@ -30,8 +30,8 @@ class RoleService:
         
         role_name_clean = role_in.name.strip().lower()
 
-        # Validar si el rol con ese nombre ya existe
-        existing_role = db.query(Role).filter(Role.name == role_name_clean).first()
+        # Validar si el rol con ese nombre ya existe (case-insensitive)
+        existing_role = db.query(Role).filter(func.lower(Role.name) == role_name_clean).first()
         if existing_role:
             if existing_role.active:
                 raise EntityAlreadyExistsException(f"El rol con nombre '{role_name_clean}' ya está registrado.")
@@ -66,8 +66,8 @@ class RoleService:
                 raise HTTPException(status_code=400, detail="El nombre del rol no puede estar vacío o contener solo espacios en blanco.")
             
             role_name_clean = role_in.name.strip().lower()
-            if role_name_clean != role_obj.name:
-                existing_role = db.query(Role).filter(Role.name == role_name_clean).first()
+            if role_name_clean != role_obj.name.lower():
+                existing_role = db.query(Role).filter(func.lower(Role.name) == role_name_clean).first()
                 if existing_role:
                     raise EntityAlreadyExistsException(f"El rol con nombre '{role_name_clean}' ya está registrado.")
                 role_obj.name = role_name_clean

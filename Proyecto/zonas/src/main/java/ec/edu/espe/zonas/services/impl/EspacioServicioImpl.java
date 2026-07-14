@@ -82,6 +82,17 @@ public class EspacioServicioImpl implements EspacioServicio {
                 "La zona ya alcanzó su capacidad máxima"
             );
         }
+        if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
+            String descClean = dto.getDescription().trim();
+            boolean existsDesc = repositorioEspacio.findByZoneId(objZona.getId()).stream()
+                .anyMatch(e -> e.getDescription() != null && e.getDescription().trim().equalsIgnoreCase(descClean));
+            if (existsDesc) {
+                throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Ya existe un espacio con esa descripción en esta zona"
+                );
+            }
+        }
 
         Espacio newSpace = mapper.toEntityEspacio(dto);
         newSpace.setZone(objZona);

@@ -22,7 +22,7 @@ def seed_roles():
         ]
         role_objs = {}
         for role_name, description in default_roles:
-            role = db.query(Role).filter(Role.name == role_name).first()
+            role = db.query(Role).filter(func.lower(Role.name) == func.lower(role_name)).first()
             if not role:
                 role = Role(name=role_name, description=description, active=True)
                 db.add(role)
