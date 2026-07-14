@@ -1,3 +1,17 @@
+# --- STAGE 0: Development (hot reload) ---
+FROM node:20-slim AS development
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3002
+
+CMD ["npm", "run", "start:dev"]
+
 # --- STAGE 1: Build ---
 FROM node:20-slim AS builder
 
