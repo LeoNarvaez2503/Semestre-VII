@@ -91,17 +91,18 @@ const conectarSSE = () => {
         setConnectionStatus(true);
     };
 
-    eventSource.onmessage = (event) => {
+    const handleEvent = (event) => {
         try {
             const payload = JSON.parse(event.data);
             console.log('SSE recibido:', payload);
-            // Cada vez que recibimos un evento, recargamos todos los espacios
-            // (también sirve para reflejar nuevos espacios insertados)
             cargarEspacios();
         } catch (e) {
             console.error('Error al parsear evento SSE:', e);
         }
     };
+
+    eventSource.onmessage = handleEvent;
+    eventSource.addEventListener('espacios', handleEvent);
 
     eventSource.onerror = (error) => {
         console.error('SSE error:', error);
