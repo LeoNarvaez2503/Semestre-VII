@@ -15,7 +15,7 @@ export const iso_2_1 = {
       contenido: `ISO/IEC 29110-2-1:2015 es el pilar conceptual de toda la serie. Funciona como el **Marco de Referencia** (Framework) y la **Taxonomía oficial** de la familia de normas.
 
 ### Propósito del Framework
-- Establecer un glosario de términos unificado y definiciones estándar de ingeniería de software para evitar malentendidos lingüísticos.
+- Establecer un glosario de términos  y definiciones estándar de ingeniería de software para evitar malentendidos lingüísticos.
 - Explicar la lógica científica detrás de la creación de perfiles de ingeniería de software y sistemas adaptados a las limitaciones de recursos de las VSEs.
 
 ### Audiencia Objetivo
@@ -70,7 +70,7 @@ Aunque su foco son las VSEs (hasta 25 personas), el estándar advierte que sus b
           explicacion: "Las organizaciones grandes pueden adoptar la norma en subequipos, pero deben saber que los perfiles están optimizados para VSEs y no abordan problemáticas de macroestructura empresarial."
         },
         {
-          pregunta: "¿Qué evita el establecimiento de un glosario de términos unificado por esta parte?",
+          pregunta: "¿Qué evita el establecimiento de un glosario de términos  por esta parte?",
           opciones: [
             "Errores de sintaxis en el código de desarrollo",
             "Ambigüedades y malentendidos sobre el significado de roles y entregables en la norma",

@@ -17,9 +17,9 @@ echo "--------------------------------------------------------"
 
 cleanup_db() {
   # Limpiar datos de pruebas previas para asegurar la idempotencia del script
-  docker exec -i usuarios_db_unificado psql -U postgres -d usuarios -c "DELETE FROM users WHERE username IN ('jcperez', 'mgomez'); DELETE FROM persons WHERE email IN ('test.usuario@example.com', 'test.maria@example.com'); DELETE FROM roles WHERE name IN ('Cliente', 'Administrador');" >/dev/null 2>&1
-  docker exec -i vehiculos_db_unificado psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN ('PDF9876', 'PDF9999');" >/dev/null 2>&1
-  docker exec -i asignaciones_db_unificado psql -U admin -d asignaciones_db -c "DELETE FROM asignaciones;" >/dev/null 2>&1
+  docker exec -i usuarios_db_ psql -U postgres -d usuarios -c "DELETE FROM users WHERE username IN ('jcperez', 'mgomez'); DELETE FROM persons WHERE email IN ('test.usuario@example.com', 'test.maria@example.com'); DELETE FROM roles WHERE name IN ('Cliente', 'Administrador');" >/dev/null 2>&1
+  docker exec -i vehiculos_db_ psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN ('PDF9876', 'PDF9999');" >/dev/null 2>&1
+  docker exec -i asignaciones_db_ psql -U admin -d asignaciones_db -c "DELETE FROM asignaciones;" >/dev/null 2>&1
 }
 
 # Ejecutar limpieza inicial
@@ -227,7 +227,7 @@ run_test_case "Eliminar Lógicamente Asignación de Vehículo A con Usuario B (2
 
 # Caso 17b: Verificar directamente en la BD que la asignación sigue existiendo pero inactiva (eliminación lógica)
 echo -e "\n${BOLD}[Verificación BD] Comprobando eliminación lógica...${NC}"
-DB_ACTIVE_STATUS=$(docker exec -i asignaciones_db_unificado psql -U admin -d asignaciones_db -t -A -c "SELECT active FROM asignaciones WHERE user_id = '$USER_B_ID' AND vehicle_id = '$VEHICLE_A_ID';")
+DB_ACTIVE_STATUS=$(docker exec -i asignaciones_db_ psql -U admin -d asignaciones_db -t -A -c "SELECT active FROM asignaciones WHERE user_id = '$USER_B_ID' AND vehicle_id = '$VEHICLE_A_ID';")
 if [ "$DB_ACTIVE_STATUS" = "f" ]; then
   echo -e "${GREEN}✔ Confirmado en BD: La asignación persiste y su estado es active = false (eliminada lógicamente).${NC}"
 else

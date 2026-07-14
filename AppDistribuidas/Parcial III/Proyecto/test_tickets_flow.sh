@@ -19,15 +19,15 @@ echo "----------------------------------------------------------------------"
 cleanup_db() {
   echo -e "\n${BOLD}Limpiando datos de prueba previos...${NC}"
   # Limpiar tickets locales
-  docker exec -i tickets_db_unificado psql -U postgres -d tickets -c "DELETE FROM tickets;" >/dev/null 2>&1
+  docker exec -i tickets_db_ psql -U postgres -d tickets -c "DELETE FROM tickets;" >/dev/null 2>&1
   # Limpiar asignaciones
-  docker exec -i asignaciones_db_unificado psql -U admin -d asignaciones_db -c "DELETE FROM asignaciones;" >/dev/null 2>&1
+  docker exec -i asignaciones_db_ psql -U admin -d asignaciones_db -c "DELETE FROM asignaciones;" >/dev/null 2>&1
   # Limpiar vehículos
-  docker exec -i vehiculos_db_unificado psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN ('TKT9999', 'MT-123A');" >/dev/null 2>&1
+  docker exec -i vehiculos_db_ psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN ('TKT9999', 'MT-123A');" >/dev/null 2>&1
   # Limpiar espacios y zonas
-  docker exec -i zonas_db_unificado psql -U zonas_user -d zonas_db -c "DELETE FROM espacios WHERE description IN ('Espacio de auto para tickets', 'Espacio de moto para tickets', 'Espacio de auto 2 para tickets'); DELETE FROM zonas WHERE name = 'Zona Tickets';" >/dev/null 2>&1
+  docker exec -i zonas_db_ psql -U zonas_user -d zonas_db -c "DELETE FROM espacios WHERE description IN ('Espacio de auto para tickets', 'Espacio de moto para tickets', 'Espacio de auto 2 para tickets'); DELETE FROM zonas WHERE name = 'Zona Tickets';" >/dev/null 2>&1
   # Limpiar usuarios/personas
-  docker exec -i usuarios_db_unificado psql -U postgres -d usuarios -c "DELETE FROM persons WHERE email = 'ticket.test@example.com';" >/dev/null 2>&1
+  docker exec -i usuarios_db_ psql -U postgres -d usuarios -c "DELETE FROM persons WHERE email = 'ticket.test@example.com';" >/dev/null 2>&1
   echo -e "${GREEN}Limpieza completada.${NC}"
 }
 

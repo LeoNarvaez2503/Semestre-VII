@@ -5,11 +5,11 @@ import os
 
 def clean_db():
     print("Limpiando base de datos...")
-    os.system('docker exec -i tickets_db_unificado psql -U postgres -d tickets -c "DELETE FROM tickets;"')
-    os.system('docker exec -i asignaciones_db_unificado psql -U admin -d asignaciones_db -c "DELETE FROM asignaciones;"')
-    os.system('docker exec -i vehiculos_db_unificado psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN (\'TKT9999\', \'MT-123A\');"')
-    os.system('docker exec -i zonas_db_unificado psql -U zonas_user -d zonas_db -c "DELETE FROM espacios WHERE description IN (\'Espacio de auto para tickets\', \'Espacio de moto para tickets\', \'Espacio de auto 2 para tickets\'); DELETE FROM zonas WHERE name = \'Zona Tickets\';"')
-    os.system('docker exec -i usuarios_db_unificado psql -U postgres -d usuarios -c "DELETE FROM persons WHERE email = \'ticket.test@example.com\';"')
+    os.system('docker exec -i tickets_db_ psql -U postgres -d tickets -c "DELETE FROM tickets;"')
+    os.system('docker exec -i asignaciones_db_ psql -U admin -d asignaciones_db -c "DELETE FROM asignaciones;"')
+    os.system('docker exec -i vehiculos_db_ psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN (\'TKT9999\', \'MT-123A\');"')
+    os.system('docker exec -i zonas_db_ psql -U zonas_user -d zonas_db -c "DELETE FROM espacios WHERE description IN (\'Espacio de auto para tickets\', \'Espacio de moto para tickets\', \'Espacio de auto 2 para tickets\'); DELETE FROM zonas WHERE name = \'Zona Tickets\';"')
+    os.system('docker exec -i usuarios_db_ psql -U postgres -d usuarios -c "DELETE FROM persons WHERE email = \'ticket.test@example.com\';"')
     print("Limpieza completada.")
 
 def request(url, method="GET", body=None, token=None):

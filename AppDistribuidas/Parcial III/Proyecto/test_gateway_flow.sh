@@ -18,9 +18,9 @@ echo "--------------------------------------------------------"
 
 cleanup_db() {
   # Limpiar datos de pruebas previas para asegurar la idempotencia del script
-  docker exec -i usuarios_db_unificado psql -U postgres -d usuarios -c "DELETE FROM users WHERE username = 'jcperez'; DELETE FROM persons WHERE email = 'test.usuario@example.com'; DELETE FROM roles WHERE name IN ('Cliente', 'Administrador');" >/dev/null 2>&1
-  docker exec -i vehiculos_db_unificado psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN ('PDF9876', 'PDF9999', 'AB-123X');" >/dev/null 2>&1
-  docker exec -i zonas_db_unificado psql -U zonas_user -d zonas_db -c "DELETE FROM espacios WHERE description IN ('Espacio E-101', 'Espacio Temp-1', 'Espacio Temp-2', 'Espacio Inactivo'); DELETE FROM zonas WHERE name IN ('Zona A - Planta Baja', 'Zona Conflicto', 'Zona Inactiva');" >/dev/null 2>&1
+  docker exec -i usuarios_db_ psql -U postgres -d usuarios -c "DELETE FROM users WHERE username = 'jcperez'; DELETE FROM persons WHERE email = 'test.usuario@example.com'; DELETE FROM roles WHERE name IN ('Cliente', 'Administrador');" >/dev/null 2>&1
+  docker exec -i vehiculos_db_ psql -U admin -d vehiculos_db -c "DELETE FROM vehiculo WHERE placa IN ('PDF9876', 'PDF9999', 'AB-123X');" >/dev/null 2>&1
+  docker exec -i zonas_db_ psql -U zonas_user -d zonas_db -c "DELETE FROM espacios WHERE description IN ('Espacio E-101', 'Espacio Temp-1', 'Espacio Temp-2', 'Espacio Inactivo'); DELETE FROM zonas WHERE name IN ('Zona A - Planta Baja', 'Zona Conflicto', 'Zona Inactiva');" >/dev/null 2>&1
 }
 
 # Ejecutar limpieza inicial

@@ -2,7 +2,7 @@ services:
   # --- MICROSERVICIO: USUARIOS ---
   usuarios-db:
     image: postgres:15-alpine
-    container_name: usuarios_db_unificado
+    container_name: usuarios_db
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -13,7 +13,7 @@ services:
     volumes:
       - usuarios_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d usuarios"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d usuarios" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -22,7 +22,7 @@ services:
     build:
       context: ./usuarios-fast
       dockerfile: Dockerfile
-    container_name: usuarios_api_unificado
+    container_name: usuarios_api
     restart: always
     environment:
       DATABASE_URL: postgresql://postgres:admin@usuarios-db:5432/usuarios
@@ -34,7 +34,7 @@ services:
   # --- MICROSERVICIO: VEHICULOS ---
   vehiculos-db:
     image: postgres:15-alpine
-    container_name: vehiculos_db_unificado
+    container_name: vehiculos_db
     restart: always
     environment:
       POSTGRES_USER: admin
@@ -45,7 +45,7 @@ services:
     volumes:
       - vehiculos_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d vehiculos_db"]
+      test: [ "CMD-SHELL", "pg_isready -U admin -d vehiculos_db" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -54,7 +54,7 @@ services:
     build:
       context: ./vehiculos
       dockerfile: Dockerfile
-    container_name: vehiculos_app_unificado
+    container_name: vehiculos_app
     restart: always
     environment:
       PORT: 3000
@@ -70,7 +70,7 @@ services:
   # --- MICROSERVICIO: ZONAS ---
   zonas-db:
     image: postgres:16-alpine
-    container_name: zonas_db_unificado
+    container_name: zonas_db
     restart: always
     environment:
       POSTGRES_DB: zonas_db
@@ -81,7 +81,7 @@ services:
     volumes:
       - zonas_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U zonas_user -d zonas_db"]
+      test: [ "CMD-SHELL", "pg_isready -U zonas_user -d zonas_db" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -90,7 +90,7 @@ services:
     build:
       context: ./zonas
       dockerfile: Dockerfile
-    container_name: zonas_app_unificado
+    container_name: zonas_app
     restart: always
     environment:
       DB_URL: jdbc:postgresql://zonas-db:5432/zonas_db
@@ -108,7 +108,7 @@ services:
   # --- MICROSERVICIO: ASIGNACIONES Y TRAZABILIDAD ---
   asignaciones-db:
     image: postgres:15-alpine
-    container_name: asignaciones_db_unificado
+    container_name: asignaciones_db
     restart: always
     environment:
       POSTGRES_USER: admin
@@ -119,7 +119,7 @@ services:
     volumes:
       - asignaciones_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d asignaciones_db"]
+      test: [ "CMD-SHELL", "pg_isready -U admin -d asignaciones_db" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -128,7 +128,7 @@ services:
     build:
       context: ./asignacion-trazabilidad
       dockerfile: Dockerfile
-    container_name: asignaciones_app_unificado
+    container_name: asignaciones_app
     restart: always
     environment:
       PORT: 3001
@@ -171,7 +171,7 @@ services:
   # --- MICROSERVICIO: TICKETS ---
   tickets-db:
     image: postgres:15-alpine
-    container_name: tickets_db_unificado
+    container_name: tickets_db
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -182,7 +182,7 @@ services:
     volumes:
       - tickets_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d tickets"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d tickets" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -191,7 +191,7 @@ services:
     build:
       context: ./tickets
       dockerfile: Dockerfile
-    container_name: tickets_api_unificado
+    container_name: tickets_api
     restart: always
     environment:
       DATABASE_URL: postgresql://postgres:admin@tickets-db:5432/tickets
