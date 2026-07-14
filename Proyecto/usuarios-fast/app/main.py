@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import func
 from app.core.database import engine, Base, SessionLocal
 from app.routers import users, roles, auth
 from app.models.person import Person
