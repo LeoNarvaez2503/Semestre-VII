@@ -14,15 +14,22 @@ export class VehicleService {
   ) {}
 
   async create(createVehicleDto: CreateVehicleDto): Promise<Vehicle> {
+    const plate = createVehicleDto.data.plate;
+    if (/\s/.test(plate)) {
+      throw new BadRequestException('La placa no puede contener espacios.');
+    }
+    const cleanPlate = plate.trim().toLowerCase();
+
     const exists = await this.vehicleRepository.findOne({
       where: {
-        plate: ILike(createVehicleDto.data.plate),
+        plate: cleanPlate,
       },
     });
     if (exists) {
       throw new ConflictException('El vehículo ya está registrado.');
     }
 
+    createVehicleDto.data.plate = cleanPlate;
     const vehicle = VehicleFactory.create(createVehicleDto);
     return this.vehicleRepository.save(vehicle);
   }
@@ -45,19 +52,25 @@ export class VehicleService {
     const vehicle = await this.findOne(id);
     if (updateVehicleDto.data) {
       const data = updateVehicleDto.data;
-      if (data.plate && data.plate !== vehicle.plate) {
-        const exists = await this.vehicleRepository.findOne({
-          where: { plate: ILike(data.plate) },
-        });
-        if (exists && exists.id !== id) {
-          throw new ConflictException(
-            'La placa ya está registrada por otro vehículo.',
-          );
+      if (data.plate) {
+        if (/\s/.test(data.plate)) {
+          throw new BadRequestException('La placa no puede contener espacios.');
+        }
+        const cleanPlate = data.plate.trim().toLowerCase();
+        if (cleanPlate !== vehicle.plate) {
+          const exists = await this.vehicleRepository.findOne({
+            where: { plate: cleanPlate },
+          });
+          if (exists && exists.id !== id) {
+            throw new ConflictException(
+              'La placa ya está registrada por otro vehículo.',
+            );
+          }
+          vehicle.plate = cleanPlate;
         }
       }
       
       // Update fields
-      if (data.plate) vehicle.plate = data.plate;
       if (data.brand) vehicle.brand = data.brand;
       if (data.model) vehicle.model = data.model;
       if (data.color) vehicle.color = data.color;
