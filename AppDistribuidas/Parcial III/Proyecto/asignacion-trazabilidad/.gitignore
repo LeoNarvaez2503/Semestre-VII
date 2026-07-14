@@ -1,0 +1,12 @@
+/dist
+/node_modules
+/build
+logs
+*.log
+npm-debug.log*
+.DS_Store
+/coverage
+.env
+.env.local
+.temp
+.tmp

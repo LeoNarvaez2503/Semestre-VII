@@ -1,0 +1,923 @@
+{
+  "info": {
+    "_postman_id": "9a12c4b5-68d7-49f2-ae9a-bc01f8d43801",
+    "name": "Microservicios - Tickets de Parqueadero",
+    "description": "Colección para validar el ciclo de vida de los tickets, compatibilidad de vehículos y espacios, y validaciones de exclusividad.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Preparación",
+      "item": [
+        {
+          "name": "Login Root",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Token saved\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.access_token).to.not.be.undefined;",
+                  "    pm.collectionVariables.set(\"root_token\", jsonData.access_token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"root\",\n  \"password\": \"rootpassword123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/usuario/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Cliente de Prueba",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"test_user_id\", jsonData.id_person);",
+                  "pm.collectionVariables.set(\"test_username\", jsonData.username);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"miPasswordSeguro123\",\n  \"person\": {\n    \"dni\": \"1723456784\",\n    \"email\": \"ticket.test@example.com\",\n    \"first_name\": \"Juan\",\n    \"last_name\": \"Perez\",\n    \"middle_name\": \"Carlos\",\n    \"nationality\": \"Ecuatoriana\",\n    \"phone\": \"0987654321\",\n    \"address\": \"Quito\"\n  },\n  \"roles\": [\"Cliente\"]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/usuario/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login Cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"client_token\", jsonData.access_token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{test_username}}\",\n  \"password\": \"miPasswordSeguro123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/usuario/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "usuario",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Vehículo Auto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"test_auto_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Auto\",\n  \"data\": {\n    \"plate\": \"TKT-9999\",\n    \"brand\": \"Toyota\",\n    \"model\": \"Yaris\",\n    \"color\": \"Negro\",\n    \"year\": 2022,\n    \"classification\": \"Gasolina\",\n    \"doors\": 4,\n    \"trunkCapacity\": 350,\n    \"fuelType\": \"Gasolina\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/vehiculo/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "vehiculo",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Vehículo Moto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"test_moto_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"Moto\",\n  \"data\": {\n    \"plate\": \"MOTO-99\",\n    \"brand\": \"Yamaha\",\n    \"model\": \"R3\",\n    \"color\": \"Azul\",\n    \"year\": 2021,\n    \"classification\": \"Gasolina\",\n    \"motorcycleType\": \"Deportiva\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/vehiculo/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "vehiculo",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Asignar Auto a Cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"vehicleId\": \"{{test_auto_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Asignar Moto a Cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{test_user_id}}\",\n  \"vehicleId\": \"{{test_moto_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/asignacion/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "asignacion",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Zona de Parqueo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"test_zone_id\", jsonData.zoneId);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Zona Tickets\",\n  \"description\": \"Zona para pruebas de tickets\",\n  \"type\": \"REGULAR\",\n  \"capacidad\": 10\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/zona/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "zona",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Espacio Auto 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"test_space_auto_id\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zoneId\": \"{{test_zone_id}}\",\n  \"description\": \"Espacio de auto para tickets\",\n  \"type\": \"AUTO\",\n  \"estado\": \"DISPONIBLE\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/espacio/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "espacio",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Espacio Auto 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"test_space_auto_id2\", jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zoneId\": \"{{test_zone_id}}\",\n  \"description\": \"Espacio de auto 2 para tickets\",\n  \"type\": \"AUTO\",\n  \"estado\": \"DISPONIBLE\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/espacio/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "espacio",
+                "crear"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Flujo de Tickets",
+      "item": [
+        {
+          "name": "Crear Ticket Auto Exitoso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.expect(jsonData.id_ticket).to.not.be.undefined;",
+                  "pm.expect(jsonData.codigo_ticket).to.contain(\"ZONATICKETS_TKT-9999\");",
+                  "pm.collectionVariables.set(\"active_ticket_id\", jsonData.id_ticket);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{test_space_auto_id}}\",\n  \"id_vehiculo\": \"{{test_auto_id}}\",\n  \"id_usuario\": \"{{test_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/ticket/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "ticket",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validar Espacio Ocupado en Zonas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.expect(jsonData.estado).to.equal(\"OCUPADO\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9000/espacio/obtener/{{test_space_auto_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "espacio",
+                "obtener",
+                "{{test_space_auto_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validación: Comprar sobre espacio ocupado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{test_space_auto_id}}\",\n  \"id_vehiculo\": \"{{test_moto_id}}\",\n  \"id_usuario\": \"{{root_token}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/ticket/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "ticket",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validación: Persona con ticket activo duplicado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{test_space_auto_id2}}\",\n  \"id_vehiculo\": \"{{test_moto_id}}\",\n  \"id_usuario\": \"{{test_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/ticket/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "ticket",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validación: Incompatibilidad Moto en Espacio Auto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_espacio\": \"{{test_space_auto_id2}}\",\n  \"id_vehiculo\": \"{{test_moto_id}}\",\n  \"id_usuario\": \"{{test_user_id}}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:9000/ticket/crear",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "ticket",
+                "crear"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar Ticket",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9000/ticket/buscar?id_usuario={{test_user_id}}&id_vehiculo={{test_auto_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "ticket",
+                "buscar"
+              ],
+              "query": [
+                {
+                  "key": "id_usuario",
+                  "value": "{{test_user_id}}"
+                },
+                {
+                  "key": "id_vehiculo",
+                  "value": "{{test_auto_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar Todos los Tickets",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9000/ticket/listar-todos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "ticket",
+                "listar-todos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Pagar Ticket",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.expect(jsonData.estado_ticket).to.equal(\"pagado\");",
+                  "pm.expect(parseFloat(jsonData.valor_recaudado)).to.equal(2.0);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{client_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9000/ticket/pagar/{{active_ticket_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "ticket",
+                "pagar",
+                "{{active_ticket_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validar Espacio Disponible Tras Pago",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "pm.expect(jsonData.estado).to.equal(\"DISPONIBLE\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{root_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9000/espacio/obtener/{{test_space_auto_id}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9000",
+              "path": [
+                "espacio",
+                "obtener",
+                "{{test_space_auto_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "root_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "client_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_username",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_auto_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_moto_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_zone_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_space_auto_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_space_auto_id2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "active_ticket_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

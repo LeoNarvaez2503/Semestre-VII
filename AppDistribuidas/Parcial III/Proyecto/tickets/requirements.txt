@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+pg8000
+pydantic
+pydantic-settings
+requests
+python-dotenv
+pika
