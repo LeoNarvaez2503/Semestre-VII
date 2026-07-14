@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: mushuc_runa_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mushuc_runa
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    security_opt:
+      - no-new-privileges:true
+
+  backend-clientes:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: mushuc_runa_clientes
+    restart: always
+    command: node dist/apps/clientes/apps/clientes/src/main.js
+    ports:
+      - "127.0.0.1:4001:4001"
+    environment:
+      NODE_ENV: production
+      CLIENTES_PORT: 4001
+      FRONTEND_URL: http://localhost:3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: mushuc_runa
+      DB_SYNCHRONIZE: "true"
+      DB_SEED_DEMO: "true"
+      DB_LOGGING: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 160M
+    security_opt:
+      - no-new-privileges:true
+
+  backend-cuentas:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: mushuc_runa_cuentas
+    restart: always
+    command: node dist/apps/cuentas/apps/cuentas/src/main.js
+    ports:
+      - "127.0.0.1:4002:4002"
+    environment:
+      NODE_ENV: production
+      CUENTAS_PORT: 4002
+      FRONTEND_URL: http://localhost:3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: mushuc_runa
+      DB_SYNCHRONIZE: "true"
+      DB_LOGGING: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 160M
+    security_opt:
+      - no-new-privileges:true
+
+  backend-transacciones:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: mushuc_runa_transacciones
+    restart: always
+    command: node dist/apps/transacciones/apps/transacciones/src/main.js
+    ports:
+      - "127.0.0.1:4003:4003"
+    environment:
+      NODE_ENV: production
+      TRANSACCIONES_PORT: 4003
+      FRONTEND_URL: http://localhost:3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: mushuc_runa
+      DB_SYNCHRONIZE: "true"
+      DB_LOGGING: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 160M
+    security_opt:
+      - no-new-privileges:true
+
+  frontend:
+    build:
+      context: ./cooperativa-mushuc-runa
+      dockerfile: Dockerfile
+      args:
+        VITE_USE_BACKEND: "true"
+        VITE_CLIENTES_API_URL: http://localhost:4001
+        VITE_CUENTAS_API_URL: http://localhost:4002
+        VITE_TRANSACCIONES_API_URL: http://localhost:4003
+    container_name: mushuc_runa_frontend
+    restart: always
+    ports:
+      - "127.0.0.1:3000:8080"
+    depends_on:
+      - backend-clientes
+      - backend-cuentas
+      - backend-transacciones
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  pgdata:
