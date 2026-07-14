@@ -151,6 +151,8 @@ services:
       dockerfile: Dockerfile
     container_name: asignaciones_app
     restart: always
+    ports:
+      - "3001:3001"
     environment:
       PORT: 3001
       DB_HOST: asignaciones-db

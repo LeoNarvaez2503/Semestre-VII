@@ -5,6 +5,7 @@ import { AsignacionesModule } from './asignaciones/asignaciones.module';
 import { Asignacion } from './asignaciones/entities/asignacion.entity';
 import { Auditoria } from './asignaciones/entities/auditoria.entity';
 import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+import { SseModule } from './sse/sse.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
     }),
     AsignacionesModule,
     RabbitMQModule,
+    SseModule,
   ],
 })
 export class AppModule {}
