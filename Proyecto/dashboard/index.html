@@ -1,41 +1,498 @@
 <!DOCTYPE html>
-<html lang="es">
+<html class="light" lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - Espacios de Estacionamiento</title>
-    <!-- Tailwind CSS vía CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Estilos adicionales -->
-    <link rel="stylesheet" href="app.css" />
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>UrbanFlow - Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+    <!-- Redirección temprana si no está autenticado -->
+    <script>
+        if (!localStorage.getItem('access_token')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <!-- Design System Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface-dim": "#d8dadc",
+                        "tertiary-container": "#410004",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#131b2e",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "outline": "#76777d",
+                        "primary-container": "#131b2e",
+                        "outline-variant": "#c6c6cd",
+                        "secondary": "#006c49",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#45464d",
+                        "secondary-container": "#6cf8bb",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-tint": "#565e74",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "surface-bright": "#f7f9fb",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f4f6",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-container": "#ef4444",
+                        "surface-container": "#eceef0",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-surface": "#191c1e",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-secondary-container": "#00714d",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "on-background": "#191c1e",
+                        "error-container": "#ffdad6",
+                        "primary": "#000000",
+                        "tertiary-fixed": "#ffdad7",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-container": "#7c839b",
+                        "tertiary": "#000000",
+                        "on-secondary-fixed": "#002113",
+                        "background": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "1rem",
+                        "sidebar-width": "280px",
+                        "gutter-md": "1.5rem",
+                        "stack-sm": "0.75rem",
+                        "container-padding": "2rem"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "stat-value": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "stat-value": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f7f9fb;
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pulse-green {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            animation: pulse-g 2s infinite;
+        }
+        @keyframes pulse-g {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .pulse-red {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            animation: pulse-r 2s infinite;
+        }
+        @keyframes pulse-r {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .pulse-yellow {
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+            animation: pulse-y 2s infinite;
+        }
+        @keyframes pulse-y {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(245, 158, 11, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 p-6 font-sans antialiased">
+<body class="overflow-hidden">
 
-    <div class="max-w-7xl mx-auto">
-        <!-- Encabezado -->
-        <header class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">🅿️ Dashboard de Espacios</h1>
+    <!-- BARRA LATERAL (SIDEBAR) -->
+    <aside class="fixed top-0 left-0 h-full w-[280px] flex flex-col py-6 bg-primary dark:bg-primary z-50">
+        <!-- Brand Header -->
+        <div class="px-6 mb-10 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-on-primary-fixed flex items-center justify-center">
+                <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+            </div>
+            <div>
+                <h1 class="text-headline-lg font-headline-lg font-black text-on-primary">UrbanFlow</h1>
+                <p class="text-label-md font-label-md text-primary-fixed-dim opacity-70">Parking Management</p>
+            </div>
+        </div>
+
+        <!-- Nav Items -->
+        <nav class="flex-grow flex flex-col gap-1">
+            <button 
+                id="navDashboard"
+                class="bg-on-primary-fixed-variant text-on-primary rounded-lg mx-2 flex items-center gap-3 px-4 py-3 scale-98 transition-all font-label-md text-label-md text-left"
+            >
+                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Vista Parqueadero
+            </button>
+            <button 
+                id="navRoles"
+                class="hidden text-primary-fixed-dim hover:text-on-primary mx-2 flex items-center gap-3 px-4 py-3 hover:bg-on-primary-fixed-variant/50 transition-colors duration-200 font-label-md text-label-md text-left"
+            >
+                <span class="material-symbols-outlined" data-icon="lock_person">lock_person</span>
+                Roles y Permisos
+            </button>
+        </nav>
+
+        <!-- Footer Profile -->
+        <div class="mt-auto px-4 border-t border-on-primary-fixed-variant/30 pt-6">
+            <div class="flex items-center gap-3 px-2 mb-6">
+                <div class="w-10 h-10 rounded-full bg-on-primary-fixed-variant flex items-center justify-center overflow-hidden font-bold text-white text-base uppercase" id="userAvatar">
+                    U
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-on-primary font-label-md text-label-md truncate max-w-[150px]" id="usernameDisplay">root</span>
+                    <span class="text-primary-fixed-dim text-[10px] uppercase tracking-wider truncate max-w-[150px]" id="roleDisplay">Administrador</span>
+                </div>
+            </div>
+            <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 bg-on-primary-fixed-variant/20 hover:bg-on-primary-fixed-variant/40 text-on-primary py-3 rounded-lg transition-all text-label-md font-label-md">
+                <span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
+                Cerrar sesión
+            </button>
+        </div>
+    </aside>
+
+    <!-- AREA PRINCIPAL (MAIN STAGE) -->
+    <main class="ml-[280px] h-screen flex flex-col overflow-hidden">
+        
+        <!-- ENCABEZADO SUPERIOR (TOP BAR) -->
+        <header class="flex justify-between items-center w-full px-8 py-4 border-b border-outline-variant dark:border-outline bg-surface flex-shrink-0">
+            <h2 class="font-headline-lg text-headline-lg text-primary" id="currentViewTitle">Vista Parqueadero</h2>
             <div class="flex items-center gap-4">
-                <span id="totalEspacios" class="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Cargando...</span>
-                <span id="statusConexion" class="flex items-center gap-2 text-sm">
-                    <span class="w-3 h-3 bg-green-500 rounded-full inline-block" id="indicator"></span>
-                    <span id="statusText">Conectado</span>
-                </span>
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary-container/20 text-on-secondary-container" id="statusConexion">
+                    <span class="w-2 h-2 rounded-full bg-secondary animate-pulse" id="indicator"></span>
+                    <span class="text-label-md font-label-md" id="statusText">Conectado</span>
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+                    <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+                </button>
             </div>
         </header>
 
-        <!-- Contenedor de tarjetas (grid) -->
-        <div id="espaciosContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <!-- Las tarjetas se inyectan dinámicamente desde app.js -->
-        </div>
+        <!-- AREA DE CONTENIDO -->
+        <section class="flex-grow p-8 overflow-y-auto custom-scrollbar bg-background relative">
+            
+            <!-- ALERTA DE PERMISOS (Oculta por defecto) -->
+            <div id="permissionAlert" class="hidden mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-3">
+                <span class="material-symbols-outlined text-amber-500">warning</span>
+                <span id="permissionAlertMessage">No tienes privilegios para realizar esta acción.</span>
+            </div>
 
-        <!-- Pie de página con timestamp de última actualización -->
-        <footer class="mt-8 text-sm text-gray-500 text-center border-t pt-4">
-            Última actualización: <span id="lastUpdate">--</span>
-        </footer>
+            <!-- PESTAÑA 1: VISTA DE PARQUEADERO -->
+            <div id="tabDashboardContent" class="block space-y-8 animate-fade-in">
+                <!-- Bento-Style Stats (Vista Parqueadero) -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                    <!-- KPI: Total Plazas -->
+                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Total Plazas</span>
+                            <div class="text-stat-value font-stat-value text-primary mt-1" id="kpiTotal">--</div>
+                        </div>
+                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500">
+                            <span class="material-symbols-outlined text-[80px]">local_parking</span>
+                        </div>
+                    </div>
+                    <!-- KPI: Disponibles -->
+                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Disponibles</span>
+                            <div class="text-stat-value font-stat-value text-secondary mt-1" id="kpiDisponibles">--</div>
+                        </div>
+                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500 text-secondary">
+                            <span class="material-symbols-outlined text-[80px]">check_circle</span>
+                        </div>
+                    </div>
+                    <!-- KPI: Ocupadas -->
+                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Ocupadas</span>
+                            <div class="text-stat-value font-stat-value text-error mt-1" id="kpiOcupadas">--</div>
+                        </div>
+                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500 text-error">
+                            <span class="material-symbols-outlined text-[80px]">directions_car</span>
+                        </div>
+                    </div>
+                    <!-- KPI: Reservadas -->
+                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Reservadas</span>
+                            <div class="text-stat-value font-stat-value text-amber-500 mt-1" id="kpiReservadas">--</div>
+                        </div>
+                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500 text-amber-500">
+                            <span class="material-symbols-outlined text-[80px]">schedule</span>
+                        </div>
+                    </div>
+                    <!-- KPI: Ocupación -->
+                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group flex flex-col justify-between">
+                        <div class="relative z-10 flex justify-between items-center w-full">
+                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Ocupación</span>
+                            <div class="text-xl font-bold text-primary" id="kpiPorcentaje">0%</div>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 mt-4 overflow-hidden">
+                            <div id="kpiProgressBar" class="bg-primary h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grilla de Plazas -->
+                <div>
+                    <h3 class="font-headline-md text-headline-md text-primary mb-4 flex items-center gap-2">
+                        <span>Plazas de Estacionamiento</span>
+                        <span id="totalEspacios" class="text-label-md font-label-md bg-surface-container text-on-surface px-3 py-1 rounded-full font-bold">Cargando...</span>
+                    </h3>
+                    <div id="espaciosContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                        <div class="col-span-full text-center py-12">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
+                            <p class="text-on-surface-variant text-body-md mt-3 font-medium">Obteniendo distribución de espacios...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PESTAÑA 2: ROLES Y PERMISOS -->
+            <div id="tabRolesContent" class="hidden space-y-8 animate-fade-in">
+                
+                <!-- Acciones Cabecera -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="relative max-w-md w-full">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+                        <input id="roleSearchInput" class="w-full pl-10 pr-4 py-2.5 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-md text-body-md" placeholder="Buscar por nombre de rol..." type="text"/>
+                    </div>
+                    <button class="bg-primary text-white px-6 py-2.5 rounded-xl font-label-md text-label-md flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-sm" onclick="document.getElementById('modal-new-role').classList.remove('hidden')">
+                        <span class="material-symbols-outlined text-[20px]">add</span>
+                        Crear Nuevo Rol
+                    </button>
+                </div>
+
+                <!-- Bento-Style Stats (Roles y Permisos) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Total Roles</span>
+                            <div class="text-stat-value font-stat-value text-primary mt-1" id="bentoTotalRoles">--</div>
+                        </div>
+                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500">
+                            <span class="material-symbols-outlined text-[80px]">groups</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Usuarios Activos</span>
+                            <div class="text-stat-value font-stat-value text-primary mt-1" id="bentoActiveUsers">--</div>
+                        </div>
+                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500 text-secondary">
+                            <span class="material-symbols-outlined text-[80px]">person_check</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Permisos Definidos</span>
+                            <div class="text-stat-value font-stat-value text-primary mt-1" id="bentoTotalPerms">3</div>
+                        </div>
+                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500 text-error">
+                            <span class="material-symbols-outlined text-[80px]">shield_lock</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerta de Guardado de Roles -->
+                <div id="saveSuccessAlert" class="hidden p-4 rounded-xl bg-green-50 border border-green-200 text-green-800 text-sm flex items-center gap-3">
+                    <span class="material-symbols-outlined text-green-500">check_circle</span>
+                    <span>Configuración guardada exitosamente.</span>
+                </div>
+
+                <!-- Tabla de Roles -->
+                <div class="bg-white rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-surface-container-low border-b border-outline-variant/50">
+                            <tr>
+                                <th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Nombre del Rol</th>
+                                <th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Permisos Clave</th>
+                                <th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Usuarios</th>
+                                <th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/30" id="rolesTableBody">
+                            <!-- Inyectado dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- PANEL DESLIZABLE LATERAL (EDITAR PRIVILEGIOS SLIDE-OVER) -->
+    <div class="fixed inset-0 z-[60] invisible group" id="side-panel-edit">
+        <div class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300" id="panel-backdrop"></div>
+        <div class="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 flex flex-col" id="panel-content">
+            <div class="p-8 border-b border-outline-variant flex justify-between items-center">
+                <div>
+                    <h3 class="font-headline-lg text-headline-lg text-primary" id="panel-title">Editar Rol</h3>
+                    <p class="font-body-md text-body-md text-on-surface-variant">Gestione los privilegios del sistema</p>
+                </div>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors" id="btnCloseEditPanel">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <form id="editRoleForm" class="flex-grow flex flex-col justify-between overflow-hidden">
+                <div class="flex-grow overflow-y-auto p-8 custom-scrollbar space-y-8">
+                    <!-- Configuración General -->
+                    <section class="space-y-4">
+                        <h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Información General</h4>
+                        <input type="hidden" id="editRoleId">
+                        <div>
+                            <label class="block font-label-md text-label-md mb-1.5 text-on-surface">Nombre del Rol</label>
+                            <input id="editRoleNameInput" class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary transition-all font-body-md text-body-md" type="text" required/>
+                        </div>
+                        <div>
+                            <label class="block font-label-md text-label-md mb-1.5 text-on-surface">Descripción</label>
+                            <textarea id="editRoleDescriptionInput" class="w-full px-4 py-2 border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary transition-all h-24 font-body-md text-body-md"></textarea>
+                        </div>
+                    </section>
+
+                    <!-- Lista de Permisos Detallados -->
+                    <section class="space-y-4">
+                        <h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Privilegios Detallados</h4>
+                        <div class="space-y-3" id="permissionsChecklistContainer">
+                            <!-- Inyectado dinámicamente -->
+                        </div>
+                    </section>
+                </div>
+                
+                <div class="p-8 border-t border-outline-variant bg-surface-container-low flex gap-4 flex-shrink-0">
+                    <button type="button" class="flex-1 px-6 py-3 border border-outline-variant rounded-xl font-label-md text-label-md hover:bg-white transition-all" id="btnCancelRoleEdit">Cancelar</button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-primary text-white rounded-xl font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all shadow-md">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- Nuestro JavaScript -->
+    <!-- MODAL: CREAR NUEVO ROL -->
+    <div class="fixed inset-0 z-[70] hidden items-center justify-center p-4" id="modal-new-role">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="newRoleBackdrop"></div>
+        <form id="newRoleForm" class="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl p-8 flex flex-col gap-6 animate-fade-in">
+            <h3 class="font-headline-lg text-headline-lg text-primary text-center">Crear Nuevo Rol</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-label-md text-label-md mb-1.5 text-on-surface">Nombre del Rol</label>
+                    <input id="newRoleNameInput" class="w-full px-4 py-3 border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary transition-all font-body-md text-body-md" placeholder="Nombre del Rol (Ej: Operario)" type="text" required/>
+                </div>
+                <div>
+                    <label class="block font-label-md text-label-md mb-1.5 text-on-surface">Descripción</label>
+                    <textarea id="newRoleDescriptionInput" class="w-full px-4 py-3 border border-outline-variant rounded-xl h-24 focus:ring-2 focus:ring-primary transition-all font-body-md text-body-md" placeholder="Descripción del rol..." required></textarea>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button type="button" class="flex-1 py-3 border border-outline-variant rounded-xl font-label-md text-label-md hover:bg-surface-bright" id="btnCancelNewRole">Atrás</button>
+                <button type="submit" class="flex-1 py-3 bg-primary text-white rounded-xl font-label-md text-label-md hover:opacity-90 shadow-md">Continuar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- MODAL: CAMBIAR ESTADO DE PLAZA -->
+    <div id="editSpaceModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-outline-variant/30 animate-fade-in relative">
+            <h3 class="font-headline-lg text-headline-lg text-primary mb-2">Cambiar Estado de Plaza</h3>
+            <p class="text-body-md text-on-surface-variant mb-6" id="modalSpaceDetails">Plaza ID: --</p>
+
+            <form id="editSpaceForm" class="space-y-5">
+                <input type="hidden" id="modalSpaceId">
+                
+                <div>
+                    <label for="modalSpaceStatus" class="block font-label-md text-label-md mb-1.5 text-on-surface">Nuevo Estado de la Plaza</label>
+                    <select 
+                        id="modalSpaceStatus" 
+                        class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-xl text-primary focus:outline-none focus:ring-2 focus:ring-primary transition-all font-body-md text-body-md"
+                    >
+                        <option value="DISPONIBLE">DISPONIBLE</option>
+                        <option value="OCUPADO">OCUPADO</option>
+                        <option value="RESERVADO">RESERVADO</option>
+                    </select>
+                </div>
+
+                <div id="modalAlert" class="hidden p-3 rounded-lg text-xs"></div>
+
+                <div class="flex justify-end gap-3 pt-3">
+                    <button 
+                        type="button" 
+                        id="btnCancelEdit"
+                        class="px-5 py-3 border border-outline-variant rounded-xl font-label-md text-label-md hover:bg-surface-bright transition-all"
+                    >
+                        Cancelar
+                    </button>
+                    <button 
+                        type="submit" 
+                        id="btnSaveSpaceStatus"
+                        class="px-5 py-3 bg-primary text-white rounded-xl font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all shadow-md flex items-center gap-2"
+                    >
+                        <span id="modalBtnText">Confirmar</span>
+                        <svg id="modalBtnSpinner" class="animate-spin h-4 w-4 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script de lógica principal -->
     <script src="app.js"></script>
 </body>
 </html>

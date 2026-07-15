@@ -76,9 +76,11 @@ def check_roles(allowed_roles: List[str]):
 
 @router.post("/login", response_model=TokenResponse)
 def login(login_data: LoginRequest, request: Request, db: Session = Depends(get_db)):
-    # Búsqueda de usuario case-insensitive
-    user = db.query(User).filter(
-        func.lower(User.username) == login_data.username.strip().lower(),
+    # Búsqueda de usuario case-insensitive por username o email
+    from app.models.person import Person
+    user = db.query(User).join(Person).filter(
+        (func.lower(User.username) == login_data.username.strip().lower()) |
+        (func.lower(Person.email) == login_data.username.strip().lower()),
         User.active == True
     ).first()
 

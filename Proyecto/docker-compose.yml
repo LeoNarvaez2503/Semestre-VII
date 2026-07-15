@@ -310,6 +310,19 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  # --- FRONTEND DASHBOARD ---
+  dashboard-app:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    container_name: dashboard_app
+    restart: always
+    ports:
+      - "8070:80"
+    depends_on:
+      api-gateway:
+        condition: service_started
+
 volumes:
   usuarios_pgdata:
   vehiculos_pgdata:

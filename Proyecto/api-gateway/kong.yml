@@ -42,6 +42,7 @@ services:
           - /usuario/login
         methods:
           - POST
+          - OPTIONS
         plugins:
           - name: request-transformer
             config:
@@ -414,6 +415,7 @@ services:
           - /espacio/listar
         methods:
           - GET
+          - OPTIONS
         plugins:
           - name: request-transformer
             config:
