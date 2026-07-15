@@ -14,9 +14,9 @@ COPY . .
 
 # Set environment variables for the build
 ARG VITE_USE_BACKEND=true
-ARG VITE_CLIENTES_API_URL=http://localhost:4001
-ARG VITE_CUENTAS_API_URL=http://localhost:4002
-ARG VITE_TRANSACCIONES_API_URL=http://localhost:4003
+ARG VITE_CLIENTES_API_URL=http://localhost:3000/api/clientes
+ARG VITE_CUENTAS_API_URL=http://localhost:3000/api/cuentas
+ARG VITE_TRANSACCIONES_API_URL=http://localhost:3000/api/transacciones
 
 ENV VITE_USE_BACKEND=$VITE_USE_BACKEND
 ENV VITE_CLIENTES_API_URL=$VITE_CLIENTES_API_URL

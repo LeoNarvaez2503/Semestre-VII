@@ -18,6 +18,16 @@ export class TransaccionesService {
     private readonly config: Repository<SystemConfigEntity>,
   ) {}
 
+  async onModuleInit() {
+    const count = await this.transactions.count();
+    if (count > 0) return;
+
+    await this.transactions.save([
+      { id: 'tx-init-1', sourceAccountId: null, destinationAccountId: 'acc-savings-anthony', type: 'DEPOSIT', amount: 10000, description: 'Deposito Inicial de Apertura en Efectivo', ipAddress: '192.168.1.100', status: 'SUCCESS', fee: 0, refCode: 'DEP-773821' },
+      { id: 'tx-init-2', sourceAccountId: 'acc-savings-anthony', destinationAccountId: 'acc-savings-segundo', type: 'TRANSFER', amount: 50, description: 'Transferencia por Servicios Ambientales', ipAddress: '192.168.1.102', status: 'SUCCESS', fee: 0, refCode: 'TRF-552194' },
+    ]);
+  }
+
   findAll() {
     return this.transactions.find({ order: { timestamp: 'DESC' } });
   }

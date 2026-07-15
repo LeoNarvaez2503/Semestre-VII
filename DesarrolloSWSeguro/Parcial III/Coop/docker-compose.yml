@@ -1,142 +1,207 @@
 version: '3.8'
 
 services:
+
   db:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: mushuc_runa_db
-    restart: always
+    env_file:
+      - ./Backend/.env
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mushuc_runa
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+
+  # Broker de EVENTOS (Redis)
+  redis:
+    image: redis:7-alpine
+    container_name: redis_broker
+    env_file:
+      - ./Backend/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - redisdata:/data
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis_insight_ui
+    env_file:
+      - ./Backend/.env
+    ports:
+      - "8001:5540"
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
     security_opt:
       - no-new-privileges:true
 
-  backend-clientes:
+  # --- Microservicio A (Transacciones) ---
+  svc-transacciones:
     build:
       context: ./Backend
-      dockerfile: Dockerfile
-    container_name: mushuc_runa_clientes
-    restart: always
-    command: node dist/apps/clientes/apps/clientes/src/main.js
-    ports:
-      - "127.0.0.1:4001:4001"
-    environment:
-      NODE_ENV: production
-      CLIENTES_PORT: 4001
-      FRONTEND_URL: http://localhost:3000
+      dockerfile: apps/transacciones/Dockerfile
+    container_name: svc-transacciones
+    env_file:
+      - ./Backend/.env
+    environment: 
       DB_HOST: db
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      DB_DATABASE: mushuc_runa
+      DB_DATABASE: TransaccionesBDD
       DB_SYNCHRONIZE: "true"
-      DB_SEED_DEMO: "true"
       DB_LOGGING: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      TCP_PORT: 4003
+      TRANSACCIONES_PORT: 5003
+    ports:
+      - "5003:5003"
     depends_on:
       db:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 160M
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
     security_opt:
       - no-new-privileges:true
 
-  backend-cuentas:
+  # --- Microservicio B (Cuentas) ---
+  svc-cuentas:
     build:
       context: ./Backend
-      dockerfile: Dockerfile
-    container_name: mushuc_runa_cuentas
-    restart: always
-    command: node dist/apps/cuentas/apps/cuentas/src/main.js
-    ports:
-      - "127.0.0.1:4002:4002"
-    environment:
-      NODE_ENV: production
-      CUENTAS_PORT: 4002
-      FRONTEND_URL: http://localhost:3000
+      dockerfile: apps/cuentas/Dockerfile
+    container_name: svc-cuentas
+    env_file:
+      - ./Backend/.env
+    environment: 
       DB_HOST: db
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      DB_DATABASE: mushuc_runa
+      DB_DATABASE: CuentasBDD
       DB_SYNCHRONIZE: "true"
       DB_LOGGING: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      TCP_PORT: 4002
+      CUENTAS_PORT: 5002
+    ports:
+      - "5002:5002"
     depends_on:
       db:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 160M
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
     security_opt:
       - no-new-privileges:true
 
-  backend-transacciones:
+  # --- Microservicio C (Clientes / Usuarios) ---
+  svc-clientes:
     build:
       context: ./Backend
-      dockerfile: Dockerfile
-    container_name: mushuc_runa_transacciones
-    restart: always
-    command: node dist/apps/transacciones/apps/transacciones/src/main.js
-    ports:
-      - "127.0.0.1:4003:4003"
+      dockerfile: apps/clientes/Dockerfile
+    container_name: svc-clientes
+    env_file:
+      - ./Backend/.env
     environment:
-      NODE_ENV: production
-      TRANSACCIONES_PORT: 4003
-      FRONTEND_URL: http://localhost:3000
       DB_HOST: db
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      DB_DATABASE: mushuc_runa
+      DB_DATABASE: UsuariosBDD
       DB_SYNCHRONIZE: "true"
       DB_LOGGING: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      TCP_PORT: 4001
+      CLIENTES_PORT: 5001
+    ports:
+      - "5001:5001"
     depends_on:
       db:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 160M
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
     security_opt:
       - no-new-privileges:true
 
+  # --- API Gateway ---
+  gateway:
+    build:
+      context: ./Backend
+      dockerfile: apps/sistema_bancario/Dockerfile
+    container_name: gateway
+    env_file:
+      - ./Backend/.env
+    environment:
+      SVC_TRANSACCIONES_HOST: svc-transacciones
+      SVC_TRANSACCIONES_PORT: 4003
+      SVC_TRANSACCIONES_HTTP_PORT: 5003
+      SVC_CUENTAS_HOST: svc-cuentas
+      SVC_CUENTAS_PORT: 4002
+      SVC_CUENTAS_HTTP_PORT: 5002
+      SVC_CLIENTES_HOST: svc-clientes
+      SVC_CLIENTES_PORT: 4001
+      SVC_CLIENTES_HTTP_PORT: 5001
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports: 
+      - "3000:3000"
+    depends_on: 
+      - svc-transacciones
+      - svc-cuentas
+      - svc-clientes
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+  # --- Frontend ---
   frontend:
     build:
       context: ./cooperativa-mushuc-runa
       dockerfile: Dockerfile
-      args:
-        VITE_USE_BACKEND: "true"
-        VITE_CLIENTES_API_URL: http://localhost:4001
-        VITE_CUENTAS_API_URL: http://localhost:4002
-        VITE_TRANSACCIONES_API_URL: http://localhost:4003
-    container_name: mushuc_runa_frontend
-    restart: always
+    container_name: frontend_ui
     ports:
-      - "127.0.0.1:3000:8080"
+      - "8080:8080"
     depends_on:
-      - backend-clientes
-      - backend-cuentas
-      - backend-transacciones
-    deploy:
-      resources:
-        limits:
-          memory: 64M
+      - gateway
+    restart: unless-stopped
     security_opt:
       - no-new-privileges:true
 
 volumes:
   pgdata:
+  redisdata:

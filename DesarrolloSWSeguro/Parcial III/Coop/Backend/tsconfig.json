@@ -15,7 +15,9 @@
     "skipLibCheck": true,
     "strictPropertyInitialization": false,
     "paths": {
-      "@common/*": ["libs/common/src/*"]
+      "@common/*": [
+        "libs/common/src/*"
+      ]
     }
   }
 }

@@ -15,6 +15,17 @@ export class CuentasService {
     private readonly auditLogs: Repository<AuditLogEntity>,
   ) {}
 
+  async onModuleInit() {
+    const count = await this.accounts.count();
+    if (count > 0) return;
+
+    await this.accounts.save([
+      { id: 'acc-savings-anthony', userId: 'client-anthony', accountNumber: '100234567', type: 'AHORROS', balance: 12450.5, status: 'ACTIVE' },
+      { id: 'acc-checking-anthony', userId: 'client-anthony', accountNumber: '200456789', type: 'CORRIENTE', balance: 1500, status: 'ACTIVE' },
+      { id: 'acc-savings-segundo', userId: 'client-segundo', accountNumber: '100555666', type: 'AHORROS', balance: 850, status: 'ACTIVE' },
+    ]);
+  }
+
   findAll() {
     return this.accounts.find({ order: { createdAt: 'ASC' } });
   }

@@ -105,7 +105,7 @@ function LoginScreen() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <div className="mx-auto grid min-h-screen max-w-7xl grid-cols-1 lg:grid-cols-2">
+      <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-2">
         <section className="flex flex-col justify-between bg-[linear-gradient(135deg,#0f172a_0%,#14532d_100%)] p-8 sm:p-12">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 text-lg font-black shadow-lg shadow-emerald-950/30">
@@ -145,7 +145,7 @@ function LoginScreen() {
         </section>
 
         <main className="flex items-center justify-center bg-slate-50 p-6 text-slate-900 sm:p-10">
-          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/10 sm:p-8">
+          <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/10 sm:p-8">
             <div className="mb-6">
               <div className="mb-2 flex items-center gap-2 text-emerald-700">
                 <KeyRound className="h-5 w-5" />

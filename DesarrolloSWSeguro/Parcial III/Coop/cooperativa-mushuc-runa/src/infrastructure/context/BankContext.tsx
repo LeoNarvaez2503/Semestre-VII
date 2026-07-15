@@ -109,11 +109,28 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ? users.find(user => user.id === userIdOverride && user.status === 'ACTIVE') || null
         : null;
 
+      const parsedConf = conf ? {
+        ...conf,
+        dailyTransferLimit: Number(conf.dailyTransferLimit),
+        commissionFee: Number(conf.commissionFee),
+        savingsInterestRate: Number(conf.savingsInterestRate)
+      } : conf;
+
+      const parsedAccounts = accounts.map(a => ({
+        ...a,
+        balance: Number(a.balance)
+      }));
+
+      const parsedTxs = txs.map(t => ({
+        ...t,
+        amount: Number(t.amount)
+      }));
+
       setAllUsers(users);
-      setAllAccounts(accounts);
-      setTransactions(txs);
+      setAllAccounts(parsedAccounts);
+      setTransactions(parsedTxs);
       setAuditLogs(logs);
-      setSystemConfig(conf);
+      setSystemConfig(parsedConf);
       setCurrentUser(sessionUser);
 
       if (sessionUser) {

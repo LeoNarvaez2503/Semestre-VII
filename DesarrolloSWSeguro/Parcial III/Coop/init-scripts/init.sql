@@ -1,0 +1,3 @@
+CREATE DATABASE "TransaccionesBDD";
+CREATE DATABASE "CuentasBDD";
+CREATE DATABASE "UsuariosBDD";

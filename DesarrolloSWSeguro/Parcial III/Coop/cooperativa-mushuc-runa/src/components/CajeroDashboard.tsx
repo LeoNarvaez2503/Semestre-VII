@@ -32,11 +32,9 @@ export const CajeroDashboard: React.FC = () => {
     clearNotifications
   } = useBank();
 
-  // Search states
   const [searchQuery, setSearchQuery] = useState('');
   const [searchedUser, setSearchedUser] = useState<User | null>(null);
   const [searchedAccounts, setSearchedAccounts] = useState<Account[]>([]);
-  const [searchError, setSearchError] = useState<string | null>(null);
 
   // Transaction states
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
@@ -45,47 +43,32 @@ export const CajeroDashboard: React.FC = () => {
   const [description, setDescription] = useState('');
   const [otpCode, setOtpCode] = useState(''); // Redención de código OTP
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSearchError(null);
+  const filteredClients = React.useMemo(() => {
+    const clients = allUsers.filter(u => u.role === 'CLIENTE');
+    if (!searchQuery.trim()) return clients;
+    
+    const query = searchQuery.trim().toLowerCase();
+    return clients.filter(client => {
+      const matchesClient = client.name.toLowerCase().includes(query) || 
+                            client.identityId.includes(query) ||
+                            client.email.toLowerCase().includes(query);
+      const userAccs = allAccounts.filter(acc => acc.userId === client.id);
+      const matchesAccount = userAccs.some(acc => acc.accountNumber.includes(query));
+      
+      return matchesClient || matchesAccount;
+    });
+  }, [allUsers, allAccounts, searchQuery]);
+
+  const selectClient = (client: User) => {
     clearNotifications();
-    setSelectedAccount(null);
-    setSearchedUser(null);
-    setSearchedAccounts([]);
-
-    if (!searchQuery.trim()) {
-      setSearchError('Por favor ingrese un número de cédula o de cuenta válido.');
-      return;
+    setSearchedUser(client);
+    const userAccs = allAccounts.filter(acc => acc.userId === client.id);
+    setSearchedAccounts(userAccs);
+    if (userAccs.length > 0) {
+      setSelectedAccount(userAccs[0]);
+    } else {
+      setSelectedAccount(null);
     }
-
-    // Search by Account Number first
-    const matchedAccount = allAccounts.find(acc => acc.accountNumber === searchQuery.trim());
-    if (matchedAccount) {
-      const user = allUsers.find(u => u.id === matchedAccount.userId);
-      if (user) {
-        setSearchedUser(user);
-        const userAccs = allAccounts.filter(acc => acc.userId === user.id);
-        setSearchedAccounts(userAccs);
-        setSelectedAccount(matchedAccount);
-        return;
-      }
-    }
-
-    // Search by Identity ID (Cédula)
-    const matchedUser = allUsers.find(
-      u => u.identityId === searchQuery.trim() && u.role === 'CLIENTE'
-    );
-    if (matchedUser) {
-      setSearchedUser(matchedUser);
-      const userAccs = allAccounts.filter(acc => acc.userId === matchedUser.id);
-      setSearchedAccounts(userAccs);
-      if (userAccs.length > 0) {
-        setSelectedAccount(userAccs[0]);
-      }
-      return;
-    }
-
-    setSearchError('No se encontró ningún cliente o cuenta con los datos proporcionados.');
   };
 
   const handleBranchTransaction = async (e: React.FormEvent) => {
@@ -156,30 +139,52 @@ export const CajeroDashboard: React.FC = () => {
         <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
           <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest font-mono mb-4">Módulo de Búsqueda de Clientes</h3>
           
-          <form onSubmit={handleSearch} className="flex gap-2">
+          <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Busque por Cédula (Ej. 1804294812) o Cuenta (Ej. 100234567)"
+                placeholder="Filtrar por nombre, cédula o cuenta..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  if (searchedUser) {
+                    setSearchedUser(null);
+                    setSelectedAccount(null);
+                    setSearchedAccounts([]);
+                  }
+                }}
                 className="w-full border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-xs font-mono focus:outline-emerald-600 bg-slate-50"
               />
             </div>
-            <button
-              type="submit"
-              id="btn-search-cashier"
-              className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-wider cursor-pointer whitespace-nowrap"
-            >
-              Buscar
-            </button>
-          </form>
+          </div>
 
-          {searchError && (
-            <p className="text-xs font-bold text-red-600 mt-3 flex items-center gap-1.5 font-mono">
-              <AlertTriangle className="w-3.5 h-3.5" /> {searchError}
-            </p>
+          {!searchedUser && (
+            <div className="mt-6 space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              {filteredClients.length > 0 ? (
+                filteredClients.map(client => (
+                  <button
+                    key={client.id}
+                    type="button"
+                    onClick={() => selectClient(client)}
+                    className="w-full flex items-center justify-between p-4 border border-slate-100 rounded-xl hover:border-emerald-200 hover:bg-emerald-50/50 transition-all text-left cursor-pointer relative z-10"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500">
+                        <UserIcon className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">{client.name}</p>
+                        <p className="text-xs text-slate-400 font-mono">C.I. {client.identityId}</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                  </button>
+                ))
+              ) : (
+                <p className="text-center text-xs text-slate-400 py-6">No se encontraron clientes.</p>
+              )}
+            </div>
           )}
         </div>
 

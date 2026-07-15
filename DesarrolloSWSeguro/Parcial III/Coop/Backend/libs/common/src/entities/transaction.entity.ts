@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, Index, PrimaryColumn } from 'typeorm';
+import { EncryptionTransformer } from '../utils/encryption.util';
 
 export type TransactionType = 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER';
 export type TransactionStatus = 'SUCCESS' | 'FAILED';
@@ -28,7 +29,7 @@ export class TransactionEntity {
   @CreateDateColumn()
   timestamp: Date;
 
-  @Column()
+  @Column({ transformer: new EncryptionTransformer() })
   ipAddress: string;
 
   @Column({ type: 'varchar', length: 20, default: 'SUCCESS' })

@@ -27,6 +27,15 @@
         "tsConfigPath": "apps/cuentas/tsconfig.app.json"
       }
     },
+    "sistema_bancario": {
+      "type": "application",
+      "root": "apps/sistema_bancario",
+      "entryFile": "main",
+      "sourceRoot": "apps/sistema_bancario/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/sistema_bancario/tsconfig.app.json"
+      }
+    },
     "transacciones": {
       "type": "application",
       "root": "apps/transacciones",
