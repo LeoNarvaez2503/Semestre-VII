@@ -62,10 +62,11 @@ async def get_current_user(
 
 def check_roles(allowed_roles: List[str]):
     def dependency(current_user: User = Depends(get_current_user)):
-        user_roles = [ur.role.name for ur in current_user.user_roles if ur.active]
-        if "Root" in user_roles:
+        user_roles = [ur.role.name.lower() for ur in current_user.user_roles if ur.active]
+        if "root" in user_roles:
             return current_user
-        if not any(role in user_roles for role in allowed_roles):
+        allowed_roles_lower = [role.lower() for role in allowed_roles]
+        if not any(role in user_roles for role in allowed_roles_lower):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="No tiene permisos suficientes para realizar esta acción."
@@ -170,8 +171,8 @@ def update_user_me(
     db: Session = Depends(get_db)
 ):
     # Proteger roles: Solo administradores o root pueden cambiar roles.
-    user_roles = [ur.role.name for ur in current_user.user_roles if ur.active]
-    is_admin_or_root = "Administrador" in user_roles or "Root" in user_roles
+    user_roles = [ur.role.name.lower() for ur in current_user.user_roles if ur.active]
+    is_admin_or_root = "administrador" in user_roles or "root" in user_roles
     if not is_admin_or_root:
         user_in.roles = None
 

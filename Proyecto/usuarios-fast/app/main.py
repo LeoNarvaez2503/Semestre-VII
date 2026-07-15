@@ -16,6 +16,29 @@ from app.services.user_service import pwd_context
 def seed_roles():
     db = SessionLocal()
     try:
+        # --- Limpieza de datos inconsistentes (migración en caliente) ---
+        from app.utils.validators import validate_role_name_format
+        all_roles = db.query(Role).all()
+        for r in all_roles:
+            try:
+                # Intentamos limpiar primero removiendo números y caracteres especiales
+                cleaned_name = "".join([c for c in r.name if c.isalpha() or c in "áéíóúÁÉÍÓÚñÑüÜ"])
+                if cleaned_name.strip():
+                    sanitized_name = validate_role_name_format(cleaned_name)
+                    if r.name != sanitized_name:
+                        existing = db.query(Role).filter(Role.name == sanitized_name).first()
+                        if existing:
+                            # Reasignar usuarios al rol normalizado existente
+                            db.query(UserRole).filter(UserRole.id_role == r.id).update({"id_role": existing.id})
+                            db.delete(r)
+                        else:
+                            r.name = sanitized_name
+                else:
+                    r.active = False
+            except Exception:
+                r.active = False
+        db.commit()
+
         default_roles = [
             ("Cliente", "Rol asignado para los clientes del parqueadero."),
             ("Administrador", "Rol con acceso total al sistema."),

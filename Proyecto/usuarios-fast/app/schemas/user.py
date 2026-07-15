@@ -1,6 +1,12 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import List, Optional
-from app.utils.validators import validate_no_spaces, validate_real_name, validate_username_format, validate_safe_text
+from app.utils.validators import (
+    validate_no_spaces,
+    validate_real_name,
+    validate_username_format,
+    validate_safe_text,
+    validate_role_name_format
+)
 from datetime import datetime
 from uuid import UUID
 from stdnum.ec import ci
@@ -130,9 +136,19 @@ class RoleCreate(BaseModel):
     name: str = Field(..., max_length=50)
     description: Optional[str] = None
 
+    @field_validator('name')
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        return validate_role_name_format(v)
+
 class RoleUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=50)
     description: Optional[str] = None
+
+    @field_validator('name')
+    @classmethod
+    def validate_name(cls, v: Optional[str]) -> Optional[str]:
+        return validate_role_name_format(v)
 
 class RoleResponse(BaseModel):
     id: UUID

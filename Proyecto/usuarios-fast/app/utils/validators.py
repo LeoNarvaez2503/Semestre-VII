@@ -1,4 +1,5 @@
 import re
+import unicodedata
 from typing import Optional
 
 # Palabras clave SQL prohibidas comunes para mitigar cualquier intento de inyección
@@ -64,4 +65,23 @@ def validate_safe_text(field_name: str, value: Optional[str]) -> Optional[str]:
             if word in BANNED_SQL_KEYWORDS:
                 raise ValueError(f"La {field_name} contiene palabras reservadas no permitidas")
         return trimmed
+    return value
+
+def validate_role_name_format(value: Optional[str]) -> Optional[str]:
+    """
+    Valida alfabético, remueve acentos y retorna en formato Title Case (ej. 'técnico' -> 'Tecnico').
+    """
+    if value is not None:
+        trimmed = value.strip()
+        if ' ' in trimmed:
+            raise ValueError("El nombre del rol no puede contener espacios")
+        # Validar alfabético
+        if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+$", trimmed):
+            raise ValueError("El nombre del rol solo puede contener letras (sin números ni caracteres especiales)")
+        
+        # Remover acentos y diacríticos
+        nfkd_form = unicodedata.normalize('NFKD', trimmed)
+        only_ascii = "".join([c for c in nfkd_form if not unicodedata.combining(c)])
+        
+        return only_ascii.capitalize()
     return value
