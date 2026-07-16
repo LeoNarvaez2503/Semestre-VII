@@ -19,13 +19,30 @@ export class TransaccionesService {
   ) {}
 
   async onModuleInit() {
-    const count = await this.transactions.count();
-    if (count > 0) return;
+    const usersCount = await this.users.count();
+    if (usersCount === 0) {
+
+    await this.users.save([
+      { id: 'client-anthony', name: 'Anthony Alain Morales', identityId: '1804294812', email: 'AnthonyAlainMorales@gmail.com', role: 'CLIENTE', status: 'ACTIVE', twoFactorEnabled: true },
+      { id: 'client-segundo', name: 'Segundo Intriago Chango', identityId: '1805556661', email: 'segundo.chango@mushucruna.ec', role: 'CLIENTE', status: 'ACTIVE', twoFactorEnabled: false },
+      { id: 'cashier-maria', name: 'Maria Juana Pilamunga', identityId: '1802345678', email: 'maria.juana@mushucruna.ec', role: 'CAJERO', status: 'ACTIVE', twoFactorEnabled: true },
+      { id: 'auditor-humberto', name: 'Humberto Calero Flores', identityId: '1803456789', email: 'humberto.calero@mushucruna.ec', role: 'AUDITOR', status: 'ACTIVE', twoFactorEnabled: true },
+      { id: 'admin-luis', name: 'Abg. Luis Alfonso Chango', identityId: '1801234567', email: 'luis.chango@mushucruna.ec', role: 'ADMIN', status: 'ACTIVE', twoFactorEnabled: true },
+    ]);
+
+    await this.accounts.save([
+      { id: 'acc-savings-anthony', userId: 'client-anthony', accountNumber: '100234567', type: 'AHORROS', balance: 12450.5, status: 'ACTIVE' },
+      { id: 'acc-checking-anthony', userId: 'client-anthony', accountNumber: '200456789', type: 'CORRIENTE', balance: 1500, status: 'ACTIVE' },
+      { id: 'acc-savings-segundo', userId: 'client-segundo', accountNumber: '100555666', type: 'AHORROS', balance: 850, status: 'ACTIVE' },
+    ]);
 
     await this.transactions.save([
       { id: 'tx-init-1', sourceAccountId: null, destinationAccountId: 'acc-savings-anthony', type: 'DEPOSIT', amount: 10000, description: 'Deposito Inicial de Apertura en Efectivo', ipAddress: '192.168.1.100', status: 'SUCCESS', fee: 0, refCode: 'DEP-773821' },
       { id: 'tx-init-2', sourceAccountId: 'acc-savings-anthony', destinationAccountId: 'acc-savings-segundo', type: 'TRANSFER', amount: 50, description: 'Transferencia por Servicios Ambientales', ipAddress: '192.168.1.102', status: 'SUCCESS', fee: 0, refCode: 'TRF-552194' },
     ]);
+
+    await this.config.save({ id: 'default', dailyTransferLimit: 5000, commissionFee: 2.5, savingsInterestRate: 6.5 });
+    }
   }
 
   findAll() {

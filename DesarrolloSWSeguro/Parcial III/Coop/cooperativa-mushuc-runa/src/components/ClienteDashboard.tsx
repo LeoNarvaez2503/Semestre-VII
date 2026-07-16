@@ -234,7 +234,7 @@ export const ClienteDashboard: React.FC = () => {
                 </div>
                 <div className="bg-slate-50 rounded-xl p-3 flex items-start gap-2.5 text-[11px] text-slate-600 mt-4 border border-slate-200">
                   <Info className="w-3.5 h-3.5 text-emerald-700 shrink-0 mt-0.5" />
-                  <span>Retiro ATM sin costo hasta $500/día. Comisiones interbancarias fijas: ${systemConfig?.commissionFee.toFixed(2)}.</span>
+                  <span>Retiro ATM sin costo hasta $500/día. Comisiones interbancarias fijas: ${Number(systemConfig?.commissionFee || 0).toFixed(2)}.</span>
                 </div>
               </div>
             </div>
@@ -314,8 +314,8 @@ export const ClienteDashboard: React.FC = () => {
                                 <span className="text-[10px] font-mono text-slate-400 font-medium">Canal IP: {tx.ipAddress}</span>
                               </td>
                               <td className={`p-4 text-right font-bold font-mono ${isDebit ? 'text-red-600' : 'text-emerald-700'}`}>
-                                {isDebit ? '-' : '+'}${tx.amount.toFixed(2)}
-                                {tx.fee > 0 && <span className="block text-[9px] font-normal text-slate-400 font-mono">Comisión: ${tx.fee.toFixed(2)}</span>}
+                                {isDebit ? '-' : '+'}${Number(tx.amount).toFixed(2)}
+                                {tx.fee > 0 && <span className="block text-[9px] font-normal text-slate-400 font-mono">Comisión: ${Number(tx.fee).toFixed(2)}</span>}
                               </td>
                             </tr>
                           );
@@ -346,7 +346,7 @@ export const ClienteDashboard: React.FC = () => {
                 >
                   {currentUserAccounts.map((a) => (
                     <option key={a.id} value={a.id}>
-                      Cuenta {a.type} &bull; Nº {a.accountNumber} (Saldo: ${a.balance.toFixed(2)})
+                      Cuenta {a.type} &bull; Nº {a.accountNumber} (Saldo: ${Number(a.balance).toFixed(2)})
                     </option>
                   ))}
                 </select>
@@ -408,7 +408,7 @@ export const ClienteDashboard: React.FC = () => {
                   >
                     {currentUserAccounts.map((a) => (
                       <option key={a.id} value={a.id}>
-                        Cuenta {a.type} &bull; Nº {a.accountNumber} (Saldo: ${a.balance.toFixed(2)})
+                        Cuenta {a.type} &bull; Nº {a.accountNumber} (Saldo: ${Number(a.balance).toFixed(2)})
                       </option>
                     ))}
                   </select>
@@ -530,7 +530,7 @@ export const ClienteDashboard: React.FC = () => {
                 >
                   {currentUserAccounts.map((a) => (
                     <option key={a.id} value={a.id}>
-                      Cuenta {a.type} &bull; Nº {a.accountNumber} (Saldo: ${a.balance.toFixed(2)})
+                      Cuenta {a.type} &bull; Nº {a.accountNumber} (Saldo: ${Number(a.balance).toFixed(2)})
                     </option>
                   ))}
                 </select>
@@ -575,10 +575,10 @@ export const ClienteDashboard: React.FC = () => {
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-center">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block font-bold">Comisión Aplicada:</span>
                   <span className="text-sm font-extrabold text-slate-700 font-mono">
-                    {transferType === 'EXTERNA' ? `$${systemConfig?.commissionFee.toFixed(2)}` : '$0.00 (Gratuito)'}
+                    {transferType === 'EXTERNA' ? `$${Number(systemConfig?.commissionFee || 0).toFixed(2)}` : '$0.00 (Gratuito)'}
                   </span>
                   <span className="text-[9px] text-slate-400 mt-0.5 leading-relaxed font-mono">
-                    Límite diario de transferencias: ${systemConfig?.dailyTransferLimit.toFixed(2)}.
+                    Límite diario de transferencias: ${Number(systemConfig?.dailyTransferLimit || 0).toFixed(2)}.
                   </span>
                 </div>
               </div>

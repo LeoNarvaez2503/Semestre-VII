@@ -123,7 +123,8 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const parsedTxs = txs.map(t => ({
         ...t,
-        amount: Number(t.amount)
+        amount: Number(t.amount),
+        fee: Number(t.fee)
       }));
 
       setAllUsers(users);
@@ -135,7 +136,7 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (sessionUser) {
         setActiveRole(sessionUser.role);
-        setCurrentUserAccounts(accounts.filter(account => account.userId === sessionUser.id));
+        setCurrentUserAccounts(parsedAccounts.filter(account => account.userId === sessionUser.id));
       } else {
         setCurrentUserAccounts([]);
       }
