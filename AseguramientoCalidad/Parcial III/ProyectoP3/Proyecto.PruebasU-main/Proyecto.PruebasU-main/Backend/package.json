@@ -1,0 +1,49 @@
+{
+  "name": "concesionaria_api",
+  "version": "1.0.0",
+  "description": "API Backend Concesionaria",
+  "scripts": {
+    "start": "node src/app.js",
+    "seed": "node src/seeders.js",
+    "test": "jest --forceExit --detectOpenHandles --maxWorkers=1",
+    "test:coverage": "jest --coverage --forceExit --detectOpenHandles --maxWorkers=1",
+    "lint": "eslint",
+    "lintFix": "eslint --fix"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": ["<rootDir>/test/setup.js"],
+    "testTimeout": 30000,
+    "verbose": true,
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/seeders.js",
+      "!src/app.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 85,
+        "functions": 85,
+        "lines": 85,
+        "statements": 85
+      }
+    },
+    "coverageReporters": ["text", "lcov", "html"]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github-espe:JordanESPE/ProyectoP1_PruebasDeSoftware.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^16.6.1",
+    "eslint": "^9.39.1",
+    "express": "^5.1.0",
+    "jest": "^30.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.23.0",
+    "supertest": "^7.1.4"
+  }
+}

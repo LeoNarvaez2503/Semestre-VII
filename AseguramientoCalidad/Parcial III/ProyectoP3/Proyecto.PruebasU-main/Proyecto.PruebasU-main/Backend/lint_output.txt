@@ -1,0 +1,37 @@
+
+> concesionaria_api@1.0.0 lint
+> eslint
+
+
+C:\Users\caeta\Documents\6to\PS\proyecto\Proyecto.PruebasU\Backend\coverage\lcov-report\block-navigation.js
+  1:1  warning  Unused eslint-disable directive (no problems were reported)
+
+C:\Users\caeta\Documents\6to\PS\proyecto\Proyecto.PruebasU\Backend\coverage\lcov-report\prettify.js
+  1:1  warning  Unused eslint-disable directive (no problems were reported)
+
+C:\Users\caeta\Documents\6to\PS\proyecto\Proyecto.PruebasU\Backend\coverage\lcov-report\sorter.js
+  1:1  warning  Unused eslint-disable directive (no problems were reported)
+
+C:\Users\caeta\Documents\6to\PS\proyecto\Proyecto.PruebasU\Backend\src\app.js
+  19:10  error    'error' is defined but never used. Allowed unused args must match /^_/u      no-unused-vars
+  76:1   warning  Unused eslint-disable directive (no problems were reported from 'no-undef')
+
+C:\Users\caeta\Documents\6to\PS\proyecto\Proyecto.PruebasU\Backend\src\controllers\auth.controller.js
+  17:10  error  'generateToken' is already defined  no-redeclare
+  90:9   error  Unexpected console statement        no-console
+
+C:\Users\caeta\Documents\6to\PS\proyecto\Proyecto.PruebasU\Backend\src\controllers\auto.controller.js
+  89:14  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\caeta\Documents\6to\PS\proyecto\Proyecto.PruebasU\Backend\src\controllers\cliente.controller.js
+  86:14  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\caeta\Documents\6to\PS\proyecto\Proyecto.PruebasU\Backend\src\controllers\concesionaria.controller.js
+  97:14  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\caeta\Documents\6to\PS\proyecto\Proyecto.PruebasU\Backend\src\controllers\vendor.controller.js
+  95:14  error  'error' is defined but never used  no-unused-vars
+
+Γ£û 11 problems (7 errors, 4 warnings)
+  0 errors and 4 warnings potentially fixable with the `--fix` option.
+

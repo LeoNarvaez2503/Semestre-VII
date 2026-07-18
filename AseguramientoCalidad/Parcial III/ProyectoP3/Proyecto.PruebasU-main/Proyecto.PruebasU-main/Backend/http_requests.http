@@ -1,0 +1,202 @@
+@baseUrl = http://localhost:3000/api/autos
+
+### 1. Obtener todos los autos
+GET {{baseUrl}}
+
+### 2. Crear auto exitoso - Toyota
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "año": 2023,
+  "color": "Blanco",
+  "numeroSerie": "TOYOTA001"
+}
+
+### 3. Crear auto exitoso - Honda
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Honda",
+  "modelo": "Civic",
+  "año": 2022,
+  "color": "Negro",
+  "numeroSerie": "HONDA001"
+}
+
+### 4. Crear auto exitoso - Ford
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Ford",
+  "modelo": "Mustang",
+  "año": 2024,
+  "color": "Rojo",
+  "numeroSerie": "FORD001"
+}
+
+### 5. Crear auto exitoso - Mercedes
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Mercedes-Benz",
+  "modelo": "C-Class",
+  "año": 2023,
+  "color": "Gris",
+  "numeroSerie": "MERC001"
+}
+
+### 6. Crear auto - BMW
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "BMW",
+  "modelo": "3 Series",
+  "año": 2023,
+  "color": "Azul",
+  "numeroSerie": "BMW001"
+}
+
+### 7. ERROR - Falta marca
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "modelo": "Corolla",
+  "año": 2023,
+  "color": "Blanco",
+  "numeroSerie": "ERROR001"
+}
+
+### 8. ERROR - Falta modelo
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "año": 2023,
+  "color": "Blanco",
+  "numeroSerie": "ERROR002"
+}
+
+### 9. ERROR - Falta año
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "color": "Blanco",
+  "numeroSerie": "ERROR003"
+}
+
+### 10. ERROR - Año inválido (muy antiguo)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "año": 1800,
+  "color": "Blanco",
+  "numeroSerie": "ERROR_YEAR"
+}
+
+### 11. ERROR - Año inválido (futuro lejano)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "año": 2100,
+  "color": "Blanco",
+  "numeroSerie": "ERROR_FUTURE"
+}
+
+### 12. ERROR - Número de serie duplicado
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Camry",
+  "año": 2023,
+  "color": "Negro",
+  "numeroSerie": "TOYOTA001"
+}
+
+### 13. ERROR - Falta número de serie
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "año": 2023,
+  "color": "Blanco"
+}
+
+### 14. Actualizar solo color (reemplazar ID)
+PUT {{baseUrl}}/1702345678000
+Content-Type: application/json
+
+{
+  "color": "Verde"
+}
+
+### 15. Actualizar marca y modelo (reemplazar ID)
+PUT {{baseUrl}}/1702345678000
+Content-Type: application/json
+
+{
+  "marca": "Audi",
+  "modelo": "A4"
+}
+
+### 16. Actualizar todos los campos (reemplazar ID)
+PUT {{baseUrl}}/1702345678000
+Content-Type: application/json
+
+{
+  "marca": "Volkswagen",
+  "modelo": "Golf",
+  "año": 2024,
+  "color": "Plata",
+  "numeroSerie": "VW123456"
+}
+
+### 17. ERROR - Actualizar con año inválido (reemplazar ID)
+PUT {{baseUrl}}/1702345678000
+Content-Type: application/json
+
+{
+  "año": 1800
+}
+
+### 18. ERROR - Actualizar auto inexistente
+PUT {{baseUrl}}/999999999
+Content-Type: application/json
+
+{
+  "color": "Naranja"
+}
+
+### 19. Eliminar auto (reemplazar ID)
+DELETE {{baseUrl}}/1702345678000
+
+### 20. ERROR - Eliminar auto inexistente
+DELETE {{baseUrl}}/999999999
+
+### Notas de uso:
+### - Copiar este archivo a la raíz del proyecto o carpeta Backend
+### - Usar con extensión REST Client de VS Code
+### - O copiar/pegar manualmente en Postman
+### - Reemplazar los valores de ID con IDs reales obtenidos del POST
+### - La variable {{baseUrl}} debe ser configurada en el cliente REST

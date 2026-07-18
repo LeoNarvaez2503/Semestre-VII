@@ -1,0 +1,23 @@
+name: K6 Load Test
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  load_test:
+    name: Run K6 Load Test against Vercel
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+          
+      - name: Run K6 Load Test
+        uses: grafana/k6-action@v0.3.0
+        env:
+          BASE_URL: 'https://proyecto-pruebasu.onrender.com'
+        with:
+          filename: k6-tests/load-test.js
+          flags: --vus 5 --duration 20s

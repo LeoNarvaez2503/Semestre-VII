@@ -1,0 +1,455 @@
+
+         /\      Grafana   /ÔÇ¥ÔÇ¥/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ÔÇ¥ÔÇ¥\ 
+  /          \   |   (  |  (ÔÇ¥)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: k6-tests/load-test.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 5 max VUs, 2m10s max duration (incl. graceful stop):
+              * default: Up to 5 looping VUs for 1m40s over 3 stages (gracefulRampDown: 30s, gracefulStop: 30s)
+
+
+running (0m01.0s), 1/5 VUs, 0 complete and 0 interrupted iterations
+default   [   1% ] 1/5 VUs  0m01.0s/1m40.0s
+
+running (0m02.0s), 1/5 VUs, 0 complete and 0 interrupted iterations
+default   [   2% ] 1/5 VUs  0m02.0s/1m40.0s
+
+running (0m03.0s), 1/5 VUs, 0 complete and 0 interrupted iterations
+default   [   3% ] 1/5 VUs  0m03.0s/1m40.0s
+
+running (0m04.0s), 1/5 VUs, 0 complete and 0 interrupted iterations
+default   [   4% ] 1/5 VUs  0m04.0s/1m40.0s
+
+running (0m05.0s), 1/5 VUs, 0 complete and 0 interrupted iterations
+default   [   5% ] 1/5 VUs  0m05.0s/1m40.0s
+
+running (0m06.0s), 1/5 VUs, 0 complete and 0 interrupted iterations
+default   [   6% ] 1/5 VUs  0m06.0s/1m40.0s
+
+running (0m07.0s), 1/5 VUs, 0 complete and 0 interrupted iterations
+default   [   7% ] 1/5 VUs  0m07.0s/1m40.0s
+
+running (0m08.0s), 2/5 VUs, 0 complete and 0 interrupted iterations
+default   [   8% ] 2/5 VUs  0m08.0s/1m40.0s
+
+running (0m09.0s), 2/5 VUs, 0 complete and 0 interrupted iterations
+default   [   9% ] 2/5 VUs  0m09.0s/1m40.0s
+
+running (0m10.0s), 2/5 VUs, 0 complete and 0 interrupted iterations
+default   [  10% ] 2/5 VUs  0m10.0s/1m40.0s
+
+running (0m11.0s), 2/5 VUs, 0 complete and 0 interrupted iterations
+default   [  11% ] 2/5 VUs  0m11.0s/1m40.0s
+time="2026-02-11T19:53:53-05:00" level=info msg="ID Mismatch: Expected 1770857629779, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"id\":1770857629779,\"nombre\":\"Cliente Test 1770857630874\",\"email\":\"test.client.1770857630874.314@example.com\",\"telefono\":\"0991210619\",\"direccion\":\"Calle Falsa 314\",\"ciudad\":\"Quito\"}}" source=console
+
+running (0m12.0s), 2/5 VUs, 0 complete and 0 interrupted iterations
+default   [  12% ] 2/5 VUs  0m12.0s/1m40.0s
+
+running (0m13.0s), 2/5 VUs, 0 complete and 0 interrupted iterations
+default   [  13% ] 2/5 VUs  0m13.0s/1m40.0s
+
+running (0m14.0s), 2/5 VUs, 0 complete and 0 interrupted iterations
+default   [  14% ] 2/5 VUs  0m14.0s/1m40.0s
+
+running (0m15.0s), 2/5 VUs, 0 complete and 0 interrupted iterations
+default   [  15% ] 2/5 VUs  0m15.0s/1m40.0s
+
+running (0m16.0s), 3/5 VUs, 0 complete and 0 interrupted iterations
+default   [  16% ] 3/5 VUs  0m16.0s/1m40.0s
+
+running (0m17.0s), 3/5 VUs, 0 complete and 0 interrupted iterations
+default   [  17% ] 3/5 VUs  0m17.0s/1m40.0s
+
+running (0m18.0s), 3/5 VUs, 0 complete and 0 interrupted iterations
+default   [  18% ] 3/5 VUs  0m18.0s/1m40.0s
+
+running (0m19.0s), 3/5 VUs, 1 complete and 0 interrupted iterations
+default   [  19% ] 3/5 VUs  0m19.0s/1m40.0s
+time="2026-02-11T19:54:00-05:00" level=info msg="ID Mismatch: Expected 1770857637254, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"telefono\":\"0997976257\",\"direccion\":\"Calle Falsa 379\",\"ciudad\":\"Quito\",\"id\":1770857637254,\"nombre\":\"Cliente Test 1770857638359\",\"email\":\"test.client.1770857638359.379@example.com\"}}" source=console
+
+running (0m20.0s), 3/5 VUs, 1 complete and 0 interrupted iterations
+default   [  20% ] 3/5 VUs  0m20.0s/1m40.0s
+
+running (0m21.0s), 3/5 VUs, 1 complete and 0 interrupted iterations
+default   [  21% ] 3/5 VUs  0m21.0s/1m40.0s
+
+running (0m22.0s), 3/5 VUs, 1 complete and 0 interrupted iterations
+default   [  22% ] 3/5 VUs  0m22.0s/1m40.0s
+
+running (0m23.0s), 4/5 VUs, 1 complete and 0 interrupted iterations
+default   [  23% ] 4/5 VUs  0m23.0s/1m40.0s
+
+running (0m24.0s), 4/5 VUs, 1 complete and 0 interrupted iterations
+default   [  24% ] 4/5 VUs  0m24.0s/1m40.0s
+
+running (0m25.0s), 4/5 VUs, 1 complete and 0 interrupted iterations
+default   [  25% ] 4/5 VUs  0m25.0s/1m40.0s
+
+running (0m26.0s), 4/5 VUs, 2 complete and 0 interrupted iterations
+default   [  26% ] 4/5 VUs  0m26.0s/1m40.0s
+time="2026-02-11T19:54:08-05:00" level=info msg="ID Mismatch: Expected 1770857644641, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"id\":1770857644641,\"nombre\":\"Cliente Test 1770857645744\",\"email\":\"test.client.1770857645744.510@example.com\",\"telefono\":\"0995429359\",\"direccion\":\"Calle Falsa 510\",\"ciudad\":\"Quito\"}}" source=console
+
+running (0m27.0s), 4/5 VUs, 2 complete and 0 interrupted iterations
+default   [  27% ] 4/5 VUs  0m27.0s/1m40.0s
+
+running (0m28.0s), 4/5 VUs, 2 complete and 0 interrupted iterations
+default   [  28% ] 4/5 VUs  0m28.0s/1m40.0s
+
+running (0m29.0s), 4/5 VUs, 2 complete and 0 interrupted iterations
+default   [  29% ] 4/5 VUs  0m29.0s/1m40.0s
+time="2026-02-11T19:54:11-05:00" level=info msg="ID Mismatch: Expected 1770857647679, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"id\":1770857647679,\"nombre\":\"Cliente Test 1770857648776\",\"email\":\"test.client.1770857648776.597@example.com\",\"telefono\":\"0995356461\",\"direccion\":\"Calle Falsa 597\",\"ciudad\":\"Quito\"}}" source=console
+
+running (0m30.0s), 4/5 VUs, 2 complete and 0 interrupted iterations
+default   [  30% ] 4/5 VUs  0m30.0s/1m40.0s
+
+running (0m31.0s), 5/5 VUs, 2 complete and 0 interrupted iterations
+default   [  31% ] 5/5 VUs  0m31.0s/1m40.0s
+
+running (0m32.0s), 5/5 VUs, 2 complete and 0 interrupted iterations
+default   [  32% ] 5/5 VUs  0m32.0s/1m40.0s
+
+running (0m33.0s), 5/5 VUs, 3 complete and 0 interrupted iterations
+default   [  33% ] 5/5 VUs  0m33.0s/1m40.0s
+
+running (0m34.0s), 5/5 VUs, 3 complete and 0 interrupted iterations
+default   [  34% ] 5/5 VUs  0m34.0s/1m40.0s
+time="2026-02-11T19:54:15-05:00" level=info msg="ID Mismatch: Expected 1770857652267, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"ciudad\":\"Quito\",\"id\":1770857652267,\"nombre\":\"Cliente Test 1770857653364\",\"email\":\"test.client.1770857653364.977@example.com\",\"telefono\":\"0996115572\",\"direccion\":\"Calle Falsa 977\"}}" source=console
+
+running (0m35.0s), 5/5 VUs, 3 complete and 0 interrupted iterations
+default   [  35% ] 5/5 VUs  0m35.0s/1m40.0s
+
+running (0m36.0s), 5/5 VUs, 4 complete and 0 interrupted iterations
+default   [  36% ] 5/5 VUs  0m36.0s/1m40.0s
+time="2026-02-11T19:54:18-05:00" level=info msg="ID Mismatch: Expected 1770857654931, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"direccion\":\"Calle Falsa 51\",\"ciudad\":\"Quito\",\"id\":1770857654931,\"nombre\":\"Cliente Test 1770857656033\",\"email\":\"test.client.1770857656033.51@example.com\",\"telefono\":\"0994074096\"}}" source=console
+
+running (0m37.0s), 5/5 VUs, 4 complete and 0 interrupted iterations
+default   [  37% ] 5/5 VUs  0m37.0s/1m40.0s
+
+running (0m38.0s), 5/5 VUs, 4 complete and 0 interrupted iterations
+default   [  38% ] 5/5 VUs  0m38.0s/1m40.0s
+
+running (0m39.0s), 5/5 VUs, 4 complete and 0 interrupted iterations
+default   [  39% ] 5/5 VUs  0m39.0s/1m40.0s
+
+running (0m40.0s), 5/5 VUs, 4 complete and 0 interrupted iterations
+default   [  40% ] 5/5 VUs  0m40.0s/1m40.0s
+
+running (0m41.0s), 5/5 VUs, 5 complete and 0 interrupted iterations
+default   [  41% ] 5/5 VUs  0m41.0s/1m40.0s
+time="2026-02-11T19:54:23-05:00" level=info msg="ID Mismatch: Expected 1770857659695, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"telefono\":\"0993951272\",\"direccion\":\"Calle Falsa 545\",\"ciudad\":\"Quito\",\"id\":1770857659695,\"nombre\":\"Cliente Test 1770857660796\",\"email\":\"test.client.1770857660796.545@example.com\"}}" source=console
+
+running (0m42.0s), 5/5 VUs, 5 complete and 0 interrupted iterations
+default   [  42% ] 5/5 VUs  0m42.0s/1m40.0s
+
+running (0m43.0s), 5/5 VUs, 5 complete and 0 interrupted iterations
+default   [  43% ] 5/5 VUs  0m43.0s/1m40.0s
+
+running (0m44.0s), 5/5 VUs, 6 complete and 0 interrupted iterations
+default   [  44% ] 5/5 VUs  0m44.0s/1m40.0s
+time="2026-02-11T19:54:25-05:00" level=info msg="ID Mismatch: Expected 1770857662324, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"email\":\"test.client.1770857663429.113@example.com\",\"telefono\":\"0992648439\",\"direccion\":\"Calle Falsa 113\",\"ciudad\":\"Quito\",\"id\":1770857662324,\"nombre\":\"Cliente Test 1770857663429\"}}" source=console
+
+running (0m45.0s), 5/5 VUs, 6 complete and 0 interrupted iterations
+default   [  45% ] 5/5 VUs  0m45.0s/1m40.0s
+
+running (0m46.0s), 5/5 VUs, 6 complete and 0 interrupted iterations
+default   [  46% ] 5/5 VUs  0m46.0s/1m40.0s
+
+running (0m47.0s), 5/5 VUs, 6 complete and 0 interrupted iterations
+default   [  47% ] 5/5 VUs  0m47.0s/1m40.0s
+time="2026-02-11T19:54:29-05:00" level=info msg="ID Mismatch: Expected 1770857665565, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"email\":\"test.client.1770857666667.317@example.com\",\"telefono\":\"0991700847\",\"direccion\":\"Calle Falsa 317\",\"ciudad\":\"Quito\",\"id\":1770857665565,\"nombre\":\"Cliente Test 1770857666667\"}}" source=console
+
+running (0m48.0s), 5/5 VUs, 7 complete and 0 interrupted iterations
+default   [  48% ] 5/5 VUs  0m48.0s/1m40.0s
+
+running (0m49.0s), 5/5 VUs, 7 complete and 0 interrupted iterations
+default   [  49% ] 5/5 VUs  0m49.0s/1m40.0s
+
+running (0m50.0s), 5/5 VUs, 7 complete and 0 interrupted iterations
+default   [  50% ] 5/5 VUs  0m50.0s/1m40.0s
+
+running (0m51.0s), 5/5 VUs, 8 complete and 0 interrupted iterations
+default   [  51% ] 5/5 VUs  0m51.0s/1m40.0s
+
+running (0m52.0s), 5/5 VUs, 8 complete and 0 interrupted iterations
+default   [  52% ] 5/5 VUs  0m52.0s/1m40.0s
+
+running (0m53.0s), 5/5 VUs, 8 complete and 0 interrupted iterations
+default   [  53% ] 5/5 VUs  0m53.0s/1m40.0s
+
+running (0m54.0s), 5/5 VUs, 9 complete and 0 interrupted iterations
+default   [  54% ] 5/5 VUs  0m54.0s/1m40.0s
+time="2026-02-11T19:54:36-05:00" level=info msg="ID Mismatch: Expected 1770857672660, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"id\":1770857672660,\"nombre\":\"Cliente Test 1770857673765\",\"email\":\"test.client.1770857673765.164@example.com\",\"telefono\":\"0995024163\",\"direccion\":\"Calle Falsa 164\",\"ciudad\":\"Quito\"}}" source=console
+
+running (0m55.0s), 5/5 VUs, 9 complete and 0 interrupted iterations
+default   [  55% ] 5/5 VUs  0m55.0s/1m40.0s
+
+running (0m56.0s), 5/5 VUs, 9 complete and 0 interrupted iterations
+default   [  56% ] 5/5 VUs  0m56.0s/1m40.0s
+
+running (0m57.0s), 5/5 VUs, 9 complete and 0 interrupted iterations
+default   [  57% ] 5/5 VUs  0m57.0s/1m40.0s
+
+running (0m58.0s), 5/5 VUs, 9 complete and 0 interrupted iterations
+default   [  58% ] 5/5 VUs  0m58.0s/1m40.0s
+
+running (0m59.0s), 5/5 VUs, 10 complete and 0 interrupted iterations
+default   [  59% ] 5/5 VUs  0m59.0s/1m40.0s
+
+running (1m00.0s), 5/5 VUs, 10 complete and 0 interrupted iterations
+default   [  60% ] 5/5 VUs  1m00.0s/1m40.0s
+
+running (1m01.0s), 5/5 VUs, 11 complete and 0 interrupted iterations
+default   [  61% ] 5/5 VUs  1m01.0s/1m40.0s
+
+running (1m02.0s), 5/5 VUs, 11 complete and 0 interrupted iterations
+default   [  62% ] 5/5 VUs  1m02.0s/1m40.0s
+
+running (1m03.0s), 5/5 VUs, 11 complete and 0 interrupted iterations
+default   [  63% ] 5/5 VUs  1m03.0s/1m40.0s
+
+running (1m04.0s), 5/5 VUs, 11 complete and 0 interrupted iterations
+default   [  64% ] 5/5 VUs  1m04.0s/1m40.0s
+
+running (1m05.0s), 5/5 VUs, 11 complete and 0 interrupted iterations
+default   [  65% ] 5/5 VUs  1m05.0s/1m40.0s
+time="2026-02-11T19:54:46-05:00" level=info msg="ID Mismatch: Expected 1770857683367, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"ciudad\":\"Quito\",\"id\":1770857683367,\"nombre\":\"Cliente Test 1770857684468\",\"email\":\"test.client.1770857684468.41@example.com\",\"telefono\":\"0997328576\",\"direccion\":\"Calle Falsa 41\"}}" source=console
+
+running (1m06.0s), 5/5 VUs, 12 complete and 0 interrupted iterations
+default   [  66% ] 5/5 VUs  1m06.0s/1m40.0s
+
+running (1m07.0s), 5/5 VUs, 12 complete and 0 interrupted iterations
+default   [  67% ] 5/5 VUs  1m07.0s/1m40.0s
+
+running (1m08.0s), 5/5 VUs, 12 complete and 0 interrupted iterations
+default   [  68% ] 5/5 VUs  1m08.0s/1m40.0s
+
+running (1m09.0s), 5/5 VUs, 13 complete and 0 interrupted iterations
+default   [  69% ] 5/5 VUs  1m09.0s/1m40.0s
+time="2026-02-11T19:54:51-05:00" level=info msg="ID Mismatch: Expected 1770857687747, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"email\":\"test.client.1770857688844.725@example.com\",\"telefono\":\"0993353217\",\"direccion\":\"Calle Falsa 725\",\"ciudad\":\"Quito\",\"id\":1770857687747,\"nombre\":\"Cliente Test 1770857688844\"}}" source=console
+
+running (1m10.0s), 5/5 VUs, 13 complete and 0 interrupted iterations
+default   [  70% ] 5/5 VUs  1m10.0s/1m40.0s
+
+running (1m11.0s), 5/5 VUs, 13 complete and 0 interrupted iterations
+default   [  71% ] 5/5 VUs  1m11.0s/1m40.0s
+
+running (1m12.0s), 5/5 VUs, 13 complete and 0 interrupted iterations
+default   [  72% ] 5/5 VUs  1m12.0s/1m40.0s
+time="2026-02-11T19:54:53-05:00" level=info msg="ID Mismatch: Expected 1770857690335, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"telefono\":\"0997450906\",\"direccion\":\"Calle Falsa 934\",\"ciudad\":\"Quito\",\"id\":1770857690335,\"nombre\":\"Cliente Test 1770857691432\",\"email\":\"test.client.1770857691432.934@example.com\"}}" source=console
+
+running (1m13.0s), 5/5 VUs, 14 complete and 0 interrupted iterations
+default   [  73% ] 5/5 VUs  1m13.0s/1m40.0s
+
+running (1m14.0s), 5/5 VUs, 14 complete and 0 interrupted iterations
+default   [  74% ] 5/5 VUs  1m14.0s/1m40.0s
+
+running (1m15.0s), 5/5 VUs, 14 complete and 0 interrupted iterations
+default   [  75% ] 5/5 VUs  1m15.0s/1m40.0s
+
+running (1m16.0s), 5/5 VUs, 15 complete and 0 interrupted iterations
+default   [  76% ] 5/5 VUs  1m16.0s/1m40.0s
+
+running (1m17.0s), 5/5 VUs, 15 complete and 0 interrupted iterations
+default   [  77% ] 5/5 VUs  1m17.0s/1m40.0s
+
+running (1m18.0s), 5/5 VUs, 15 complete and 0 interrupted iterations
+default   [  78% ] 5/5 VUs  1m18.0s/1m40.0s
+
+running (1m19.0s), 5/5 VUs, 16 complete and 0 interrupted iterations
+default   [  79% ] 5/5 VUs  1m19.0s/1m40.0s
+time="2026-02-11T19:55:01-05:00" level=info msg="ID Mismatch: Expected 1770857697715, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"telefono\":\"0997403786\",\"direccion\":\"Calle Falsa 307\",\"ciudad\":\"Quito\",\"id\":1770857697715,\"nombre\":\"Cliente Test 1770857698824\",\"email\":\"test.client.1770857698824.307@example.com\"}}" source=console
+
+running (1m20.0s), 5/5 VUs, 16 complete and 0 interrupted iterations
+default   [  80% ] 5/5 VUs  1m20.0s/1m40.0s
+
+running (1m21.0s), 5/5 VUs, 16 complete and 0 interrupted iterations
+default   [  81% ] 5/5 VUs  1m21.0s/1m40.0s
+
+running (1m22.0s), 5/5 VUs, 16 complete and 0 interrupted iterations
+default   [  82% ] 5/5 VUs  1m22.0s/1m40.0s
+
+running (1m23.0s), 5/5 VUs, 16 complete and 0 interrupted iterations
+default   [  83% ] 5/5 VUs  1m23.0s/1m40.0s
+time="2026-02-11T19:55:05-05:00" level=info msg="ID Mismatch: Expected 1770857701781, Got undefined. Body: {\"cliente\":{\"email\":\"test.client.1770857702869.102@example.com\",\"telefono\":\"0994255084\",\"direccion\":\"Calle Falsa 102\",\"ciudad\":\"Quito\",\"id\":1770857701781,\"nombre\":\"Cliente Test 1770857702869\"},\"message\":\"Cliente obtenido exitosamente\"}" source=console
+
+running (1m24.0s), 5/5 VUs, 17 complete and 0 interrupted iterations
+default   [  84% ] 5/5 VUs  1m24.0s/1m40.0s
+
+running (1m25.0s), 5/5 VUs, 17 complete and 0 interrupted iterations
+default   [  85% ] 5/5 VUs  1m25.0s/1m40.0s
+
+running (1m26.0s), 5/5 VUs, 18 complete and 0 interrupted iterations
+default   [  86% ] 5/5 VUs  1m26.0s/1m40.0s
+
+running (1m27.0s), 5/5 VUs, 18 complete and 0 interrupted iterations
+default   [  87% ] 5/5 VUs  1m27.0s/1m40.0s
+time="2026-02-11T19:55:08-05:00" level=info msg="ID Mismatch: Expected 1770857705425, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"id\":1770857705425,\"nombre\":\"Cliente Test 1770857706528\",\"email\":\"test.client.1770857706528.191@example.com\",\"telefono\":\"0997559246\",\"direccion\":\"Calle Falsa 191\",\"ciudad\":\"Quito\"}}" source=console
+
+running (1m28.0s), 5/5 VUs, 18 complete and 0 interrupted iterations
+default   [  88% ] 5/5 VUs  1m28.0s/1m40.0s
+
+running (1m29.0s), 5/5 VUs, 18 complete and 0 interrupted iterations
+default   [  89% ] 5/5 VUs  1m29.0s/1m40.0s
+time="2026-02-11T19:55:11-05:00" level=info msg="ID Mismatch: Expected 1770857708111, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"id\":1770857708111,\"nombre\":\"Cliente Test 1770857709214\",\"email\":\"test.client.1770857709214.0@example.com\",\"telefono\":\"0995775522\",\"direccion\":\"Calle Falsa 0\",\"ciudad\":\"Quito\"}}" source=console
+
+running (1m30.0s), 5/5 VUs, 18 complete and 0 interrupted iterations
+default   [  90% ] 5/5 VUs  1m30.0s/1m40.0s
+
+running (1m31.0s), 5/5 VUs, 19 complete and 0 interrupted iterations
+default   [  91% ] 5/5 VUs  1m31.0s/1m40.0s
+
+running (1m32.0s), 5/5 VUs, 19 complete and 0 interrupted iterations
+default   [  92% ] 5/5 VUs  1m32.0s/1m40.0s
+
+running (1m33.0s), 5/5 VUs, 19 complete and 0 interrupted iterations
+default   [  93% ] 5/5 VUs  1m33.0s/1m40.0s
+
+running (1m34.0s), 5/5 VUs, 20 complete and 0 interrupted iterations
+default   [  94% ] 5/5 VUs  1m34.0s/1m40.0s
+time="2026-02-11T19:55:16-05:00" level=info msg="ID Mismatch: Expected 1770857713014, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"email\":\"test.client.1770857714108.334@example.com\",\"telefono\":\"0997743847\",\"direccion\":\"Calle Falsa 334\",\"ciudad\":\"Quito\",\"id\":1770857713014,\"nombre\":\"Cliente Test 1770857714108\"}}" source=console
+
+running (1m35.0s), 5/5 VUs, 20 complete and 0 interrupted iterations
+default   [  95% ] 5/5 VUs  1m35.0s/1m40.0s
+
+running (1m36.0s), 5/5 VUs, 20 complete and 0 interrupted iterations
+default   [  96% ] 5/5 VUs  1m36.0s/1m40.0s
+
+running (1m37.0s), 5/5 VUs, 21 complete and 0 interrupted iterations
+default   [  97% ] 5/5 VUs  1m37.0s/1m40.0s
+time="2026-02-11T19:55:18-05:00" level=info msg="ID Mismatch: Expected 1770857715391, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"ciudad\":\"Quito\",\"id\":1770857715391,\"nombre\":\"Cliente Test 1770857716497\",\"email\":\"test.client.1770857716497.604@example.com\",\"telefono\":\"0996275323\",\"direccion\":\"Calle Falsa 604\"}}" source=console
+
+running (1m38.0s), 5/5 VUs, 21 complete and 0 interrupted iterations
+default   [  98% ] 5/5 VUs  1m38.0s/1m40.0s
+
+running (1m39.0s), 5/5 VUs, 21 complete and 0 interrupted iterations
+default   [  99% ] 5/5 VUs  1m39.0s/1m40.0s
+
+running (1m40.0s), 5/5 VUs, 21 complete and 0 interrupted iterations
+default   [ 100% ] 5/5 VUs  1m40.0s/1m40.0s
+
+running (1m41.0s), 5/5 VUs, 21 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m42.0s), 4/5 VUs, 22 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m43.0s), 4/5 VUs, 22 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m44.0s), 3/5 VUs, 23 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+time="2026-02-11T19:55:26-05:00" level=info msg="ID Mismatch: Expected 1770857723111, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"id\":1770857723111,\"nombre\":\"Cliente Test 1770857724212\",\"email\":\"test.client.1770857724212.451@example.com\",\"telefono\":\"0997108899\",\"direccion\":\"Calle Falsa 451\",\"ciudad\":\"Quito\"}}" source=console
+
+running (1m45.0s), 3/5 VUs, 23 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m46.0s), 3/5 VUs, 23 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m47.0s), 3/5 VUs, 23 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+time="2026-02-11T19:55:29-05:00" level=info msg="ID Mismatch: Expected 1770857725837, Got undefined. Body: {\"message\":\"Cliente obtenido exitosamente\",\"cliente\":{\"id\":1770857725837,\"nombre\":\"Cliente Test 1770857726943\",\"email\":\"test.client.1770857726943.677@example.com\",\"telefono\":\"0998765525\",\"direccion\":\"Calle Falsa 677\",\"ciudad\":\"Quito\"}}" source=console
+
+running (1m48.0s), 2/5 VUs, 24 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m49.0s), 2/5 VUs, 24 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m50.0s), 2/5 VUs, 24 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m51.0s), 2/5 VUs, 24 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m52.0s), 1/5 VUs, 25 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m53.0s), 1/5 VUs, 25 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+running (1m54.0s), 1/5 VUs, 25 complete and 0 interrupted iterations
+default Ôåô [ 100% ] 5/5 VUs  1m40s
+
+
+  Ôûê THRESHOLDS 
+
+    http_req_duration
+    Ô£ô 'p(95)<500' p(95)=134.8ms
+
+    http_req_failed
+    Ô£ù 'rate<0.01' rate=25.64%
+
+
+  Ôûê TOTAL RESULTS 
+
+    checks_total.......: 676    5.928291/s
+    checks_succeeded...: 76.62% 518 out of 676
+    checks_failed......: 23.37% 158 out of 676
+
+    Ô£ô status is 200
+    Ô£ô token present
+    Ô£ô create vendor status is 201
+    Ô£ô create vendor has id
+    Ô£ô get all vendors status is 200
+    Ô£ù new vendor in list
+      Ôå│  84% ÔÇö Ô£ô 22 / Ô£ù 4
+    Ô£ù get vendor by id status is 200
+      Ôå│  73% ÔÇö Ô£ô 19 / Ô£ù 7
+    Ô£ù vendor id matches
+      Ôå│  73% ÔÇö Ô£ô 19 / Ô£ù 7
+    Ô£ù update vendor status is 200
+      Ôå│  65% ÔÇö Ô£ô 17 / Ô£ù 9
+    Ô£ù vendor updated name matches
+      Ôå│  65% ÔÇö Ô£ô 17 / Ô£ù 9
+    Ô£ù vendor updated comision matches
+      Ôå│  65% ÔÇö Ô£ô 17 / Ô£ù 9
+    Ô£ù delete vendor status is 200
+      Ôå│  61% ÔÇö Ô£ô 16 / Ô£ù 10
+    Ô£ô get deleted vendor status is 404
+    Ô£ô create client status is 201
+    Ô£ô create client has id
+    Ô£ô get all clients status is 200
+    Ô£ù new client in list
+      Ôå│  88% ÔÇö Ô£ô 23 / Ô£ù 3
+    Ô£ù get client by id status is 200
+      Ôå│  80% ÔÇö Ô£ô 21 / Ô£ù 5
+    Ô£ù client id matches
+      Ôå│  0% ÔÇö Ô£ô 0 / Ô£ù 26
+    Ô£ù update client status is 200
+      Ôå│  69% ÔÇö Ô£ô 18 / Ô£ù 8
+    Ô£ù client updated name matches
+      Ôå│  0% ÔÇö Ô£ô 0 / Ô£ù 26
+    Ô£ù client updated city matches
+      Ôå│  0% ÔÇö Ô£ô 0 / Ô£ù 26
+    Ô£ù delete client status is 200
+      Ôå│  65% ÔÇö Ô£ô 17 / Ô£ù 9
+    Ô£ô get deleted client status is 404
+
+    HTTP
+    http_req_duration..............: avg=117.74ms min=101.87ms med=112.24ms max=646.4ms p(90)=125.9ms  p(95)=134.8ms 
+      { expected_response:true }...: avg=118.01ms min=102.87ms med=111.91ms max=646.4ms p(90)=124.79ms p(95)=136.16ms
+    http_req_failed................: 25.64% 100 out of 390
+    http_reqs......................: 390    3.420168/s
+
+    EXECUTION
+    iteration_duration.............: avg=17.81s   min=17.64s   med=17.76s   max=18.34s  p(90)=18.01s   p(95)=18.11s  
+    iterations.....................: 26     0.228011/s
+    vus............................: 1      min=1          max=5
+    vus_max........................: 5      min=5          max=5
+
+    NETWORK
+    data_received..................: 638 kB 5.6 kB/s
+    data_sent......................: 51 kB  443 B/s
+
+
+
+
+running (1m54.0s), 0/5 VUs, 26 complete and 0 interrupted iterations
+default Ô£ô [ 100% ] 0/5 VUs  1m40s
+time="2026-02-11T19:55:35-05:00" level=error msg="thresholds on metrics 'http_req_failed' have been crossed"
