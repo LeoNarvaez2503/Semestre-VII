@@ -1,0 +1,361 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[spanish]{babel}
+\usepackage{fontspec}
+\IfFontExistsTF{Times New Roman}
+  {\setmainfont{Times New Roman}}
+  {\setmainfont{TeX Gyre Termes}}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{ragged2e}
+\justifying
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\graphicspath{{./imagenes/}}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{xurl}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+% Colores del formato institucional ESPE
+\definecolor{espeGreen}{HTML}{0F3D2E}
+\definecolor{deepTeal}{HTML}{123C55}
+\definecolor{softGold}{HTML}{C6A24A}
+\definecolor{ink}{HTML}{1F2933}
+\definecolor{mist}{HTML}{EFF3F1}
+\definecolor{cloud}{HTML}{F8FAF8}
+\definecolor{accentRed}{HTML}{B44B3F}
+\definecolor{steel}{HTML}{44546A}
+\definecolor{fog}{HTML}{DCE2DE}
+
+\titleformat{\section}{\normalfont\Large\bfseries\color{espeGreen}}{\thesection.}{0.7em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\color{deepTeal}}{\thesubsection.}{0.7em}{}
+\captionsetup{font=small,labelfont=bf}
+
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\fancyhf{}
+\lhead{\small SentinelML-ABAC: Seguridad en Sistemas Inteligentes}
+\rhead{\small Ing. de Seguridad de Software}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+% Configuración para listings
+\lstset{
+  backgroundcolor=\color{cloud},
+  basicstyle=\ttfamily\scriptsize\color{ink},
+  keywordstyle=\bfseries\color{deepTeal},
+  commentstyle=\color{steel!80!black}\itshape,
+  stringstyle=\color{accentRed},
+  numbers=left,
+  numberstyle=\tiny\color{steel},
+  stepnumber=1,
+  numbersep=6pt,
+  frame=single,
+  rulecolor=\color{fog},
+  tabsize=2,
+  breaklines=true,
+  breakatwhitespace=false,
+  showstringspaces=false
+}
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[cloud] (current page.south west) rectangle (current page.north east);
+  \fill[espeGreen] (current page.north west) rectangle ([xshift=4.2cm]current page.south west);
+  \fill[deepTeal] ([xshift=3.55cm]current page.north west) -- ([xshift=5.05cm]current page.north west) -- ([xshift=3.95cm]current page.south west) -- ([xshift=2.65cm]current page.south west) -- cycle;
+  \draw[softGold,line width=1.2pt] ([xshift=13.25cm,yshift=-1.1cm]current page.north west) -- ([xshift=-1.2cm,yshift=-1.1cm]current page.north east);
+  \draw[softGold,line width=1.2pt] ([xshift=5.2cm,yshift=1.1cm]current page.south west) -- ([xshift=-1.2cm,yshift=1.1cm]current page.south east);
+  \foreach \x/\y/\r in {1.1/-2.0/0.18,2.3/-4.7/0.11,1.5/-7.0/0.14,2.8/-9.6/0.09,1.0/-12.2/0.16,2.6/-15.5/0.12,1.4/-18.0/0.10}{
+    \fill[softGold!80] ([xshift=\x cm,yshift=\y cm]current page.north west) circle (\r cm);
+  }
+  \node[anchor=north west] at ([xshift=5.15cm,yshift=-0.82cm]current page.north west) {\includegraphics[width=7.9cm]{espe.jpg}};
+  \node[anchor=south west,rotate=90,text=cloud!86,font=\Large\bfseries] at ([xshift=1.0cm,yshift=1.7cm]current page.south west) {INGENIERÍA DE SEGURIDAD DE SOFTWARE};
+  \draw[softGold,line width=0.9pt] ([xshift=0.8cm,yshift=1.35cm]current page.south west) -- ([xshift=0.8cm,yshift=11.5cm]current page.south west);
+  % Eliminado G1 de la esquina
+\end{tikzpicture}
+
+\vspace*{1.65cm}
+\noindent\hspace*{4.65cm}
+\begin{minipage}{0.66\textwidth}
+  \begin{flushleft}
+    {\Large\bfseries\color{espeGreen} Universidad de las Fuerzas Armadas\par ESPE\par}
+    \vspace{0.25cm}
+    {\large Departamento de Ciencias de la Computación\par}
+    \vspace{0.2cm}
+    {\large Ingeniería de Software\par}
+    \vspace{1.0cm}
+    {\fontsize{20}{24}\selectfont\bfseries\color{ink} SentinelML-ABAC: Sistema de Control de Acceso Industrial con Inferencia Resiliente a Ataques de Evasión\par}
+    \vspace{0.35cm}
+    {\Large\color{softGold}\bfseries Proyecto: Idea de una Solución de Seguridad Novedosa\par}
+    \vspace{0.8cm}
+    \begin{tikzpicture}
+      \draw[softGold,line width=1pt] (0,0) -- (9.7,0);
+      \fill[softGold] (0,0) circle (2pt);
+      \fill[softGold] (9.7,0) circle (2pt);
+    \end{tikzpicture}
+    \vspace{0.45cm}
+
+    {\bfseries Integrantes:}\par
+    Caetano Flores\par
+    Jordan Guamán\par
+    Mesías Mariscal\par
+    Anthony Morales\par
+    Leonardo Narváez\par
+    Denise Rea\par
+    \vspace{0.25cm}
+    {\bfseries Docente:} Sang Guun Yoo, PhD\par
+    \vspace{0.45cm}
+    Sangolquí, Ecuador\par
+    Julio de 2026
+  \end{flushleft}
+\end{minipage}
+\clearpage
+
+\tableofcontents
+\newpage
+
+\section{Introducción y Planteamiento del Problema}
+
+La transformación digital en entornos de automatización industrial y de infraestructura crítica (como plantas de energía, refinerías y sistemas de distribución de agua) ha acelerado la convergencia entre la tecnología de operaciones (OT) y la tecnología de la información (IT). Los sistemas tradicionales SCADA (Supervisory Control and Data Acquisition) y los sensores del Internet de las Cosas Industrial (IIoT) operan bajo redes que históricamente dependían del aislamiento físico como su principal defensa. Sin embargo, con la integración de APIs, conectividad IP y la toma de decisiones asistida por modelos de Inteligencia Artificial (IA), este aislamiento ha desaparecido, exponiendo la infraestructura a vectores de ataque altamente sofisticados.
+
+En este nuevo paradigma, la toma de decisiones sobre el control de acceso a recursos físicos e informáticos críticos no puede limitarse a políticas estáticas tradicionales. El volumen dinámico del tráfico y el comportamiento mutante de los sensores exigen un enfoque de control de acceso adaptativo basado en atributos (ABAC). Sin embargo, los motores de IA y Machine Learning (ML) incorporados para estimar los atributos de riesgo y clasificar el comportamiento del sistema son intrínsecamente vulnerables. 
+
+Los atacantes de nivel Máster o APTs (Amenazas Persistentes Avanzadas) han desarrollado técnicas de evasión matemática o ejemplos adversarios (Adversarial Examples), consistentes en perturbar levemente las señales de telemetría de los sensores de manera que, siendo imperceptibles para un operador humano, logren que el clasificador probabilístico del sistema identifique tráfico malicioso o destructivo como legítimo. Esto permitiría a un intruso forzar la apertura de válvulas de presión, sabotear turbinas o exfiltrar datos, saltándose los mecanismos de autorización y eludiendo las alertas del IDS. 
+
+El problema central radica en diseñar una arquitectura de control de acceso industrial que implemente políticas ABAC robustas, pero cuyos componentes de clasificación de seguridad mediante modelos de aprendizaje automático cuenten con un escudo proactivo contra ataques de envenenamiento de datos (Data Poisoning) y de evasión (como FGSM). Asimismo, la arquitectura debe garantizar la integridad física de los pesos del modelo, operar con latencias críticas y estar enmarcada bajo un sistema de gestión estructurado (SGSI). En respuesta a este desafío, este informe detalla la conceptualización y desarrollo de la propuesta, la cual se alinea con el requerimiento académico de formular una \textbf{Idea de una Solución de Seguridad Novedosa} para mitigar riesgos en infraestructuras críticas.
+
+\section{Criterios de Selección y Pertinencia de la Solución}
+
+La solución planteada, denominada \textbf{SentinelML-ABAC}, ha sido seleccionada específicamente para mitigar las debilidades del ecosistema SCADA moderno mediante la combinación integrada de conceptos de control de acceso formal, criptografía híbrida e ingeniería de MLSecOps. Los criterios que justifican su selección frente a esquemas tradicionales son:
+
+\begin{enumerate}
+    \item \textbf{Flexibilidad y Contextualización Dinámica (ABAC vs. RBAC)}: A diferencia del control de acceso basado en roles (RBAC) que es rígido y no contempla condiciones del entorno, ABAC permite incorporar atributos dinámicos temporales y técnicos (p.ej., la dirección IP del sensor, el nivel de seguridad de la red de origen, la tasa de anomalías en el canal físico y la coherencia del historial de telemetría) regulando de manera granular los permisos de lectura y escritura en los actuadores de planta.
+    \item \textbf{Garantía Estricta de la Integridad (Modelo Biba)}: Dado que un flujo de datos erróneo o manipulado en un sensor industrial podría provocar daños catastróficos a nivel físico (Safety), se selecciona la política del modelo de integridad de Biba (*no-read-down, no-write-up*). Esto garantiza que procesos de baja confianza en la red corporativa o dispositivos comprometidos de la periferia no puedan escribir o alterar parámetros de control del kernel central o bases de datos de alta integridad.
+    \item \textbf{Protección Criptográfica del Pipeline de ML}: Los modelos de IA suelen guardarse en formatos de serialización vulnerables (como Pickles de Python) que permiten la ejecución remota de código (RCE) al ser montados. La solución introduce el formato binario plano \texttt{Safetensors} y la firma criptográfica obligatoria mediante hashes SHA-256 en la PKI corporativa antes del arranque del servicio de inferencia, garantizando la confidencialidad y la inmutabilidad de los pesos del clasificador.
+    \item \textbf{Monitoreo Activo de Desviación (Data Drift)}: A diferencia de los IDS estáticos basados en firmas que fallan ante malware de mutación polimórfica o ataques de día cero, \textbf{SentinelML-ABAC} integra el cálculo en tiempo real del Population Stability Index ($PSI$) y la Distancia de Wasserstein. Esto permite detectar de forma proactiva desalineaciones estadísticas en el tráfico antes de que el modelo degrade su precisión a niveles inseguros, permitiendo ejecutar rollbacks automáticos en menos de 5 segundos.
+\end{enumerate}
+
+\section{Marco Teórico y Estado del Arte}
+
+La arquitectura propuesta unifica las tres unidades fundamentales del programa de Ingeniería de Seguridad de Software y los avances en seguridad aplicados a sistemas de inteligencia artificial:
+
+\subsection{Fundamentos, Malware y Vectores de Red (Unidad 1)}
+La triada CIA es el fundamento para el resguardo de infraestructuras críticas. En redes industriales, la disponibilidad e integridad toman prioridad crítica sobre la confidencialidad para evitar fallos de seguridad física (safety) \cite{nist800}. Los actores de amenazas sofisticados, como APTs y el crimen organizado, despliegan payloads maliciosos que evaden firewalls perimetrales mediante el uso de botnets de IoT (como Mirai \cite{mirai}) y técnicas de ocultamiento de kernel (rootkits). Los ataques comunes de red como el envenenamiento ARP (ARP poisoning) y la suplantación de IP (IP spoofing) son utilizados para interceptar comunicaciones (eavesdropping) o inyectar comandos fraudulentos mediante Man-in-the-Middle (MITM) y ataques de reproducción (replay).
+
+\subsection{Criptografía y Control de Acceso (Unidad 2)}
+La criptografía híbrida combina el cifrado simétrico (AES-256) para el canal de datos de alta velocidad con el cifrado asimétrico (ECC) para la distribución segura de claves. La autenticación robusta requiere al menos un esquema multifactor (MFA). El control de acceso discrecional (DAC) basado en matrices y listas de control de acceso (ACL) resulta ineficiente e inseguro en redes de miles de nodos, requiriendo el salto a modelos mandatorios (MAC) y basados en atributos (ABAC). A nivel formal, el modelo Bell-LaPadula previene la fuga de secretos de alta clasificación, mientras que el modelo Biba se enfoca en asegurar la integridad evitando que datos contaminados corrompan a capas superiores.
+
+\subsection{Protocolos Criptográficos, Seguridad Perimetral y SGSI (Unidad 3)}
+Los protocolos de autenticación centralizada como Kerberos solucionan el problema del almacenamiento descentralizado de credenciales mediante el uso de Tickets cifrados de corta duración emitidos por un Centro de Distribución de Claves (KDC). Kerberos extiende conceptos del protocolo Needham-Schroeder utilizando marcas de tiempo (timestamps) y nonces para desarmar ataques de reproducción antiguos. El diseño global se rige por un Sistema de Gestión de Seguridad de la Información (SGSI) basado en la norma internacional ISO/IEC 27001 \cite{iso27001}, estructurado bajo la metodología de mejora continua PDCA (Plan, Do, Check, Act).
+
+\subsection{Seguridad en Inteligencia Artificial y MLSecOps (Parcial III)}
+Los modelos probabilísticos de aprendizaje automático introducen vulnerabilidades no cubiertas por parches de software tradicionales. El ataque de envenenamiento de datos (Data Poisoning) manipula el dataset durante el entrenamiento para implantar puertas traseras en el modelo. Durante la inferencia, los ejemplos adversarios (Adversarial Examples) perturban la entrada empleando algoritmos de optimización matemática de gradiente (como el método FGSM) para causar clasificaciones erróneas \cite{goodfellow2014}. Para asegurar la resiliencia en entornos de producción, el ciclo de MLSecOps introduce el escaneo estático de modelos, guardrails semánticos y la medición continua del Data Drift para calibrar la estabilidad operacional.
+
+\section{Descripción de la Solución Propuesta}
+
+La arquitectura propuesta concreta la \textbf{Idea de una Solución de Seguridad Novedosa} denominada \textbf{SentinelML-ABAC}, la cual es una pasarela de seguridad inteligente de control de acceso perimetral. Actúa como un intermediario entre la capa de sensores IIoT y los PLC/actuadores que ejecutan comandos de control de planta.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=1.2cm and 1.8cm,
+  box/.style={draw=deepTeal, fill=mist, rounded corners, minimum width=2.4cm, minimum height=1cm, align=center, font=\scriptsize\bfseries\color{ink}},
+  sensor/.style={draw=espeGreen, fill=cloud, circle, minimum size=1.1cm, align=center, font=\tiny\bfseries\color{espeGreen}},
+  actuator/.style={draw=accentRed, fill=mist, rounded corners, minimum width=2.2cm, minimum height=0.8cm, align=center, font=\scriptsize\bfseries\color{accentRed}},
+  database/.style={draw=steel, fill=cloud, cylinder, shape border rotate=90, minimum width=1.5cm, minimum height=1.2cm, align=center, font=\tiny\bfseries\color{steel}},
+  line/.style={draw=steel, -{Stealth[scale=0.8]}, line width=0.8pt}
+]
+  % Nodes
+  \node[sensor] (s1) {Sensor A};
+  \node[sensor, below=0.3cm of s1] (s2) {Sensor B};
+  
+  \node[box, right=of s1, yshift=-0.5cm] (auth) {KDC / Kerberos\\Autenticación};
+  \node[box, right=2cm of auth] (guard) {Preprocesamiento\\y Suavizado\\(Defensa FGSM)};
+  \node[box, below=1.2cm of guard] (drift) {Detector de Drift\\(Wasserstein/$PSI$)};
+  \node[box, right=2cm of guard] (engine) {Motor de ML\\(Model Inferencia\\en Safetensors)};
+  \node[box, below=1.2cm of engine] (abac) {Motor ABAC\\y Modelo Biba};
+  
+  \node[database, above=1.2cm of engine] (pki) {PKI / Hash\\SHA-256};
+  \node[actuator, right=of abac] (act) {Actuador PLC\\(Comando Físico)};
+
+  % Edges
+  \draw[line] (s1) -- (auth);
+  \draw[line] (s2) -- (auth);
+  \draw[line] (auth) -- node[above, font=\tiny\color{steel}]{TGS Ticket} (guard);
+  \draw[line] (pki) -- node[right, font=\tiny\color{steel}, align=left]{Firma Pesos} (engine);
+  \draw[line] (guard) -- node[above, font=\tiny]{$x_{smooth}$} (engine);
+  \draw[line] (guard) -- (drift);
+  \draw[line] (drift) -- node[right, font=\tiny\color{accentRed}]{PSI $\ge$ 0.25} (engine);
+  \draw[line] (engine) -- node[right, font=\tiny, align=left]{Atributos\\Riesgo ($g_i$)} (abac);
+  \draw[line] (abac) -- node[above, font=\tiny]{Decisión} (act);
+\end{tikzpicture}
+\caption{Diagrama de arquitectura del flujo de datos en el sistema SentinelML-ABAC.}
+\label{fig:arquitectura_sistema}
+\end{figure}
+
+La novedad de la solución radica en su **enfoque de defensa holístico por diseño**, donde los datos recibidos de la red pasan por tres compuertas lógicas antes de que se autorice la ejecución de cualquier acción física:
+1.  **Filtro Criptográfico de Identidad y Freshness**: Los dispositivos deben autenticarse usando Kerberos y ECC. Se descartan mensajes duplicados mediante el análisis de nonces y timestamps.
+2.  **Escudo Físico de Evasión (Suavizado de Datos)**: Para neutralizar el ruido adversario imperceptible del método FGSM, el tráfico pasa por un preprocesador matemático de suavizado espectral que dispersa la estructura del ruido de gradiente.
+3.  **Inferencia Resiliente y ABAC con Biba**: Un modelo local estima el nivel de riesgo del canal y la coherencia del comando. Los pesos del modelo son validados criptográficamente en memoria utilizando Safetensors. Si se aprueba el nivel de integridad Biba y las reglas ABAC, el comando se envía al actuador; en caso contrario, se desactiva la clave del dispositivo sospechoso y se conmuta en caliente a un modelo determinista estático de emergencia.
+
+A diferencia de los IDS de red clásicos que informan del ataque posterior a la infección, **SentinelML-ABAC** intercepta la inferencia en tiempo real en la capa de autorización del control de acceso, actuando de forma preventiva.
+
+\section{Detalle Técnico del Sistema}
+
+\subsection{Modelo de Amenazas (STRIDE / MITRE ATLAS)}
+El diseño del sistema responde a una modelación sistemática de amenazas industriales e inteligencia artificial, detallada en la Tabla \ref{tab:stride_atlas}.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{l L{4cm} L{3.5cm} L{3.5cm}}
+\toprule
+\textbf{Categoría STRIDE} & \textbf{Amenaza Técnica Específica} & \textbf{Técnica MITRE ATLAS} & \textbf{Mitigación SentinelML-ABAC} \\
+\midrule
+\textbf{Spoofing} & Suplantación de identidad del sensor en la red de telemetría. & AML.T0008: \textit{Impersonation} & Autenticación mutua con ECC y tickets cifrados en Kerberos. \\
+\textbf{Tampering} & Modificación de la telemetría mediante ejemplos adversarios (FGSM). & AML.T0015: \textit{Evade ML Model} & Suavizado de datos pre-inferencia y monitoreo de Data Drift. \\
+\textbf{Repudiation} & Negación de envío de parámetros de control erróneos por un sensor. & AML.T0020: \textit{Exfiltrar pesos} & Firma digital de mensajes basada en claves privadas asimétricas en la RA de la PKI. \\
+\textbf{Information Leak} & Exfiltración de pesos y arquitectura del modelo de clasificación. & AML.T0012: \textit{Model Extraction} & Rate limiting y perturbación de confianzas en los outputs. \\
+\textbf{Denial of Service} & Inundación de la pasarela de control mediante botnets industriales. & AML.T0029: \textit{Denial of Service} & Rate limiting a nivel de gateway IP y filtrado de IP Spoofing. \\
+\textbf{Elevation of Priv} & Inyección RCE mediante deserialización de modelos comprometidos. & AML.T0010: \textit{Poison Training Data} & Uso estricto de \texttt{Safetensors} y verificación SHA-256 de firmas de modelos. \\
+\bottomrule
+\end{tabularx}
+\caption{Modelado de amenazas combinando el estándar STRIDE y la matriz MITRE ATLAS.}
+\label{tab:stride_atlas}
+\end{table}
+
+\subsection{Mitigación de Evasión (Modelo Matemático FGSM)}
+Un atacante de nivel Elite genera telemetría adversaria aplicando el método rápido de signo de gradiente (FGSM). La entrada adversaria $x_{adv}$ se modela como:
+\begin{equation}
+    x_{adv} = x + \epsilon \cdot \text{sign}\left( \nabla_x L(\theta, x, y) \right)
+\end{equation}
+Donde $x$ es la señal legítima, $\epsilon$ es el límite del presupuesto de ruido del atacante, $\theta$ representa los pesos del clasificador y $L(\theta, x, y)$ es la función de pérdida del modelo. El operador de signo extrae la dirección de gradiente que maximiza el error de clasificación.
+
+\textbf{SentinelML-ABAC} contrarresta esto implementando un preprocesamiento de suavizado de entrada, aplicando un filtro de media móvil y una ligera inyección de ruido Gaussiano controlado $\eta \sim \mathcal{N}(0, \sigma^2)$ antes de la fase de inferencia:
+\begin{equation}
+    x_{smooth} = \text{Filter}(x_{adv}) + \eta
+\end{equation}
+Este proceso desacopla la perturbación exacta del vector de gradiente $\nabla_x L$, destruyendo la efectividad del ataque evasivo y estabilizando el comportamiento probabilístico del clasificador.
+
+\subsection{Detección de Data Drift (Distancia de Wasserstein)}
+Para identificar ataques sofisticados de deriva lenta o envenenamiento en caliente, el sistema calcula de forma síncrona en una ventana temporal de inferencias de tamaño $N$ la Distancia de Wasserstein de primer orden (Earth Mover's Distance) entre la distribución de entrenamiento $P_r$ y la distribución observada en producción $P_g$:
+\begin{equation}
+    W_1(P_r, P_g) = \inf_{\gamma \in \Pi(P_r, P_g)} \mathbb{E}_{(x,y)\sim \gamma}[\|x - y\|]
+\end{equation}
+Junto a la distancia de Wasserstein, se calcula el Population Stability Index ($PSI$) para las variables de entrada:
+\begin{equation}
+    PSI = \sum_{i=1}^{k} \left( P_{g,i} - P_{r,i} \right) \cdot \ln\left( \frac{P_{g,i}}{P_{r,i}} \right)
+\end{equation}
+El sistema de telemetría activa alarmas y conmuta las decisiones del control de acceso de acuerdo con los siguientes umbrales operativos:
+\begin{itemize}
+    \item   \textbf{$PSI < 0.10$}: Operación normal del modelo inteligente.
+    \item   \textbf{$0.10 \le PSI < 0.25$}: Desviación moderada; se envía una alerta en frío al SGSI y se programa un re-entrenamiento del modelo en la fase de CI/CD.
+    \item   \textbf{$PSI \ge 0.25$}: Desviación crítica (posible ataque de envenenamiento o evasión activa). Se ejecuta un **rollback en caliente en menos de 5 segundos**, desviando el tráfico de inferencia al modelo base robusto determinista y suspendiendo temporalmente la validación del sensor comprometido.
+\end{itemize}
+
+\subsection{Algoritmo del Guardrail del Control de Acceso}
+El flujo lógico del control de acceso integrado se presenta en el siguiente pseudocódigo:
+
+\begin{lstlisting}[language=Python, caption=Pseudocódigo del motor de autorización en la pasarela SentinelML-ABAC.]
+def authorize_sensor_request(sensor_id, request_data, security_ticket):
+    # 1. Validar ticket de autenticacion Kerberos
+    if not verify_kerberos_ticket(security_ticket):
+        log_security_event(sensor_id, "AUTH_FAILURE", "Severity: Critical")
+        return ACCESS_DENIED
+    
+    # 2. Comprobar inmutabilidad y hash del modelo de ML antes de usar
+    current_model_hash = get_file_sha256("/models/classifier.safetensors")
+    if current_model_hash != EXPECTED_MODEL_SHA256:
+        log_security_event("SYSTEM", "MODEL_INTEGRITY_VIOLATION", "Severity: Emergency")
+        trigger_system_lockdown()
+        return ACCESS_DENIED
+
+    # 3. Aplicar suavizado a los datos de telemetria
+    smoothed_data = apply_gaussian_smoothing(request_data)
+    
+    # 4. Calcular deriva estadistica (Drift)
+    psi_metric = calculate_population_stability_index(smoothed_data)
+    if psi_metric >= 0.25:
+        log_security_event(sensor_id, "CRITICAL_DRIFT_DETECTED", f"PSI: {psi_metric}")
+        activate_hot_rollback_to_baseline()
+        # Conmutacion al modelo base determinista
+        risk_score = evaluate_baseline_rules(smoothed_data)
+    else:
+        # Inferencia con modelo probabilistico Safetensors
+        risk_score = ml_model_inference(smoothed_data)
+    
+    # 5. Evaluacion de la politica ABAC bajo el Modelo Biba
+    # Sujeto: sensor_id, Objeto: actuador_id. Atributo: Integrity Level (IL)
+    sensor_il = get_attribute(sensor_id, "IntegrityLevel")
+    command_il = get_attribute(request_data, "RequiredIntegrity")
+    
+    # Biba Star Rule: No Write Down (Un sujeto no puede escribir en un objeto de mayor integridad)
+    # Biba Simple Integrity: No Read Up (Un sujeto no puede leer un objeto de menor integridad)
+    if sensor_il < command_il:
+        log_security_event(sensor_id, "BIBA_INTEGRITY_VIOLATION", f"Sensor IL {sensor_il} < Command IL {command_il}")
+        return ACCESS_DENIED
+        
+    # Validacion de reglas ABAC del entorno
+    if evaluate_abac_rules(sensor_id, risk_score, current_env_attributes()):
+        return ACCESS_APPROVED
+    else:
+        return ACCESS_DENIED
+\end{lstlisting}
+
+\section{Consideraciones de Implementación y Gobernanza (ISO/IEC 27001)}
+
+La implementación operativa de \textbf{SentinelML-ABAC} no se limita al despliegue técnico; debe estructurarse bajo un marco formal de gobernanza alineado con la norma **ISO/IEC 27001**, integrando el ciclo continuo **PDCA** (Plan-Do-Check-Act):
+
+\begin{itemize}
+    \item   \textbf{Plan (Planificar)}: Definición del alcance del SGSI enfocado en el pipeline de datos industriales y de inteligencia artificial. Identificación de los activos (pesos del modelo, datasets, código fuente). Modelado y valoración de riesgos utilizando la matriz combinada STRIDE/MITRE ATLAS. Establecimiento de la Política de Inferencia Confiable y Ciberseguridad de Modelos aprobada por la alta gerencia.
+    \item   \textbf{Do (Hacer)}: Despliegue de los controles técnicos: formato Safetensors, sandboxing de inferencia en Docker, infraestructura de firmas SHA-256 en la PKI y algoritmos de suavizado. Implementación de programas de formación y concientización a operadores de red OT sobre ataques de inyección e ingeniería social.
+    \item   \textbf{Check (Verificar)}: Monitoreo y medición periódica de los controles mediante el Population Stability Index ($PSI$) y logs de auditoría forense inmutables de inferencias. Ejecución de simulaciones periódicas de intrusión y ataques de evasión (Red Teaming de IA) para comprobar la latencia del rollback de emergencia.
+    \item   \textbf{Act (Actuar)}: Ejecución de acciones correctivas basadas en incidentes detectados. Si un sensor industrial muestra un comportamiento atípico repetitivo, se inicia su aislamiento de red (cuarentena) y se ajusta la política ABAC del entorno para restringir dinámicamente sus permisos. Actualización de las directivas de seguridad según nuevas técnicas publicadas en MITRE ATLAS.
+\end{itemize}
+
+Para la correcta trazabilidad del SGSI, el sistema mantiene de manera inmutable cuatro niveles documentales:
+1.  **Políticas**: Directrices globales sobre la autorización de telemetría y uso ético de modelos de IA en la corporación.
+2.  **Procedimientos**: Flujos operacionales de respuesta ante incidentes (p.ej., procedimiento de restauración en caliente tras una degradación del clasificador).
+3.  **Instrucciones**: Guías paso a paso para la generación de firmas de hashes y compilación segura de Safetensors por el equipo de DevOps.
+4.  **Registros**: Evidencias objetivas y logs firmados digitalmente de cada acceso concedido y alertas de deriva emitidas por el detector.
+
+\section{Conclusiones}
+
+\begin{itemize}
+    \item   El sistema \textbf{SentinelML-ABAC} ofrece una respuesta eficaz e innovadora a la vulnerabilidad latente de los clasificadores inteligentes en entornos industriales críticos, deteniendo en tiempo de inferencia ataques sofisticados de evasión (como FGSM) antes de comprometer la seguridad física de los activos de planta.
+    \item   La integración sistemática del **modelo de integridad Biba** con las políticas basadas en atributos (**ABAC**) proporciona una granularidad de seguridad multinivel y una robustez que supera a los esquemas tradicionales estáticos, cumpliendo a cabalidad con la triada de seguridad industrial.
+    \item   La mitigación técnica basada en firmas criptográficas de pesos SHA-256, formatos serializados seguros como \textbf{Safetensors} y monitoreo continuo mediante \textbf{Distancia de Wasserstein} asegura la confiabilidad del ciclo MLSecOps en producción, garantizando consistencia tipográfica y técnica bajo los marcos NIST AI RMF y MITRE ATLAS.
+    \item   Finalmente, la estructuración del diseño bajo el ciclo continuo **PDCA de la norma ISO/IEC 27001** asegura la alineación corporativa del sistema con estándares globales de calidad, auditabilidad y gobernanza de la seguridad de la información.
+\end{itemize}
+
+\begin{thebibliography}{99}
+\bibitem{nist800} NIST. (2018). \textit{Security and Privacy Controls for Information Systems and Organizations} (NIST Special Publication 800-53, Rev. 5).
+\bibitem{mirai} Antonakakis, M., et al. (2017). Understanding the Mirai Botnet. \textit{USENIX Security Symposium}.
+\bibitem{iso27001} ISO/IEC. (2022). \textit{Information security, cybersecurity and privacy protection — Information security management systems — Requirements} (ISO/IEC Standard No. 27001:2022).
+\bibitem{goodfellow2014} Goodfellow, I. J., Shlens, J., \& Szegedy, C. (2014). Explaining and harnessing adversarial examples. \textit{arXiv preprint arXiv:1412.6572}.
+\bibitem{nistairmf} NIST. (2023). \textit{Artificial Intelligence Risk Management Framework} (AI RMF 1.0).
+\bibitem{mitreatlas} MITRE. (2021). \textit{Adversarial Threat Landscape for Artificial-Intelligence Systems (ATLAS)}.
+\bibitem{owasp2023} OWASP. (2023). \textit{Top 10 for Large Language Model Applications}.
+\end{thebibliography}
+
+\end{document}
