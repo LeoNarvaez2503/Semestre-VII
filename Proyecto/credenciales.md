@@ -3,7 +3,7 @@
 A continuación se detallan las credenciales disponibles en la base de datos para iniciar sesión en la aplicación.
 
 > [!IMPORTANT]
-> Estas credenciales se inicializan y limpian de forma idempotente al ejecutar el script de sembrado de datos [seed_data.sh](file:///c:/Users/Jordan/Desktop/ESPE/Semestre-VII/Proyecto/seed_data.sh).
+> Estas credenciales corresponden a los usuarios iniciales disponibles en la base de datos.
 
 ---
 
@@ -20,7 +20,7 @@ A continuación se detallan las credenciales disponibles en la base de datos par
 
 ## 🚗 Distribución de Plazas y Vehículos Sembrados
 
-El script de sembrado inicializa las siguientes zonas y espacios:
+Se inicializan las siguientes zonas y espacios:
 
 ### Zona A - Planta Baja
 * **Espacio E-101** (AUTO): **DISPONIBLE**
@@ -30,11 +30,3 @@ El script de sembrado inicializa las siguientes zonas y espacios:
 ### Zona B - Planta Alta
 * **Espacio E-201** (AUTO): **DISPONIBLE**
 * **Espacio E-202** (AUTO): **OCUPADO** por Vehículo Chevrolet Sail (Placa: `ABC1234`, azul, de Cliente 2)
-
----
-
-## 🛠️ Ejecución de la Semilla
-Si deseas volver a limpiar y sembrar la base de datos a su estado original, ejecuta el siguiente comando en Git Bash o tu consola de comandos desde la raíz del proyecto:
-```bash
-./seed_data.sh
-```
