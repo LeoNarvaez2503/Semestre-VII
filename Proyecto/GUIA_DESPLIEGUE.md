@@ -158,3 +158,27 @@ sudo usermod -aG docker $USER
   ```bash
   docker compose up -d --build frontend-angular
   ```
+
+---
+
+## 🧹 Eliminación y Limpieza Total (Destruir Todo)
+
+Si deseas matar, eliminar y limpiar todos los contenedores, volúmenes de base de datos e imágenes:
+
+### 1️⃣ Limpieza completa del proyecto actual:
+```bash
+docker compose down --volumes --rmi all --remove-orphans
+```
+
+### 2️⃣ Limpieza "Nuclear" (Borrar ABSOLUTAMENTE TODO en el sistema Docker):
+```bash
+# 1. Matar e interrumpir todos los contenedores activos
+docker stop $(docker ps -aq) 2>/dev/null
+
+# 2. Borrar todos los contenedores
+docker rm -f $(docker ps -aq) 2>/dev/null
+
+# 3. Eliminar todo el sistema (imágenes, volúmenes, redes no usadas y caché)
+docker system prune -a --volumes -f
+```
+
