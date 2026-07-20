@@ -323,6 +323,19 @@ services:
       api-gateway:
         condition: service_started
 
+  # --- FRONTEND ANGULAR (CLEAN ARCHITECTURE) ---
+  frontend-angular:
+    build:
+      context: ./frontend-angular
+      dockerfile: Dockerfile
+    container_name: frontend_angular_app
+    restart: always
+    ports:
+      - "4200:80"
+    depends_on:
+      api-gateway:
+        condition: service_started
+
 volumes:
   usuarios_pgdata:
   vehiculos_pgdata:

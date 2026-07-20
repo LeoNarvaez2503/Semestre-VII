@@ -1,0 +1,117 @@
+<section class="zones-page" aria-labelledby="zones-title">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">Configuración del parqueadero</span>
+      <h1 id="zones-title">Zonas</h1>
+      <p>Organiza la capacidad y el tipo de cada sector del parqueadero.</p>
+    </div>
+    <button class="secondary-button" type="button" (click)="loadZones()" [disabled]="loading">
+      <span aria-hidden="true">↻</span> Actualizar
+    </button>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert alert-error" role="alert">{{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success" role="status">{{ successMessage }}</div>
+  }
+
+  <div class="content-grid">
+    <article class="panel form-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">{{ editingZone ? 'Edición' : 'Nueva zona' }}</span>
+          <h2>{{ editingZone ? 'Actualizar zona' : 'Crear zona' }}</h2>
+        </div>
+        @if (editingZone) {
+          <button class="text-button" type="button" (click)="cancelEdit()">Cancelar</button>
+        }
+      </div>
+
+      <form [formGroup]="zoneForm" (ngSubmit)="submit()" novalidate>
+        <label>
+          <span>Nombre</span>
+          <input type="text" formControlName="name" maxlength="32" placeholder="Ej. Zona norte" />
+          @if (zoneForm.controls.name.touched && zoneForm.controls.name.invalid) {
+            <small>Ingresa un nombre de hasta 32 caracteres.</small>
+          }
+        </label>
+
+        <label>
+          <span>Descripción</span>
+          <textarea formControlName="description" rows="3" placeholder="Referencia o ubicación de la zona"></textarea>
+        </label>
+
+        <div class="form-row">
+          <label>
+            <span>Tipo</span>
+            <select formControlName="type">
+              @for (type of zoneTypes; track type) {
+                <option [value]="type">{{ type }}</option>
+              }
+            </select>
+          </label>
+
+          <label>
+            <span>Capacidad</span>
+            <input type="number" formControlName="capacidad" min="1" step="1" />
+            @if (zoneForm.controls.capacidad.touched && zoneForm.controls.capacidad.invalid) {
+              <small>La capacidad debe ser mayor que cero.</small>
+            }
+          </label>
+        </div>
+
+        <button class="primary-button" type="submit" [disabled]="saving">
+          {{ saving ? 'Guardando…' : (editingZone ? 'Guardar cambios' : 'Crear zona') }}
+        </button>
+      </form>
+    </article>
+
+    <article class="panel list-panel">
+      <div class="panel-heading">
+        <div>
+          <span class="eyebrow">Inventario</span>
+          <h2>Zonas registradas</h2>
+        </div>
+        <span class="counter">{{ zones.length }}</span>
+      </div>
+
+      @if (loading) {
+        <div class="state-box" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          Cargando zonas…
+        </div>
+      } @else if (zones.length === 0) {
+        <div class="state-box">Todavía no existen zonas registradas.</div>
+      } @else {
+        <div class="zone-list">
+          @for (zone of zones; track trackZone($index, zone)) {
+            <article class="zone-card">
+              <div class="zone-main">
+                <div class="zone-icon" [attr.data-type]="zone.type">{{ zone.code || zone.name.charAt(0) }}</div>
+                <div>
+                  <div class="zone-title-line">
+                    <h3>{{ zone.name }}</h3>
+                    <span class="type-badge">{{ zone.type }}</span>
+                  </div>
+                  <p>{{ zone.description || 'Sin descripción' }}</p>
+                  <div class="zone-meta">
+                    <span><strong>{{ zone.capacidad }}</strong> espacios</span>
+                    <span class="uuid" [title]="zone.zoneId">ID {{ zone.zoneId.slice(0, 8) }}…</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <button type="button" class="edit-button" (click)="editZone(zone)">Editar</button>
+                <button type="button" class="delete-button" (click)="deleteZone(zone)" [disabled]="deletingId === zone.zoneId">
+                  {{ deletingId === zone.zoneId ? 'Eliminando…' : 'Eliminar' }}
+                </button>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </article>
+  </div>
+</section>

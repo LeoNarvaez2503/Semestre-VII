@@ -1,0 +1,136 @@
+<section class="assignments-page" aria-labelledby="assignments-title">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">Asignación y trazabilidad</span>
+      <h1 id="assignments-title">Propietarios y vehículos</h1>
+      <p>Administra asociaciones por UUID y consulta su historial de cambios.</p>
+    </div>
+    <button class="secondary-button" type="button" (click)="loadData()" [disabled]="loading">
+      <span aria-hidden="true">↻</span> Recargar datos
+    </button>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert alert-error" role="alert">{{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success" role="status">{{ successMessage }}</div>
+  }
+
+  <article class="panel create-panel">
+    <div class="panel-title">
+      <div>
+        <span class="eyebrow">Nueva relación</span>
+        <h2>Crear asignación</h2>
+      </div>
+      <span class="hint">Los identificadores se envían completos al API.</span>
+    </div>
+
+    <form [formGroup]="assignmentForm" (ngSubmit)="createAssignment()">
+      <label>
+        <span>Usuario</span>
+        <select formControlName="userId">
+          @if (users.length === 0) { <option value="">Sin usuarios disponibles</option> }
+          @for (user of users; track user.id_person) {
+            <option [value]="user.id_person">
+              {{ user.username }} · {{ user.person?.first_name }} {{ user.person?.last_name }} · {{ shortUuid(user.id_person) }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <label>
+        <span>Vehículo</span>
+        <select formControlName="vehicleId">
+          @if (vehicles.length === 0) { <option value="">Sin vehículos disponibles</option> }
+          @for (vehicle of vehicles; track vehicle.id) {
+            <option [value]="vehicle.id">
+              {{ vehicle.data.plate }} · {{ vehicle.data.brand }} {{ vehicle.data.model }} · {{ shortUuid(vehicle.id) }}
+            </option>
+          }
+        </select>
+      </label>
+
+      <button class="primary-button" type="submit" [disabled]="saving || users.length === 0 || vehicles.length === 0">
+        {{ saving ? 'Asignando…' : 'Crear asignación' }}
+      </button>
+    </form>
+  </article>
+
+  <article class="panel table-panel">
+    <div class="panel-title padded">
+      <div>
+        <span class="eyebrow">Estado actual reconstruido</span>
+        <h2>Asignaciones</h2>
+      </div>
+      <span class="counter">{{ assignments.length }}</span>
+    </div>
+
+    @if (loading && assignments.length === 0) {
+      <div class="state-box"><span class="spinner" aria-hidden="true"></span>Cargando asignaciones…</div>
+    } @else if (assignments.length === 0) {
+      <div class="state-box">No hay asignaciones registradas en la trazabilidad.</div>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Propietario</th><th>Vehículo</th><th>Estado</th><th>UUIDs</th><th>Acciones</th></tr></thead>
+          <tbody>
+            @for (assignment of assignments; track rowKey(assignment.userId, assignment.vehicleId)) {
+              <tr>
+                <td><strong>{{ getUserName(assignment.userId) }}</strong></td>
+                <td>{{ getVehicleLabel(assignment.vehicleId) }}</td>
+                <td><span class="status" [class.active]="assignment.active">{{ assignment.active ? 'Activa' : 'Inactiva' }}</span></td>
+                <td class="uuid-cell">
+                  <span [title]="assignment.userId">U: {{ shortUuid(assignment.userId) }}</span>
+                  <span [title]="assignment.vehicleId">V: {{ shortUuid(assignment.vehicleId) }}</span>
+                </td>
+                <td>
+                  <div class="actions">
+                    <button class="toggle-button" type="button" (click)="toggleAssignment(assignment)" [disabled]="processingKey === rowKey(assignment.userId, assignment.vehicleId)">
+                      {{ assignment.active ? 'Desactivar' : 'Activar' }}
+                    </button>
+                    <button class="delete-button" type="button" (click)="deleteAssignment(assignment)" [disabled]="!assignment.active || processingKey === rowKey(assignment.userId, assignment.vehicleId)">Eliminar</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </article>
+
+  <article class="panel table-panel">
+    <div class="panel-title padded">
+      <div>
+        <span class="eyebrow">Auditoría general</span>
+        <h2>Trazabilidad</h2>
+      </div>
+      <button class="text-button" type="button" (click)="refreshTraceability()" [disabled]="loading">Actualizar historial</button>
+    </div>
+
+    @if (loading && traces.length === 0) {
+      <div class="state-box"><span class="spinner" aria-hidden="true"></span>Cargando trazabilidad…</div>
+    } @else if (traces.length === 0) {
+      <div class="state-box">No existen eventos de trazabilidad.</div>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Fecha</th><th>Acción</th><th>Propietario</th><th>Vehículo</th><th>Resultado</th><th>Evento</th></tr></thead>
+          <tbody>
+            @for (trace of traces; track trace.id) {
+              <tr>
+                <td class="date-cell">{{ trace.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                <td><span class="action-badge" [attr.data-action]="trace.tipoAccion">{{ actionLabel(trace.tipoAccion) }}</span></td>
+                <td><strong>{{ getUserName(trace.userId) }}</strong><small [title]="trace.userId">{{ shortUuid(trace.userId) }}</small></td>
+                <td>{{ getVehicleLabel(trace.vehicleId) }}<small [title]="trace.vehicleId">{{ shortUuid(trace.vehicleId) }}</small></td>
+                <td><span class="status" [class.active]="traceState(trace) === 'Activa'">{{ traceState(trace) }}</span></td>
+                <td class="uuid-cell"><span [title]="trace.id">{{ shortUuid(trace.id) }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </article>
+</section>

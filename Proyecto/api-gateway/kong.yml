@@ -40,9 +40,6 @@ services:
       - name: usuario-login
         paths:
           - /usuario/login
-        methods:
-          - POST
-          - OPTIONS
         plugins:
           - name: request-transformer
             config:
@@ -51,8 +48,6 @@ services:
       - name: usuario-refresh
         paths:
           - /usuario/refresh
-        methods:
-          - POST
         plugins:
           - name: request-transformer
             config:
@@ -61,8 +56,6 @@ services:
       - name: usuario-me
         paths:
           - /usuario/me
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -71,8 +64,6 @@ services:
       - name: usuario-me-actualizar
         paths:
           - /usuario/me/actualizar
-        methods:
-          - PATCH
         plugins:
           - name: request-transformer
             config:
@@ -81,8 +72,6 @@ services:
       - name: usuario-me-vehiculos
         paths:
           - /usuario/me/vehiculos
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -91,8 +80,6 @@ services:
       - name: usuario-crear
         paths:
           - /usuario/crear
-        methods:
-          - POST
         plugins:
           - name: request-transformer
             config:
@@ -101,8 +88,6 @@ services:
       - name: usuario-listar
         paths:
           - /usuario/listar
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -111,8 +96,6 @@ services:
       - name: usuario-buscar
         paths:
           - /usuario/buscar
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -121,8 +104,6 @@ services:
       - name: usuario-obtener
         paths:
           - ~/usuario/obtener/([^/]+)$
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -131,8 +112,6 @@ services:
       - name: usuario-actualizar
         paths:
           - ~/usuario/actualizar/([^/]+)$
-        methods:
-          - PATCH
         plugins:
           - name: request-transformer
             config:
@@ -141,8 +120,6 @@ services:
       - name: usuario-roles
         paths:
           - ~/usuario/roles/([^/]+)$
-        methods:
-          - PUT
         plugins:
           - name: request-transformer
             config:
@@ -151,8 +128,6 @@ services:
       - name: usuario-eliminar
         paths:
           - ~/usuario/eliminar/([^/]+)$
-        methods:
-          - DELETE
         plugins:
           - name: request-transformer
             config:
@@ -161,8 +136,6 @@ services:
       - name: rol-crear
         paths:
           - /rol/crear
-        methods:
-          - POST
         plugins:
           - name: request-transformer
             config:
@@ -171,8 +144,6 @@ services:
       - name: rol-listar
         paths:
           - /rol/listar
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -181,8 +152,6 @@ services:
       - name: rol-obtener
         paths:
           - ~/rol/obtener/([^/]+)$
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -191,8 +160,6 @@ services:
       - name: rol-actualizar
         paths:
           - ~/rol/actualizar/([^/]+)$
-        methods:
-          - PATCH
         plugins:
           - name: request-transformer
             config:
@@ -201,8 +168,6 @@ services:
       - name: rol-eliminar
         paths:
           - ~/rol/eliminar/([^/]+)$
-        methods:
-          - DELETE
         plugins:
           - name: request-transformer
             config:
@@ -212,8 +177,6 @@ services:
         paths:
           - /usuarios/docs
           - /usuarios/openapi.json
-        methods:
-          - GET
         strip_path: false
 
   - name: vehiculos-service
@@ -222,8 +185,6 @@ services:
       - name: vehiculo-crear
         paths:
           - /vehiculo/crear
-        methods:
-          - POST
         plugins:
           - name: request-transformer
             config:
@@ -232,8 +193,6 @@ services:
       - name: vehiculo-listar
         paths:
           - /vehiculo/listar
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -242,8 +201,6 @@ services:
       - name: vehiculo-obtener
         paths:
           - ~/vehiculo/obtener/([^/]+)$
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -252,8 +209,6 @@ services:
       - name: vehiculo-actualizar
         paths:
           - ~/vehiculo/actualizar/([^/]+)$
-        methods:
-          - PATCH
         plugins:
           - name: request-transformer
             config:
@@ -262,8 +217,6 @@ services:
       - name: vehiculo-eliminar
         paths:
           - ~/vehiculo/eliminar/([^/]+)$
-        methods:
-          - DELETE
         plugins:
           - name: request-transformer
             config:
@@ -273,8 +226,6 @@ services:
         paths:
           - /vehiculos/docs/
           - /vehiculos/docs-json
-        methods:
-          - GET
         strip_path: false
 
   - name: asignaciones-service
@@ -283,8 +234,6 @@ services:
       - name: asignacion-crear
         paths:
           - /asignacion/crear
-        methods:
-          - POST
         plugins:
           - name: request-transformer
             config:
@@ -293,8 +242,6 @@ services:
       - name: asignacion-actualizar
         paths:
           - ~/asignacion/actualizar/([^/]+)/([^/]+)$
-        methods:
-          - PUT
         plugins:
           - name: request-transformer
             config:
@@ -303,8 +250,6 @@ services:
       - name: asignacion-eliminar
         paths:
           - ~/asignacion/eliminar/([^/]+)/([^/]+)$
-        methods:
-          - DELETE
         plugins:
           - name: request-transformer
             config:
@@ -313,8 +258,6 @@ services:
       - name: asignacion-propietario
         paths:
           - ~/asignacion/propietario/([^/]+)$
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -323,8 +266,6 @@ services:
       - name: asignacion-trazabilidad-general
         paths:
           - /asignacion/trazabilidad
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -333,8 +274,6 @@ services:
       - name: asignacion-trazabilidad-vehiculo
         paths:
           - ~/asignacion/trazabilidad/vehiculo/([^/]+)$
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -343,8 +282,6 @@ services:
       - name: asignacion-trazabilidad-propietario
         paths:
           - ~/asignacion/trazabilidad/propietario/([^/]+)$
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -353,8 +290,6 @@ services:
       - name: asignaciones-docs
         paths:
           - /asignaciones/docs
-        methods:
-          - GET
         strip_path: false
 
   - name: zonas-service
@@ -363,8 +298,6 @@ services:
       - name: zona-crear
         paths:
           - /zona/crear
-        methods:
-          - POST
         plugins:
           - name: request-transformer
             config:
@@ -373,8 +306,6 @@ services:
       - name: zona-listar
         paths:
           - /zona/listar
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -383,8 +314,6 @@ services:
       - name: zona-actualizar
         paths:
           - ~/zona/actualizar/([^/]+)$
-        methods:
-          - PUT
         plugins:
           - name: request-transformer
             config:
@@ -393,8 +322,6 @@ services:
       - name: zona-eliminar
         paths:
           - ~/zona/eliminar/([^/]+)$
-        methods:
-          - DELETE
         plugins:
           - name: request-transformer
             config:
@@ -403,8 +330,6 @@ services:
       - name: espacio-crear
         paths:
           - /espacio/crear
-        methods:
-          - POST
         plugins:
           - name: request-transformer
             config:
@@ -413,9 +338,6 @@ services:
       - name: espacio-listar
         paths:
           - /espacio/listar
-        methods:
-          - GET
-          - OPTIONS
         plugins:
           - name: request-transformer
             config:
@@ -424,8 +346,6 @@ services:
       - name: espacio-obtener
         paths:
           - ~/espacio/obtener/([^/]+)$
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -434,8 +354,6 @@ services:
       - name: espacio-estado-cambiar
         paths:
           - ~/espacio/estado/([^/]+)/estado/([^/]+)$
-        methods:
-          - PUT
         plugins:
           - name: request-transformer
             config:
@@ -444,8 +362,6 @@ services:
       - name: espacio-estado-listar
         paths:
           - ~/espacio/estado/([^/]+)$
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -454,8 +370,6 @@ services:
       - name: espacio-eliminar
         paths:
           - ~/espacio/eliminar/([^/]+)$
-        methods:
-          - DELETE
         plugins:
           - name: request-transformer
             config:
@@ -466,8 +380,6 @@ services:
           - /zonas/docs
           - /zonas/swagger-ui/
           - /zonas/openapi.json
-        methods:
-          - GET
         strip_path: false
 
   - name: tickets-service
@@ -476,8 +388,6 @@ services:
       - name: ticket-crear
         paths:
           - /ticket/crear
-        methods:
-          - POST
         plugins:
           - name: request-transformer
             config:
@@ -486,8 +396,6 @@ services:
       - name: ticket-listar-todos
         paths:
           - /ticket/listar-todos
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -496,8 +404,6 @@ services:
       - name: ticket-buscar
         paths:
           - /ticket/buscar
-        methods:
-          - GET
         plugins:
           - name: request-transformer
             config:
@@ -506,8 +412,6 @@ services:
       - name: ticket-pagar
         paths:
           - ~/ticket/pagar/([^/]+)$
-        methods:
-          - POST
         plugins:
           - name: request-transformer
             config:
@@ -517,6 +421,4 @@ services:
         paths:
           - /tickets/docs
           - /tickets/openapi.json
-        methods:
-          - GET
         strip_path: false
