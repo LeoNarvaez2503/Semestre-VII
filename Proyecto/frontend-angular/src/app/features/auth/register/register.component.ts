@@ -8,7 +8,7 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { RegisterPayload, User } from '../../../core/models/user.model';
 import { AuthService } from '../../../infrastructure/api/auth.service';
 
@@ -43,25 +43,51 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
             <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-700">Registro público</p>
             <h1 class="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Crea tu cuenta</h1>
             <p class="mt-2 max-w-2xl text-sm leading-relaxed text-slate-500">
-              Completa tus datos personales. Tu cuenta se creará con acceso de cliente; los permisos administrativos no se asignan desde este formulario.
+              Completa tus datos personales. Tu cuenta se creará con acceso de cliente; los permisos administrativos se gestionan por el superusuario.
             </p>
           </div>
 
+          <!-- SUCCESS CARD WITH GENERATED USERNAME -->
           <div *ngIf="createdUser" class="p-6 sm:p-10" aria-live="polite">
-            <div class="mx-auto max-w-lg rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-center">
-              <span class="material-symbols-outlined mb-3 text-5xl text-emerald-600">check_circle</span>
-              <h2 class="text-xl font-black text-slate-900">Cuenta creada correctamente</h2>
-              <p class="mt-2 text-sm text-slate-600">
-                Tu usuario de acceso es <strong class="text-slate-900">{{ createdUser.username }}</strong>.
-                Guárdalo para iniciar sesión.
-              </p>
-              <a routerLink="/login" class="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-black">
+            <div class="mx-auto max-w-lg rounded-3xl border border-emerald-300 bg-emerald-50/80 p-8 text-center shadow-lg space-y-5">
+              <div class="w-16 h-16 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mx-auto shadow-md">
+                <span class="material-symbols-outlined text-4xl">check_circle</span>
+              </div>
+              
+              <div>
+                <h2 class="text-2xl font-black text-slate-900">¡Cuenta Creada Exitosamente!</h2>
+                <p class="mt-1 text-xs text-slate-600">
+                  El sistema generó tu usuario único de acceso para iniciar sesión:
+                </p>
+              </div>
+
+              <!-- Monospace Username Box -->
+              <div class="p-4 rounded-2xl bg-white border border-emerald-200 text-left space-y-2.5 shadow-sm">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                  <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tu Usuario de Acceso:</span>
+                  <span class="text-base font-black font-mono text-emerald-700 bg-emerald-100 px-3 py-1 rounded-xl border border-emerald-300">
+                    {{ createdUser.username }}
+                  </span>
+                </div>
+                <div class="flex justify-between text-xs text-slate-600">
+                  <span>Nombre:</span>
+                  <span class="font-bold text-slate-800">{{ createdUser.person?.first_name }} {{ createdUser.person?.last_name }}</span>
+                </div>
+                <div class="flex justify-between text-xs text-slate-600">
+                  <span>Correo:</span>
+                  <span class="font-mono text-slate-700">{{ createdUser.person?.email }}</span>
+                </div>
+              </div>
+
+              <a routerLink="/login" 
+                class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-6 py-4 text-sm font-bold text-white shadow-xl shadow-slate-900/20 transition-all hover:bg-black">
                 Ir al inicio de sesión
                 <span class="material-symbols-outlined text-lg">arrow_forward</span>
               </a>
             </div>
           </div>
 
+          <!-- REGISTRATION FORM -->
           <form *ngIf="!createdUser" [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-8 p-6 sm:p-10" novalidate>
             <div *ngIf="errorMessage" class="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
               <span class="material-symbols-outlined text-xl text-red-500">warning</span>
@@ -90,7 +116,7 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
 
                 <label class="field-label">
                   Cédula / DNI <span class="required">*</span>
-                  <input formControlName="dni" type="text" maxlength="30" inputmode="numeric" autocomplete="off" class="field-input" placeholder="Número de identificación">
+                  <input formControlName="dni" type="text" maxlength="30" inputmode="numeric" autocomplete="off" class="field-input" placeholder="1723456784">
                   <span *ngIf="isInvalid('dni')" class="field-error">Ingresa un número de identificación válido.</span>
                 </label>
 
@@ -147,7 +173,7 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
 
             <div class="flex flex-col-reverse items-stretch justify-between gap-4 border-t border-slate-100 pt-7 sm:flex-row sm:items-center">
               <p class="text-xs leading-relaxed text-slate-500 sm:max-w-md">Al registrarte confirmas que los datos ingresados son correctos.</p>
-              <button type="submit" [disabled]="loading" class="inline-flex min-w-48 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-black disabled:cursor-not-allowed disabled:opacity-60">
+              <button type="submit" [disabled]="loading" class="inline-flex min-w-48 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-black disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer">
                 <span *ngIf="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                 {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
                 <span *ngIf="!loading" class="material-symbols-outlined text-lg">person_add</span>
@@ -215,6 +241,7 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
 export class RegisterComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   loading = false;
   showPassword = false;
