@@ -1,6 +1,6 @@
-const AUTH_URL = process.env.NEXT_PUBLIC_API_URL;
-const USER_URL = process.env.NEXT_PUBLIC_USER_URL;
-const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL;
+const AUTH_URL = process.env.NEXT_PUBLIC_API_URL || '/api/auth';
+const USER_URL = process.env.NEXT_PUBLIC_USER_URL || '/api/users';
+const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || '/api/bookings';
 
 export const registerUser = async (data: { name: string; email: string; password: string }) => {
     const res = await fetch(`${AUTH_URL}/register`, {
