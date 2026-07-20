@@ -1,0 +1,94 @@
+/* App-specific styles */
+.app {
+  min-height: 100vh;
+  background-color: var(--light-gray);
+}
+
+/* Global utility classes */
+.text-center {
+  text-align: center;
+}
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-5 { margin-top: 3rem; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }
+.p-4 { padding: 1.5rem; }
+.p-5 { padding: 3rem; }
+
+.d-flex { display: flex; }
+.d-block { display: block; }
+.d-none { display: none; }
+
+.justify-content-center { justify-content: center; }
+.justify-content-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.flex-column { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
+
+.text-primary { color: var(--primary-brown); }
+.text-secondary { color: var(--primary-green); }
+.text-muted { color: var(--gray); }
+.text-danger { color: #dc3545; }
+.text-success { color: var(--primary-green); }
+
+.bg-primary { background-color: var(--primary-brown); }
+.bg-secondary { background-color: var(--primary-green); }
+.bg-light { background-color: var(--light-gray); }
+.bg-white { background-color: var(--white); }
+
+.border { border: 1px solid var(--light-brown); }
+.border-0 { border: none; }
+.rounded { border-radius: 8px; }
+.rounded-circle { border-radius: 50%; }
+
+.shadow-sm { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+.shadow { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+.shadow-lg { box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); }
+
+/* Custom button styles for cancel and close actions */
+.btn-cancel,
+.btn-close-custom,
+button[type="button"]:contains("Cancelar"),
+button:contains("Cerrar"),
+.btn-secondary:contains("Cancelar"),
+.btn-outline-secondary:contains("Cancelar") {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+}
+
+.btn-cancel:hover,
+.btn-close-custom:hover {
+  background-color: #c82333 !important;
+  border-color: #bd2130 !important;
+  color: white !important;
+}
+
+/* SweetAlert2 custom button styles */
+.swal2-cancel {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+.swal2-cancel:hover {
+  background-color: #c82333 !important;
+  border-color: #bd2130 !important;
+}

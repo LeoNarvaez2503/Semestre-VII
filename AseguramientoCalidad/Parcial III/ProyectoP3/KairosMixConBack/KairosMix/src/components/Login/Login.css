@@ -1,0 +1,213 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 500px;
+  overflow: hidden;
+}
+
+.login-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.login-header h1 {
+  margin: 0;
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+.login-header p {
+  margin: 10px 0 0 0;
+  opacity: 0.9;
+  font-size: 0.95em;
+}
+
+.login-form {
+  padding: 30px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95em;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1em;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+  border-left: 4px solid #c62828;
+}
+
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.credentials-section {
+  padding: 30px;
+  background-color: #f9f9f9;
+}
+
+.credentials-section h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.1em;
+  text-align: center;
+}
+
+.credential-card {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.credential-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.credential-card.admin {
+  border-left: 4px solid #667eea;
+}
+
+.credential-card.user {
+  border-left: 4px solid #764ba2;
+}
+
+.credential-header {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 0.95em;
+}
+
+.credential-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 0.9em;
+}
+
+.credential-item .label {
+  color: #666;
+  font-weight: 500;
+}
+
+.credential-item .value {
+  color: #333;
+  font-family: 'Courier New', monospace;
+  background-color: #f5f5f5;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.fill-button {
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fill-button.admin {
+  background-color: #667eea;
+  color: white;
+}
+
+.fill-button.admin:hover {
+  background-color: #5568d3;
+}
+
+.fill-button.user {
+  background-color: #764ba2;
+  color: white;
+}
+
+.fill-button.user:hover {
+  background-color: #693a8c;
+}
+
+@media (max-width: 600px) {
+  .login-card {
+    border-radius: 0;
+  }
+
+  .login-header {
+    padding: 30px 20px;
+  }
+
+  .login-header h1 {
+    font-size: 2em;
+  }
+}

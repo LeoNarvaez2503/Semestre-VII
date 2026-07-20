@@ -1,0 +1,84 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "code": "A01",
+      "name": "Almendras Premium",
+      "countryOfOrigin": "Estados Unidos",
+      "pricePerPound": 15.99,
+      "wholesalePrice": 14.5,
+      "retailPrice": 17.99,
+      "initialStock": 50,
+      "stock": 50,
+      "image": null,
+      "imagePreview": ""
+    },
+    {
+      "id": 2,
+      "code": "N01",
+      "name": "Nueces de Castilla",
+      "countryOfOrigin": "Chile",
+      "pricePerPound": 22.5,
+      "wholesalePrice": 20.0,
+      "retailPrice": 25.99,
+      "initialStock": 30,
+      "stock": 30,
+      "image": null,
+      "imagePreview": ""
+    },
+    {
+      "id": 3,
+      "code": "P01",
+      "name": "Pasas Sultan",
+      "countryOfOrigin": "Turquía",
+      "pricePerPound": 8.75,
+      "wholesalePrice": 7.5,
+      "retailPrice": 10.99,
+      "initialStock": 75,
+      "stock": 75,
+      "image": null,
+      "imagePreview": ""
+    }
+  ],
+  "clients": [
+    {
+      "id": "1234567890",
+      "idNumber": "1234567890",
+      "name": "Juan Carlos Pérez",
+      "email": "juan.perez@email.com",
+      "phone": "0998765432",
+      "address": "Av. 10 de Agosto 1234, Quito",
+      "city": "Quito"
+    },
+    {
+      "id": "1790123456001",
+      "idNumber": "1790123456001",
+      "name": "Comercial Los Andes S.A.",
+      "email": "ventas@losandes.com",
+      "phone": "0987654321",
+      "address": "Av. Amazonas 2345, Quito",
+      "city": "Quito"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "clientId": "1234567890",
+      "clientName": "Juan Carlos Pérez",
+      "type": "regular",
+      "products": [
+        {
+          "code": "A01",
+          "name": "Almendras Premium",
+          "quantity": 2,
+          "unitPrice": 17.99,
+          "totalPrice": 35.98
+        }
+      ],
+      "total": 35.98,
+      "status": "Pendiente",
+      "date": "01/01/2026"
+    }
+  ],
+  "savedMixes": []
+}

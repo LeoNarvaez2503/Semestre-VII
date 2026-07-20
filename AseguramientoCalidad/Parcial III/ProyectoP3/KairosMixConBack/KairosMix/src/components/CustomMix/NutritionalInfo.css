@@ -1,0 +1,532 @@
+/* NutritionalInfo.css */
+.nutritional-info-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    padding: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.nutritional-info-modal {
+    background: white;
+    border-radius: 20px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    color: white;
+    padding: 25px 30px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+}
+
+.btn-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.product-title {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.product-title h4 {
+    color: #2c3e50;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.serving-info {
+    color: #6c757d;
+    font-size: 1rem;
+    margin: 0;
+    font-style: italic;
+}
+
+.nutrients-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.nutrient-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nutrient-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--card-color);
+}
+
+.nutrient-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.nutrient-card.calories {
+    --card-color: #ff6b6b;
+}
+
+.nutrient-card.protein {
+    --card-color: #4ecdc4;
+}
+
+.nutrient-card.fat {
+    --card-color: #ffe66d;
+}
+
+.nutrient-card.carbs {
+    --card-color: #a8e6cf;
+}
+
+.nutrient-card.fiber {
+    --card-color: #dda0dd;
+}
+
+.nutrient-icon {
+    margin-bottom: 15px;
+    color: var(--card-color);
+}
+
+.nutrient-icon .fat-icon,
+.nutrient-icon .fiber-icon {
+    font-size: 24px;
+}
+
+.nutrient-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.nutrient-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.nutrient-name {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.macro-distribution {
+    margin-bottom: 30px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.macro-distribution h5 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.macro-chart {
+    width: 100%;
+}
+
+.macro-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.macro-bar {
+    position: relative;
+    background: #e9ecef;
+    border-radius: 10px;
+    height: 35px;
+    overflow: hidden;
+}
+
+.macro-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.8s ease;
+    position: relative;
+}
+
+.protein-fill {
+    background: linear-gradient(90deg, #4ecdc4, #44a08d);
+}
+
+.fat-fill {
+    background: linear-gradient(90deg, #ffe66d, #ffb347);
+}
+
+.carbs-fill {
+    background: linear-gradient(90deg, #a8e6cf, #88d8a3);
+}
+
+.macro-label {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    z-index: 1;
+}
+
+.vitamins-minerals {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.vitamins-section,
+.minerals-section {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+}
+
+.vitamins-section h5,
+.minerals-section h5 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nutrients-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.nutrient-tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid #bbdefb;
+}
+
+.vitamin-tag {
+    background: #fff3e0;
+    color: #f57c00;
+    border-color: #ffcc02;
+}
+
+.mineral-tag {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border-color: #ce93d8;
+}
+
+.no-data {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.mix-components-nutrition {
+    margin-bottom: 30px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.mix-components-nutrition h5 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.components-nutrition-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.component-nutrition-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.component-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.component-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.component-weight {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.component-contribution {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.health-benefits {
+    margin-bottom: 30px;
+    padding: 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+}
+
+.health-benefits h5 {
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.benefit-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.benefit-icon {
+    font-size: 1.5rem;
+}
+
+.benefit-text {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.additional-info {
+    margin-bottom: 20px;
+}
+
+.info-disclaimer {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.info-disclaimer small {
+    color: #856404;
+    line-height: 1.5;
+}
+
+.modal-footer {
+    padding: 25px 30px;
+    border-top: 2px solid #e9ecef;
+    text-align: center;
+}
+
+.modal-footer button {
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    min-width: 120px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nutritional-info-overlay {
+        padding: 10px;
+    }
+    
+    .nutritional-info-modal {
+        max-height: 95vh;
+    }
+    
+    .modal-header {
+        padding: 20px;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.4rem;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .nutrients-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 15px;
+    }
+    
+    .nutrient-card {
+        padding: 15px;
+    }
+    
+    .nutrient-value {
+        font-size: 1.4rem;
+    }
+    
+    .vitamins-minerals {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .benefits-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .benefit-item {
+        padding: 12px;
+    }
+    
+    .macro-bars {
+        gap: 8px;
+    }
+    
+    .macro-bar {
+        height: 30px;
+    }
+    
+    .macro-label {
+        font-size: 0.8rem;
+        left: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nutrients-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .nutrient-card {
+        padding: 12px;
+    }
+    
+    .nutrient-value {
+        font-size: 1.2rem;
+    }
+    
+    .nutrient-name {
+        font-size: 0.8rem;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Scrollbar styling */
+.nutritional-info-modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.nutritional-info-modal::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.nutritional-info-modal::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.nutritional-info-modal::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

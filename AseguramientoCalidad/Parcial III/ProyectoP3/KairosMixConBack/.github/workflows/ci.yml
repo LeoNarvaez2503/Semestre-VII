@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build, Test, Coverage
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: KairosMix-Backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Maven Verify (JaCoCo Enforced)
+        run: mvn -B -ntp verify
+
+      - name: Upload JaCoCo Report (HTML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-site
+          path: KairosMix-Backend/target/site/jacoco
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: KairosMix-Backend/target/surefire-reports
+          if-no-files-found: warn
+          retention-days: 14

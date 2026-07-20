@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: kairosmix-backend
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/kairosmix_db}
+    username: ${SPRING_DATASOURCE_USERNAME:kairosmix}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    com.kairosmix: DEBUG
+    org.springframework: INFO
+    org.hibernate: WARN

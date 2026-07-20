@@ -1,0 +1,39 @@
+# .gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+*.iws
+*.ipr
+
+# Maven
+target/
+.m2/
+*.jar
+*.war
+*.zip
+
+# Build
+build/
+dist/
+
+# Environment
+.env
+.env.local
+*.properties
+
+# Logs
+*.log
+logs/
+
+# Test
+.coverage
+coverage/
+
+# Docker
+.dockerignore

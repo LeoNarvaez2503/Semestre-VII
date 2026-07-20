@@ -1,0 +1,13 @@
+[
+  {
+    "id": "1234567890",
+    "name": "Juan Carlos Pérez",
+    "documentType": "cedula",
+    "idType": "cedula",
+    "idNumber": "1234567890",
+    "email": "juan.perez@email.com",
+    "phone": "0998765432",
+    "address": "Av. 10 de Agosto 1234, Quito",
+    "city": "Quito"
+  }
+]

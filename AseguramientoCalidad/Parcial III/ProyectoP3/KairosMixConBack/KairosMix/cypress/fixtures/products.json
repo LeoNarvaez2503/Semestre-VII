@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "code": "A01",
+    "name": "Almendras Premium",
+    "countryOfOrigin": "Estados Unidos",
+    "pricePerPound": 15.99,
+    "wholesalePrice": 14.5,
+    "retailPrice": 17.99,
+    "initialStock": 50,
+    "stock": 50,
+    "currentStock": 50,
+    "image": null,
+    "imagePreview": ""
+  },
+  {
+    "id": 2,
+    "code": "N01",
+    "name": "Nueces de Castilla",
+    "countryOfOrigin": "Chile",
+    "pricePerPound": 22.5,
+    "wholesalePrice": 20,
+    "retailPrice": 25.99,
+    "initialStock": 30,
+    "stock": 30,
+    "currentStock": 30,
+    "image": null,
+    "imagePreview": ""
+  }
+]
