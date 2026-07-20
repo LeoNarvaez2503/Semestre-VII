@@ -56,3 +56,4 @@ Story,KAIROS-10,Consolidar Informe de Cierre (Test Summary Report) y Conclusione
 Task,KAIROS-11,Estructurar carpeta AreadePruebas y compilar documento PDF final,High,5,Sprint 3,TO DO,EPIC-3
 Task,KAIROS-12,Elaborar guión estructurado y evidencias para el Video Demo de 5-7 min,High,3,Sprint 3,TO DO,EPIC-3
 ```
+https://espe-team-ww8z1dbu.atlassian.net?continue=https%3A%2F%2Fespe-team-ww8z1dbu.atlassian.net%2Fwelcome%2Fsoftware&atlOrigin=eyJpIjoiZTg4NGUxOTVjN2RkNDgxYmE3YTJkYmM2YzIwZjYzODciLCJwIjoiaiJ9
