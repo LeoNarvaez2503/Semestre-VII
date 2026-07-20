@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prime-crud-svc
+  namespace: prime-crud-ns
+spec:
+  selector:
+    app: prime-crud
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: ClusterIP
