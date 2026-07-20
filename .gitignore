@@ -52,3 +52,4 @@ __pycache__/
 *.tex.agents/
 skills-lock.json
 .agents/
+.bin
