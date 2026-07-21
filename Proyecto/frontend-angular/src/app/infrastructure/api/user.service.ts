@@ -28,6 +28,10 @@ export class UserService {
     return this.http.patch(`${this.gatewayUrl}/usuario/actualizar/${id}`, userData);
   }
 
+  updateMyProfile(userData: any): Observable<User> {
+    return this.http.patch<User>(`${this.gatewayUrl}/usuario/me/actualizar`, userData);
+  }
+
   updateUserRoles(id: string, roleNames: string[]): Observable<any> {
     return this.http.put(`${this.gatewayUrl}/usuario/roles/${id}`, { roles: roleNames });
   }

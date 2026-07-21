@@ -26,6 +26,7 @@ export const routes: Routes = [
       { path: 'parking-map', loadComponent: () => import('./features/parking-map/parking-map.component').then(m => m.ParkingMapComponent) },
       { path: 'tickets', loadComponent: () => import('./features/tickets/tickets.component').then(m => m.TicketsComponent) },
       { path: 'vehicles', loadComponent: () => import('./features/vehicles/vehicles.component').then(m => m.VehiclesComponent) },
+      { path: 'profile', loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent) },
       {
         path: 'zones',
         ...adminOnly,

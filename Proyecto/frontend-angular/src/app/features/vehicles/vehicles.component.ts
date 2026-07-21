@@ -14,75 +14,95 @@ import { Vehicle, VehicleType } from '../../core/models/vehicle.model';
   standalone: true,
   imports: [CommonModule, FormsModule, LicensePlateComponent],
   template: `
-    <section class="feature-dark min-h-[calc(100vh-73px)] p-4 sm:p-6 space-y-6">
-          
-          <!-- Header Bar -->
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-            <div>
-              <h2 class="text-2xl font-extrabold text-white flex items-center gap-2">
-                <i class="fa-solid fa-car-side text-blue-400"></i> Garaje de Vehículos
-              </h2>
-              <p class="text-xs text-slate-400 mt-1">
-                Catálogo y registro de vehículos asociados (Autos, Motos, SUVs y Eléctricos).
-              </p>
-            </div>
+    <section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] space-y-6">
+      <div class="max-w-7xl mx-auto space-y-6">
 
-            <button (click)="showCreateModal = true"
-              class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-500/20 flex items-center gap-2 transition-all">
-              <i class="fa-solid fa-plus-circle"></i> Registrar Nuevo Vehículo
-            </button>
+        <!-- Top Banner matching MisVehiculosView.tsx -->
+        <div class="bg-slate-900 text-white rounded-xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-extrabold flex items-center gap-2">
+              <i class="fa-solid fa-truck text-amber-400"></i>
+              Flota de Vehículos Registrados
+            </h2>
+            <p class="text-xs text-slate-300 mt-1">
+              Administración centralizada de flotas comerciales, asignación directa de plazas y contacto.
+            </p>
           </div>
 
-          <!-- Vehicles Grid -->
-          <div *ngIf="loading" class="text-center py-12 text-xs text-slate-400 font-mono">
-            <i class="fa-solid fa-circle-notch fa-spin text-blue-400 text-2xl mb-2"></i>
-            <p>Cargando vehículos del sistema...</p>
+          <button (click)="showCreateModal = true"
+            class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-4 py-2.5 rounded-lg text-sm flex items-center gap-2 transition shadow-sm">
+            <i class="fa-solid fa-plus font-bold"></i>
+            Registrar Vehículo en Flota
+          </button>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+          <div class="relative w-full sm:w-80">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
+            <input type="text" [(ngModel)]="searchQuery"
+              placeholder="Buscar vehículo por placa, marca o modelo..."
+              class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" />
           </div>
 
-          <div *ngIf="!loading && vehicles.length === 0" class="glass-card p-12 text-center text-xs text-slate-500">
-            No hay vehículos registrados en la plataforma.
-          </div>
+          <span class="text-xs font-bold text-gray-500">
+            Total Flota: <strong class="text-gray-900">{{ filteredVehicles.length }} vehículos</strong>
+          </span>
+        </div>
 
-          <div *ngIf="!loading && vehicles.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <div *ngFor="let v of vehicles" class="glass-card p-5 border border-slate-800 hover:border-blue-500/40 space-y-4 flex flex-col justify-between">
-              
-              <div class="space-y-3">
-                <!-- Top Header Type & Delete -->
-                <div class="flex items-center justify-between">
-                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-blue-400">
-                    <i [class]="getTypeIcon(v.type)" class="mr-1"></i> {{ v.type }}
-                  </span>
-                  <button (click)="onDeleteVehicle(v.id)" class="text-slate-500 hover:text-red-400 text-xs">
-                    <i class="fa-solid fa-trash-can"></i>
-                  </button>
-                </div>
+        <!-- Vehicles Grid -->
+        <div *ngIf="loading" class="text-center py-12 text-xs text-gray-500 font-mono">
+          <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-2xl mb-2"></i>
+          <p>Cargando vehículos de la flota...</p>
+        </div>
 
-                <!-- License Plate Badge -->
-                <div class="flex justify-center py-2">
-                  <app-license-plate [plateNumber]="v.data?.plate" [vehicleType]="v.type" size="lg"></app-license-plate>
-                </div>
+        <div *ngIf="!loading && filteredVehicles.length === 0" class="bg-white p-12 rounded-xl border border-gray-200 text-center text-xs text-gray-400 font-medium">
+          No hay vehículos registrados en la plataforma.
+        </div>
 
-                <!-- Specs Details -->
-                <div class="space-y-1 text-xs border-t border-slate-800/80 pt-3">
-                  <div class="flex justify-between text-slate-300 font-semibold">
-                    <span>{{ v.data?.brand }} {{ v.data?.model }}</span>
-                    <span class="text-slate-400 font-mono">{{ v.data?.year }}</span>
-                  </div>
-                  <div class="flex justify-between text-[11px] text-slate-400">
-                    <span>Color: <strong class="text-slate-200">{{ v.data?.color }}</strong></span>
-                    <span>Tipo: <strong class="text-slate-200">{{ v.data?.classification || 'Gasolina' }}</strong></span>
-                  </div>
-                </div>
+        <div *ngIf="!loading && filteredVehicles.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div *ngFor="let v of filteredVehicles"
+            class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition space-y-3">
+            
+            <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+              <div>
+                <span class="font-mono font-extrabold text-base text-gray-900 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-300">
+                  {{ v.data?.plate || 'P-1234-UF' }}
+                </span>
+                <div class="text-xs text-gray-500 font-bold mt-1">{{ v.data?.brand }} {{ v.data?.model }}</div>
               </div>
 
-              <!-- ID Footer -->
-              <div class="pt-2 border-t border-slate-800/60 text-[10px] font-mono text-slate-500 flex justify-between">
-                <span>ID: {{ v.id.substring(0, 8) }}...</span>
-                <span class="text-blue-400 font-bold">Registrado</span>
-              </div>
-
+              <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase bg-slate-100 text-slate-800 border border-slate-300">
+                {{ v.type }}
+              </span>
             </div>
+
+            <div class="space-y-1.5 text-xs text-gray-600">
+              <div class="flex justify-between">
+                <span class="font-medium">Año / Modelo:</span>
+                <span class="font-bold text-gray-800">{{ v.data?.year || '2024' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="font-medium">Color / Tipo:</span>
+                <span class="font-bold text-gray-800">{{ v.data?.color || 'Gris' }} - {{ v.data?.classification || 'Comercial' }}</span>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+              <span class="text-emerald-700 font-extrabold flex items-center gap-1">
+                <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                Registrado en Flota
+              </span>
+
+              <button (click)="onDeleteVehicle(v.id)" class="text-slate-400 hover:text-red-600 transition">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+
           </div>
+        </div>
+
+      </div>
 
           <!-- Create Vehicle Modal -->
           <div *ngIf="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
@@ -205,10 +225,11 @@ import { Vehicle, VehicleType } from '../../core/models/vehicle.model';
   `
 })
 export class VehiclesComponent implements OnInit {
-  readonly currentYear = new Date().getFullYear();
   vehicles: Vehicle[] = [];
   loading = true;
   showCreateModal = false;
+  searchQuery = '';
+  currentYear = new Date().getFullYear();
 
   newVehicle = {
     type: 'Auto' as VehicleType,
@@ -235,6 +256,16 @@ export class VehiclesComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
+  }
+
+  get filteredVehicles(): Vehicle[] {
+    if (!this.searchQuery.trim()) return this.vehicles;
+    const q = this.searchQuery.toLowerCase();
+    return this.vehicles.filter(v =>
+      (v.data?.plate || '').toLowerCase().includes(q) ||
+      (v.data?.brand || '').toLowerCase().includes(q) ||
+      (v.data?.model || '').toLowerCase().includes(q)
+    );
   }
 
   loadData(): void {

@@ -1,24 +1,21 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
-import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, SidebarComponent],
+  imports: [RouterOutlet, NavbarComponent],
   template: `
-    <div class="min-h-screen bg-[#f7f9fb]">
-      <app-sidebar [open]="menuOpen" (closeMenu)="menuOpen = false" />
-      <div class="min-h-screen lg:ml-[280px]">
-        <app-navbar (menuToggle)="menuOpen = !menuOpen" />
-        <main class="min-h-[calc(100vh-73px)] overflow-x-hidden">
-          <router-outlet />
-        </main>
-      </div>
+    <div class="min-h-screen bg-[#f4f5f7] text-slate-900 font-sans flex flex-col">
+      <app-navbar />
+      <main class="flex-1 w-full overflow-x-hidden">
+        <router-outlet />
+      </main>
+      <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 font-medium">
+        UrbanFlow Logistics Dashboard &copy; 2026 &bull; Sistema de Control Operativo de Parqueadero
+      </footer>
     </div>
   `
 })
-export class AppShellComponent {
-  menuOpen = false;
-}
+export class AppShellComponent {}

@@ -157,74 +157,49 @@
 </head>
 <body class="overflow-hidden">
 
-    <!-- BARRA LATERAL (SIDEBAR) -->
-    <aside class="fixed top-0 left-0 h-full w-[280px] flex flex-col py-6 bg-primary dark:bg-primary z-50">
-        <!-- Brand Header -->
-        <div class="px-6 mb-10 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-on-primary-fixed flex items-center justify-center">
-                <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">directions_car</span>
-            </div>
-            <div>
-                <h1 class="text-headline-lg font-headline-lg font-black text-on-primary">UrbanFlow</h1>
-                <p class="text-label-md font-label-md text-primary-fixed-dim opacity-70">Parking Management</p>
-            </div>
-        </div>
-
-        <!-- Nav Items -->
-        <nav class="flex-grow flex flex-col gap-1">
-            <button 
-                id="navDashboard"
-                class="bg-on-primary-fixed-variant text-on-primary rounded-lg mx-2 flex items-center gap-3 px-4 py-3 scale-98 transition-all font-label-md text-label-md text-left"
-            >
-                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-                Vista Parqueadero
-            </button>
-            <button 
-                id="navRoles"
-                class="hidden text-primary-fixed-dim hover:text-on-primary mx-2 flex items-center gap-3 px-4 py-3 hover:bg-on-primary-fixed-variant/50 transition-colors duration-200 font-label-md text-label-md text-left"
-            >
-                <span class="material-symbols-outlined" data-icon="lock_person">lock_person</span>
-                Roles y Permisos
-            </button>
-        </nav>
-
-        <!-- Footer Profile -->
-        <div class="mt-auto px-4 border-t border-on-primary-fixed-variant/30 pt-6">
-            <div class="flex items-center gap-3 px-2 mb-6">
-                <div class="w-10 h-10 rounded-full bg-on-primary-fixed-variant flex items-center justify-center overflow-hidden font-bold text-white text-base uppercase" id="userAvatar">
-                    U
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-on-primary font-label-md text-label-md truncate max-w-[150px]" id="usernameDisplay">root</span>
-                    <span class="text-primary-fixed-dim text-[10px] uppercase tracking-wider truncate max-w-[150px]" id="roleDisplay">Administrador</span>
-                </div>
-            </div>
-            <button id="logoutBtn" class="w-full flex items-center justify-center gap-2 bg-on-primary-fixed-variant/20 hover:bg-on-primary-fixed-variant/40 text-on-primary py-3 rounded-lg transition-all text-label-md font-label-md">
-                <span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
-                Cerrar sesión
-            </button>
-        </div>
-    </aside>
-
     <!-- AREA PRINCIPAL (MAIN STAGE) -->
-    <main class="ml-[280px] h-screen flex flex-col overflow-hidden">
+    <main class="w-full h-screen flex flex-col overflow-hidden">
         
-        <!-- ENCABEZADO SUPERIOR (TOP BAR) -->
-        <header class="flex justify-between items-center w-full px-8 py-4 border-b border-outline-variant dark:border-outline bg-surface flex-shrink-0">
-            <h2 class="font-headline-lg text-headline-lg text-primary" id="currentViewTitle">Vista Parqueadero</h2>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary-container/20 text-on-secondary-container" id="statusConexion">
-                    <span class="w-2 h-2 rounded-full bg-secondary animate-pulse" id="indicator"></span>
-                    <span class="text-label-md font-label-md" id="statusText">Conectado</span>
+        <!-- ENCABEZADO SUPERIOR (TOP BAR - URBANFLOW LOGISTICS STYLE) -->
+        <header class="flex flex-col md:flex-row justify-between items-center w-full px-8 py-3 bg-[#1B222C] text-white flex-shrink-0 border-b border-slate-800 shadow-md">
+            <!-- Title / Brand -->
+            <div class="flex items-center gap-6">
+                <h2 class="text-xl font-black text-white tracking-wide flex items-center gap-2">
+                    <span class="text-amber-400 font-bold">UrbanFlow</span> Logistics Dashboard
+                </h2>
+                <!-- Nav Tabs Horizontal Bar -->
+                <nav class="hidden lg:flex items-center gap-6 text-xs font-bold tracking-wider uppercase ml-4">
+                    <button id="topNavDashboard" class="text-amber-400 border-b-2 border-amber-400 pb-1.5 transition-all">Vista Parqueadero</button>
+                    <button id="topNavMapa" class="text-slate-300 hover:text-white pb-1.5 transition-all">Mapa de Espacios</button>
+                    <button id="topNavTickets" class="text-slate-300 hover:text-white pb-1.5 transition-all">Gestión de Tickets</button>
+                    <button id="topNavVehiculos" class="text-slate-300 hover:text-white pb-1.5 transition-all">Mis Vehículos</button>
+                </nav>
+            </div>
+
+            <!-- Profile & SSE Status -->
+            <div class="flex items-center gap-6 mt-2 md:mt-0">
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 text-emerald-400 border border-slate-700 text-xs font-medium" id="statusConexion">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" id="indicator"></span>
+                    <span id="statusText">Conectado</span>
                 </div>
-                <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
-                    <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-                </button>
+                
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-white font-bold text-sm uppercase shadow-sm" id="userAvatar">
+                        U
+                    </div>
+                    <div class="flex flex-col text-left">
+                        <span class="text-sm font-bold text-white leading-tight truncate max-w-[140px]" id="usernameDisplay">lvnarvaez</span>
+                        <span class="text-[10px] text-slate-400 font-semibold tracking-wider uppercase truncate max-w-[140px]" id="roleDisplay">LOGISTICS MANAGER</span>
+                    </div>
+                    <button id="logoutBtn" title="Cerrar sesión" class="ml-2 text-slate-400 hover:text-white p-1 rounded-lg transition">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                    </button>
+                </div>
             </div>
         </header>
 
         <!-- AREA DE CONTENIDO -->
-        <section class="flex-grow p-8 overflow-y-auto custom-scrollbar bg-background relative">
+        <section class="flex-grow p-6 md:p-8 overflow-y-auto custom-scrollbar bg-[#F3F4F6] relative">
             
             <!-- ALERTA DE PERMISOS (Oculta por defecto) -->
             <div id="permissionAlert" class="hidden mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-3">
@@ -233,71 +208,79 @@
             </div>
 
             <!-- PESTAÑA 1: VISTA DE PARQUEADERO -->
-            <div id="tabDashboardContent" class="block space-y-8 animate-fade-in">
-                <!-- Bento-Style Stats (Vista Parqueadero) -->
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
-                    <!-- KPI: Total Plazas -->
-                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
-                        <div class="relative z-10">
-                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Total Plazas</span>
-                            <div class="text-stat-value font-stat-value text-primary mt-1" id="kpiTotal">--</div>
+            <div id="tabDashboardContent" class="block space-y-6 animate-fade-in">
+                <!-- 4 KPI Cards in Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <!-- KPI 1: TOTAL PLAZAS -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 border-l-8 border-l-amber-500 relative overflow-hidden flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">TOTAL PLAZAS</span>
+                            <div class="text-4xl font-extrabold text-slate-900" id="kpiTotal">--</div>
                         </div>
-                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500">
-                            <span class="material-symbols-outlined text-[80px]">local_parking</span>
-                        </div>
-                    </div>
-                    <!-- KPI: Disponibles -->
-                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
-                        <div class="relative z-10">
-                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Disponibles</span>
-                            <div class="text-stat-value font-stat-value text-secondary mt-1" id="kpiDisponibles">--</div>
-                        </div>
-                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500 text-secondary">
-                            <span class="material-symbols-outlined text-[80px]">check_circle</span>
+                        <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+                            <span class="material-symbols-outlined text-3xl">local_parking</span>
                         </div>
                     </div>
-                    <!-- KPI: Ocupadas -->
-                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
-                        <div class="relative z-10">
-                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Ocupadas</span>
-                            <div class="text-stat-value font-stat-value text-error mt-1" id="kpiOcupadas">--</div>
+
+                    <!-- KPI 2: DISPONIBLES -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 border-l-8 border-l-emerald-600 relative overflow-hidden flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">DISPONIBLES</span>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-emerald-600 text-2xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                <span class="text-4xl font-extrabold text-slate-900" id="kpiDisponibles">--</span>
+                            </div>
                         </div>
-                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500 text-error">
-                            <span class="material-symbols-outlined text-[80px]">directions_car</span>
-                        </div>
-                    </div>
-                    <!-- KPI: Reservadas -->
-                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group">
-                        <div class="relative z-10">
-                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Reservadas</span>
-                            <div class="text-stat-value font-stat-value text-amber-500 mt-1" id="kpiReservadas">--</div>
-                        </div>
-                        <div class="absolute -right-2 -bottom-2 opacity-5 group-hover:scale-110 transition-transform duration-500 text-amber-500">
-                            <span class="material-symbols-outlined text-[80px]">schedule</span>
+                        <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <span class="material-symbols-outlined text-3xl">check_circle</span>
                         </div>
                     </div>
-                    <!-- KPI: Ocupación -->
-                    <div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.04)] border border-outline-variant/30 relative overflow-hidden group flex flex-col justify-between">
-                        <div class="relative z-10 flex justify-between items-center w-full">
-                            <span class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">Ocupación</span>
-                            <div class="text-xl font-bold text-primary" id="kpiPorcentaje">0%</div>
+
+                    <!-- KPI 3: OCUPADAS -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 border-l-8 border-l-red-600 relative overflow-hidden flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">OCUPADAS</span>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-red-600 text-2xl" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+                                <span class="text-4xl font-extrabold text-slate-900" id="kpiOcupadas">--</span>
+                            </div>
                         </div>
-                        <div class="w-full bg-slate-100 rounded-full h-2 mt-4 overflow-hidden">
-                            <div id="kpiProgressBar" class="bg-primary h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+                            <span class="material-symbols-outlined text-3xl">directions_car</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI 4: RESERVADAS -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 border-l-8 border-l-amber-500 relative overflow-hidden flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">RESERVADAS</span>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-amber-500 text-2xl" style="font-variation-settings: 'FILL' 1;">schedule</span>
+                                <span class="text-4xl font-extrabold text-slate-900" id="kpiReservadas">--</span>
+                            </div>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+                            <span class="material-symbols-outlined text-3xl">schedule</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Grilla de Plazas -->
+                <!-- Section Title & Floor Map Container -->
                 <div>
-                    <h3 class="font-headline-md text-headline-md text-primary mb-4 flex items-center gap-2">
-                        <span>Plazas de Estacionamiento</span>
-                        <span id="totalEspacios" class="text-label-md font-label-md bg-surface-container text-on-surface px-3 py-1 rounded-full font-bold">Cargando...</span>
+                    <h3 class="text-xl font-extrabold text-slate-800 mb-4 flex items-center justify-between">
+                        <span id="mapTitle">Miniature Floor Map: Zona Industrial A</span>
+                        <span id="totalEspacios" class="text-xs font-bold bg-slate-200 text-slate-700 px-3 py-1 rounded-full">Cargando plazas...</span>
                     </h3>
-                    <div id="espaciosContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                        <div class="col-span-full text-center py-12">
-                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-                            <p class="text-on-surface-variant text-body-md mt-3 font-medium">Obteniendo distribución de espacios...</p>
+
+                    <!-- Map Container with Asphalt Ground Texture & Driving Lanes -->
+                    <div class="bg-[#CBD5E1] p-6 rounded-2xl border-4 border-slate-300 shadow-inner min-h-[500px] relative overflow-hidden" 
+                         style="background-image: radial-gradient(#94A3B8 1px, transparent 1px); background-size: 16px 16px;">
+                        
+                        <div id="espaciosContainer">
+                            <div class="col-span-full text-center py-12">
+                                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-slate-700 border-t-transparent"></div>
+                                <p class="text-slate-700 text-sm mt-3 font-semibold">Cargando plano y estado de plazas...</p>
+                            </div>
                         </div>
                     </div>
                 </div>

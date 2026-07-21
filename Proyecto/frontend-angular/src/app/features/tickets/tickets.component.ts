@@ -18,107 +18,125 @@ import { User } from '../../core/models/user.model';
   standalone: true,
   imports: [CommonModule, FormsModule, LicensePlateComponent],
   template: `
-    <section class="feature-dark min-h-[calc(100vh-73px)] p-4 sm:p-6 space-y-6">
-          
-          <!-- Header Bar -->
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-            <div>
-              <h2 class="text-2xl font-extrabold text-white flex items-center gap-2">
-                <i class="fa-solid fa-ticket text-amber-400"></i> Expedición y Pago de Tickets
-              </h2>
-              <p class="text-xs text-slate-400 mt-1">
-                Control de estancia, cálculo automático de tarifa por hora e impresión de comprobante.
-              </p>
-            </div>
+    <section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] space-y-6">
+      <div class="max-w-7xl mx-auto space-y-6">
 
-            <button (click)="showCreateModal = true"
-              class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-all">
-              <i class="fa-solid fa-plus-circle"></i> Nuevo Ticket de Entrada
+        <!-- Top Banner Actions matching GestionTicketsView.tsx -->
+        <div class="bg-slate-900 text-white rounded-xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-extrabold flex items-center gap-2">
+              <i class="fa-solid fa-ticket text-amber-400"></i>
+              Gestión de Tickets y Facturación
+            </h2>
+            <p class="text-xs text-slate-300 mt-1">
+              Administra el ingreso, cobro por hora y comprobantes de caja de parqueadero.
+            </p>
+          </div>
+
+          <button (click)="showCreateModal = true"
+            class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-4 py-2.5 rounded-lg text-sm flex items-center gap-2 transition shadow-sm">
+            <i class="fa-solid fa-plus font-bold"></i>
+            Emitir Nuevo Ticket de Ingreso
+          </button>
+        </div>
+
+        <!-- Filter Toolbar -->
+        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="relative w-full sm:w-80">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
+            <input type="text" [(ngModel)]="searchQuery"
+              placeholder="Buscar por # Ticket, Placa o Conductor..."
+              class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" />
+          </div>
+
+          <!-- Filter Buttons -->
+          <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg text-xs font-bold">
+            <button (click)="filterStatus = 'TODOS'"
+              [class]="filterStatus === 'TODOS' ? 'bg-white text-gray-900 shadow-sm px-3 py-1.5 rounded-md' : 'px-3 py-1.5 text-gray-600 hover:text-gray-900'">
+              Todos
+            </button>
+            <button (click)="filterStatus = 'ACTIVO'"
+              [class]="filterStatus === 'ACTIVO' ? 'bg-amber-500 text-slate-950 shadow-sm px-3 py-1.5 rounded-md' : 'px-3 py-1.5 text-amber-800'">
+              Activos ({{ getCount('ACTIVO') }})
+            </button>
+            <button (click)="filterStatus = 'PAGADO'"
+              [class]="filterStatus === 'PAGADO' ? 'bg-emerald-600 text-white shadow-sm px-3 py-1.5 rounded-md' : 'px-3 py-1.5 text-emerald-800'">
+              Pagados
             </button>
           </div>
+        </div>
 
-          <!-- Tickets Table Grid -->
-          <div class="glass-card border border-slate-800 overflow-hidden">
-            <div class="p-4 bg-slate-900/80 border-b border-slate-800 flex items-center justify-between">
-              <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider">Historial de Registros</h3>
-              <div class="flex gap-2">
-                <button (click)="filterStatus = 'TODOS'" [class.bg-slate-800]="filterStatus === 'TODOS'"
-                  class="px-2.5 py-1 text-[10px] font-mono rounded-lg text-slate-300 border border-slate-700">
-                  Todos
-                </button>
-                <button (click)="filterStatus = 'ACTIVO'" [class.bg-amber-950]="filterStatus === 'ACTIVO'"
-                  class="px-2.5 py-1 text-[10px] font-mono rounded-lg text-amber-400 border border-amber-800 font-bold">
-                  Activos ({{ getCount('ACTIVO') }})
-                </button>
-                <button (click)="filterStatus = 'PAGADO'" [class.bg-emerald-950]="filterStatus === 'PAGADO'"
-                  class="px-2.5 py-1 text-[10px] font-mono rounded-lg text-emerald-400 border border-emerald-800 font-bold">
-                  Pagados
-                </button>
-              </div>
-            </div>
-
-            <div *ngIf="loading" class="text-center py-12 text-xs text-slate-400 font-mono">
-              <i class="fa-solid fa-circle-notch fa-spin text-amber-400 text-2xl mb-2"></i>
-              <p>Cargando tickets de estancia...</p>
-            </div>
-
-            <div *ngIf="!loading && filteredTickets.length === 0" class="p-12 text-center text-xs text-slate-500">
-              No hay tickets registrados en esta vista.
-            </div>
-
-            <div *ngIf="!loading && filteredTickets.length > 0" class="overflow-x-auto">
-              <table class="w-full text-left text-xs text-slate-300">
-                <thead class="bg-slate-950 text-[10px] font-mono uppercase text-slate-400 border-b border-slate-800">
-                  <tr>
-                    <th class="p-3.5">ID Ticket</th>
-                    <th class="p-3.5">Vehículo / Placa</th>
-                    <th class="p-3.5">Espacio Asignado</th>
-                    <th class="p-3.5">Hora Ingreso</th>
-                    <th class="p-3.5">Estado</th>
-                    <th class="p-3.5">Tarifa Total</th>
-                    <th class="p-3.5 text-right">Acción</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-800/60">
-                  <tr *ngFor="let t of filteredTickets" class="hover:bg-slate-900/50 transition-all">
-                    <td class="p-3.5 font-mono font-bold text-amber-300">#{{ t.id.substring(0, 8) }}</td>
-                    <td class="p-3.5">
-                      <app-license-plate [plateNumber]="getVehiclePlate(t.id_vehiculo)" size="sm"></app-license-plate>
-                    </td>
-                    <td class="p-3.5 font-mono">
-                      <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-cyan-400 font-bold">
-                        {{ getSpaceDesc(t.id_espacio) }}
-                      </span>
-                    </td>
-                    <td class="p-3.5 font-mono text-slate-400">
-                      {{ t.hora_ingreso | date:'mediumTime' }}
-                    </td>
-                    <td class="p-3.5">
-                      <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase"
-                        [class.bg-amber-950]="t.estado === 'ACTIVO'" [class.text-amber-400]="t.estado === 'ACTIVO'" [class.border]="t.estado === 'ACTIVO'" [class.border-amber-800]="t.estado === 'ACTIVO'"
-                        [class.bg-emerald-950]="t.estado === 'PAGADO'" [class.text-emerald-400]="t.estado === 'PAGADO'" [class.border]="t.estado === 'PAGADO'" [class.border-emerald-800]="t.estado === 'PAGADO'">
-                        {{ t.estado }}
-                      </span>
-                    </td>
-                    <td class="p-3.5 font-mono font-bold">
-                      <span *ngIf="t.tarifa_total" class="text-emerald-400">$ {{ t.tarifa_total | number:'1.2-2' }}</span>
-                      <span *ngIf="!t.tarifa_total" class="text-amber-400 italic">En curso ($2.00/h)</span>
-                    </td>
-                    <td class="p-3.5 text-right">
-                      <button *ngIf="t.estado === 'ACTIVO'" (click)="openPayModal(t)"
-                        class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-[11px] shadow transition-all">
-                        <i class="fa-solid fa-cash-register mr-1"></i> Cobrar / Salida
-                      </button>
-                      <button *ngIf="t.estado === 'PAGADO'" (click)="openReceipt(t)"
-                        class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] transition-all">
-                        <i class="fa-solid fa-receipt mr-1"></i> Comprobante
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+        <!-- Tickets Table -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div *ngIf="loading" class="text-center py-12 text-xs text-gray-500 font-mono">
+            <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-2xl mb-2"></i>
+            <p>Cargando tickets de estancia...</p>
           </div>
+
+          <div *ngIf="!loading && filteredTickets.length === 0" class="p-12 text-center text-xs text-gray-400 font-medium">
+            No se encontraron tickets con los filtros aplicados.
+          </div>
+
+          <div *ngIf="!loading && filteredTickets.length > 0" class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-200 text-[11px] font-extrabold text-gray-500 uppercase tracking-wider">
+                  <th class="py-3.5 px-4"># Ticket</th>
+                  <th class="py-3.5 px-4">Placa / Vehículo</th>
+                  <th class="py-3.5 px-4">Espacio</th>
+                  <th class="py-3.5 px-4">Ingreso</th>
+                  <th class="py-3.5 px-4">Estado</th>
+                  <th class="py-3.5 px-4 text-right">Monto</th>
+                  <th class="py-3.5 px-4 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 text-xs sm:text-sm">
+                <tr *ngFor="let t of filteredTickets" class="hover:bg-gray-50/80 transition">
+                  <td class="py-3.5 px-4 font-mono font-bold text-amber-600">
+                    #{{ t.id.substring(0, 8) }}
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <div class="font-mono font-extrabold text-gray-900 bg-amber-100/80 px-2 py-0.5 rounded border border-amber-300 inline-block">
+                      {{ getVehiclePlate(t.id_vehiculo) }}
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4 font-bold text-gray-800">
+                    {{ getSpaceDesc(t.id_espacio) }}
+                  </td>
+                  <td class="py-3.5 px-4 font-mono text-gray-600 text-xs">
+                    {{ t.hora_ingreso | date:'shortTime' }}
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span *ngIf="t.estado === 'ACTIVO'" class="bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-extrabold px-2.5 py-1 rounded-full">
+                      ● ACTIVO
+                    </span>
+                    <span *ngIf="t.estado === 'PAGADO'" class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[11px] font-extrabold px-2.5 py-1 rounded-full">
+                      ✓ PAGADO
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-right font-extrabold text-gray-900">
+                    {{ t.tarifa_total ? ('$' + t.tarifa_total + ' USD') : '$3.50/h' }}
+                  </td>
+                  <td class="py-3.5 px-4 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                      <button *ngIf="t.estado === 'ACTIVO'" (click)="payTicket(t.id)"
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded text-xs transition shadow-sm">
+                        Cobrar
+                      </button>
+                      <button (click)="selectedTicketForReceipt = t"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded transition"
+                        title="Imprimir Recibo">
+                        <i class="fa-solid fa-print"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
 
           <!-- Create Ticket Modal -->
           <div *ngIf="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
@@ -171,59 +189,84 @@ import { User } from '../../core/models/user.model';
             </div>
           </div>
 
-          <!-- Checkout & Receipt Modal -->
-          <div *ngIf="selectedTicket" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
-            <div class="glass-card max-w-sm w-full p-6 border border-amber-500/40 shadow-2xl shadow-amber-950/50 space-y-4 text-center">
+          <!-- Printable Receipt Modal -->
+          <div *ngIf="selectedTicketForReceipt" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4">
+            <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-sm w-full overflow-hidden text-gray-900 font-sans">
               
-              <!-- Ticket Header -->
-              <div class="border-b border-dashed border-slate-700 pb-4">
-                <div class="inline-flex p-2.5 rounded-full bg-amber-950 text-amber-400 mb-2 border border-amber-800">
-                  <i class="fa-solid fa-receipt text-xl"></i>
+              <!-- Modal Header -->
+              <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-receipt text-amber-400 text-lg"></i>
+                  <h3 class="text-sm font-extrabold tracking-tight">Comprobante de Ticket</h3>
                 </div>
-                <h3 class="text-base font-extrabold text-white">RECIBO DE PARQUEADERO</h3>
-                <p class="text-[10px] font-mono text-slate-400">UrbanFlow Parking System</p>
-                <p class="text-xs font-mono font-bold text-amber-400 mt-1">#{{ selectedTicket.id }}</p>
-              </div>
-
-              <!-- Ticket Receipt Body -->
-              <div class="space-y-2 text-xs text-left bg-slate-900/90 p-4 rounded-xl border border-slate-800 font-mono">
-                <div class="flex justify-between">
-                  <span class="text-slate-400">Placa:</span>
-                  <span class="font-bold text-white">{{ getVehiclePlate(selectedTicket.id_vehiculo) }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-400">Plaza:</span>
-                  <span class="font-bold text-cyan-400">{{ getSpaceDesc(selectedTicket.id_espacio) }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-400">Hora Entrada:</span>
-                  <span class="text-slate-200">{{ selectedTicket.hora_ingreso | date:'mediumTime' }}</span>
-                </div>
-                <div class="flex justify-between border-t border-slate-800 pt-2 text-sm font-bold">
-                  <span class="text-slate-300">Total a Pagar:</span>
-                  <span class="text-emerald-400" *ngIf="selectedTicket.tarifa_total != null; else pendingTotal">$ {{ selectedTicket.tarifa_total | number:'1.2-2' }}</span>
-                                    <ng-template #pendingTotal><span class="text-slate-400">Por calcular</span></ng-template>
-                </div>
-              </div>
-
-              <!-- Simulated QR Code -->
-              <div class="py-2 flex flex-col items-center justify-center">
-                <div class="p-3 bg-white rounded-xl shadow">
-                  <i class="fa-solid fa-qrcode text-5xl text-slate-950"></i>
-                </div>
-                <p class="text-[9px] font-mono text-slate-400 mt-1">Escanee para validación de salida</p>
-              </div>
-
-              <!-- Actions -->
-              <div class="flex gap-2">
-                <button (click)="selectedTicket = null" 
-                  class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl">
-                  Cerrar
+                <button (click)="selectedTicketForReceipt = null" class="text-slate-400 hover:text-white p-1 transition">
+                  <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
-                <button *ngIf="selectedTicket.estado === 'ACTIVO'" (click)="processPayment()" 
-                  class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20">
-                  <i class="fa-solid fa-check mr-1"></i> Confirmar Pago
-                </button>
+              </div>
+
+              <!-- Printable Receipt Content -->
+              <div class="p-6 space-y-4 text-xs select-none">
+                <div class="text-center border-b border-dashed border-gray-300 pb-3">
+                  <div class="text-amber-600 font-black text-lg tracking-tight">UrbanFlow Logistics</div>
+                  <div class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Sistema de Parqueadero & Control</div>
+                  <div class="text-xs font-mono font-extrabold text-gray-900 mt-1 bg-amber-100 px-3 py-1 rounded inline-block border border-amber-300">
+                    TICKET #{{ selectedTicketForReceipt.id.substring(0, 8) }}
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-xl p-3.5 border border-gray-200 space-y-2 font-mono">
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-500 font-bold">Cliente / Usuario:</span>
+                    <span class="font-extrabold text-gray-900 truncate max-w-[150px]">{{ getUserName(selectedTicketForReceipt.id_usuario) }}</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-500 font-bold">Placa del Vehículo:</span>
+                    <span class="font-extrabold text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded border border-amber-300">
+                      {{ getVehiclePlate(selectedTicketForReceipt.id_vehiculo) }}
+                    </span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-500 font-bold">Espacio Asignado:</span>
+                    <span class="font-bold text-gray-800">{{ getSpaceDesc(selectedTicketForReceipt.id_espacio) }}</span>
+                  </div>
+                  <div class="flex justify-between items-center pt-1 border-t border-gray-200">
+                    <span class="text-gray-500 font-bold">Hora Entrada (Llegada):</span>
+                    <span class="text-gray-800 font-bold">{{ selectedTicketForReceipt.hora_ingreso | date:'short' }}</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-500 font-bold">Hora Salida:</span>
+                    <span class="text-gray-800 font-bold">
+                      {{ selectedTicketForReceipt.hora_salida ? (selectedTicketForReceipt.hora_salida | date:'short') : 'En Estancia (En Curso)' }}
+                    </span>
+                  </div>
+                  <div class="flex justify-between items-center pt-2 border-t border-gray-300 text-sm font-black">
+                    <span class="text-gray-900 uppercase">Monto Total:</span>
+                    <span class="text-emerald-600 text-base">
+                      {{ selectedTicketForReceipt.tarifa_total ? ('$' + selectedTicketForReceipt.tarifa_total + ' USD') : '$3.50 USD' }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- QR Code Code -->
+                <div class="text-center py-2 space-y-1">
+                  <div class="inline-block p-2.5 bg-white border border-gray-300 rounded-xl shadow-sm">
+                    <i class="fa-solid fa-qrcode text-4xl text-slate-900"></i>
+                  </div>
+                  <p class="text-[9px] text-gray-400 font-bold uppercase">Valido para control de garita y salida</p>
+                </div>
+
+                <!-- Receipt Modal Footer Buttons -->
+                <div class="pt-2 flex items-center gap-3">
+                  <button (click)="selectedTicketForReceipt = null"
+                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 rounded-lg text-xs transition">
+                    Cerrar
+                  </button>
+                  <button (click)="printReceipt()"
+                    class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-lg text-xs shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    Imprimir Recibo
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -242,8 +285,10 @@ export class TicketsComponent implements OnInit {
 
   loading = true;
   filterStatus = 'TODOS';
+  searchQuery = '';
   showCreateModal = false;
   selectedTicket: Ticket | null = null;
+  selectedTicketForReceipt: Ticket | null = null;
 
   newTicket = {
     id_usuario: '',
@@ -321,8 +366,16 @@ export class TicketsComponent implements OnInit {
   }
 
   get filteredTickets(): Ticket[] {
-    if (this.filterStatus === 'TODOS') return this.tickets;
-    return this.tickets.filter(t => t.estado === this.filterStatus);
+    return this.tickets.filter(t => {
+      if (this.filterStatus !== 'TODOS' && t.estado !== this.filterStatus) return false;
+      if (this.searchQuery.trim()) {
+        const q = this.searchQuery.toLowerCase();
+        const matchId = t.id.toLowerCase().includes(q);
+        const matchPlate = this.getVehiclePlate(t.id_vehiculo).toLowerCase().includes(q);
+        if (!matchId && !matchPlate) return false;
+      }
+      return true;
+    });
   }
 
   getCount(status: string): number {
@@ -337,6 +390,19 @@ export class TicketsComponent implements OnInit {
   getSpaceDesc(espacioId: string): string {
     const found = this.spaces.find(s => s.id === espacioId);
     return found?.description || espacioId.substring(0, 6);
+  }
+
+  getUserName(userId: string): string {
+    const found = this.users.find(u => u.id_person === userId);
+    if (!found) return 'Cliente';
+    if (found.person?.first_name || found.person?.last_name) {
+      return `${found.person.first_name || ''} ${found.person.last_name || ''}`.trim();
+    }
+    return found.username || 'Cliente';
+  }
+
+  printReceipt(): void {
+    window.print();
   }
 
   onCreateTicket(): void {
@@ -356,17 +422,21 @@ export class TicketsComponent implements OnInit {
 
   openReceipt(t: Ticket): void {
     this.selectedTicket = t;
+    this.selectedTicketForReceipt = t;
+  }
+
+  payTicket(ticketId: string): void {
+    this.ticketService.payTicket(ticketId).subscribe({
+      next: () => {
+        this.loadData();
+      },
+      error: err => alert('Error al cobrar ticket: ' + (err.error?.detail || err.message))
+    });
   }
 
   processPayment(): void {
     if (!this.selectedTicket) return;
-    this.ticketService.payTicket(this.selectedTicket.id).subscribe({
-      next: updatedTicket => {
-        alert('✅ Ticket pagado exitosamente. Espacio liberado.');
-        this.selectedTicket = null;
-        this.loadData();
-      },
-      error: err => alert('Error al procesar pago: ' + (err.error?.detail || err.message))
-    });
+    this.payTicket(this.selectedTicket.id);
+    this.selectedTicket = null;
   }
 }

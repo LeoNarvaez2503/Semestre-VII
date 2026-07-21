@@ -15,78 +15,115 @@ import { Zone } from '../../core/models/zone.model';
   standalone: true,
   imports: [CommonModule, FormsModule, SpaceSlotComponent],
   template: `
-    <section class="feature-dark min-h-[calc(100vh-73px)] p-4 sm:p-6 space-y-6">
-          
-          <!-- Header Bar -->
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-            <div>
-              <div class="flex items-center gap-2">
-                <h2 class="text-2xl font-extrabold text-white">Mapa 2D de Parqueadero</h2>
-                <span class="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-mono font-bold flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live SSE
-                </span>
-              </div>
-              <p class="text-xs text-slate-400 mt-1">
-                Monitoreo interactivo de bahías y actualización en tiempo real mediante Server-Sent Events.
-              </p>
+    <section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] space-y-6">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- Zone Overview Summary Cards matching MapaEspaciosView.tsx -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div *ngFor="let z of zones"
+            (click)="selectedZoneId = z.zoneId"
+            [class.ring-2]="selectedZoneId === z.zoneId"
+            class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm transition cursor-pointer hover:shadow-md">
+            
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded border border-amber-200">
+                {{ z.code || z.name }}
+              </span>
+              <span class="text-xs font-extrabold text-gray-500">
+                Capacidad: <span class="text-slate-900">{{ z.capacidad || 100 }}</span>
+              </span>
             </div>
 
-            <div class="flex items-center gap-3">
-              <!-- Filter by Zone -->
-              <select [(ngModel)]="selectedZoneId" (change)="filterSpaces()"
-                class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none focus:border-cyan-500">
-                <option value="">Todas las Zonas</option>
-                <option *ngFor="let z of zones" [value]="z.zoneId">{{ z.name }}</option>
-              </select>
+            <h3 class="text-lg font-bold text-gray-900 mb-1">{{ z.name }}</h3>
+            <p class="text-xs text-gray-500 mb-4">{{ z.description || 'Zona de parqueo logístico de alta rotación.' }}</p>
 
-              <!-- New Zone/Space (Admin Only) -->
-              <button *ngIf="authService.hasRole('Administrador')" (click)="showCreateModal = true"
-                class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 transition-all">
-                <i class="fa-solid fa-plus"></i> Nueva Plaza
-              </button>
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden mb-3 flex">
+              <div [style.width.%]="getZoneCount(z.zoneId, 'OCUPADO') * 10" class="bg-red-500 h-full"></div>
+              <div [style.width.%]="getZoneCount(z.zoneId, 'RESERVADO') * 10" class="bg-amber-400 h-full"></div>
+              <div [style.width.%]="getZoneCount(z.zoneId, 'DISPONIBLE') * 10" class="bg-emerald-500 h-full"></div>
+            </div>
+
+            <!-- Stats pill footer -->
+            <div class="grid grid-cols-3 gap-1 text-center text-xs pt-1 border-t border-gray-100">
+              <div class="bg-emerald-50 p-1.5 rounded">
+                <span class="block text-[10px] text-emerald-700 font-bold uppercase">Libres</span>
+                <span class="font-extrabold text-emerald-800">{{ getZoneCount(z.zoneId, 'DISPONIBLE') }}</span>
+              </div>
+              <div class="bg-red-50 p-1.5 rounded">
+                <span class="block text-[10px] text-red-700 font-bold uppercase">Ocupados</span>
+                <span class="font-extrabold text-red-800">{{ getZoneCount(z.zoneId, 'OCUPADO') }}</span>
+              </div>
+              <div class="bg-amber-50 p-1.5 rounded">
+                <span class="block text-[10px] text-amber-800 font-bold uppercase">Reservados</span>
+                <span class="font-extrabold text-amber-900">{{ getZoneCount(z.zoneId, 'RESERVADO') }}</span>
+              </div>
             </div>
           </div>
+        </div>
 
-          <!-- Zones & Spaces Grid Container -->
+        <!-- Filter Toolbar -->
+        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="relative w-full md:w-72">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
+            <input type="text" [(ngModel)]="searchQuery" (input)="filterSpaces()"
+              placeholder="Buscar por ID de espacio o Placa..."
+              class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <select [(ngModel)]="selectedZoneId" (change)="filterSpaces()"
+              class="border border-gray-300 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-gray-700 bg-white">
+              <option value="">Todas las Zonas</option>
+              <option *ngFor="let z of zones" [value]="z.zoneId">{{ z.name }}</option>
+            </select>
+
+            <select [(ngModel)]="selectedStatus" (change)="filterSpaces()"
+              class="border border-gray-300 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-gray-700 bg-white">
+              <option value="">Todos los Estados</option>
+              <option value="DISPONIBLE">Disponibles / Libres</option>
+              <option value="OCUPADO">Ocupados</option>
+              <option value="RESERVADO">Reservados</option>
+            </select>
+
+            <button *ngIf="authService.hasRole('Administrador') || authService.hasRole('Root')" (click)="showCreateModal = true"
+              class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-4 py-2 rounded-lg text-xs flex items-center gap-1.5 transition shadow-sm">
+              <i class="fa-solid fa-plus"></i> Nueva Plaza
+            </button>
+          </div>
+        </div>
+
+        <!-- Grid of Spaces -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b">
+            <h3 class="text-base font-bold text-gray-900">
+              Mapa de Espacios Filtrados ({{ filteredSpaces.length }} plazas encontradas)
+            </h3>
+            <span class="text-xs text-gray-500">
+              Haz clic en un espacio para gestionarlo
+            </span>
+          </div>
+
           <div *ngIf="loading" class="text-center py-12">
-            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-cyan-400 mb-2"></i>
-            <p class="text-xs text-slate-400 font-mono">Cargando espacios del parqueadero...</p>
+            <i class="fa-solid fa-circle-notch fa-spin text-3xl text-amber-500 mb-2"></i>
+            <p class="text-xs text-gray-500 font-mono">Cargando espacios del parqueadero...</p>
           </div>
 
-          <div *ngIf="!loading && filteredSpaces.length === 0" class="glass-card p-12 text-center">
-            <i class="fa-solid fa-car-rear text-4xl text-slate-600 mb-3"></i>
-            <p class="text-sm font-semibold text-slate-400">No se encontraron espacios configurados.</p>
+          <div *ngIf="!loading && filteredSpaces.length === 0" class="p-12 text-center text-gray-400">
+            <i class="fa-solid fa-car-rear text-4xl mb-3"></i>
+            <p class="text-sm font-semibold">No se encontraron espacios con los filtros seleccionados.</p>
           </div>
 
-          <div *ngIf="!loading && filteredSpaces.length > 0" class="space-y-8">
-            <div *ngFor="let z of visibleZones" class="glass-card p-5 border border-slate-800 space-y-4">
-              <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-cyan-950 border border-cyan-800 flex items-center justify-center text-cyan-400 font-bold text-sm">
-                    <i class="fa-solid fa-warehouse"></i>
-                  </div>
-                  <div>
-                    <h3 class="text-sm font-bold text-slate-200">{{ z.name }}</h3>
-                    <p class="text-[10px] text-slate-400 font-mono">{{ z.description }} (Capacidad: {{ z.capacidad }})</p>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-4 text-xs font-mono">
-                  <span class="text-emerald-400"><i class="fa-solid fa-circle text-[8px] mr-1"></i> Libre: {{ getZoneCount(z.zoneId, 'DISPONIBLE') }}</span>
-                  <span class="text-red-400"><i class="fa-solid fa-circle text-[8px] mr-1"></i> Ocupado: {{ getZoneCount(z.zoneId, 'OCUPADO') }}</span>
-                  <span class="text-amber-400"><i class="fa-solid fa-circle text-[8px] mr-1"></i> Reservado: {{ getZoneCount(z.zoneId, 'RESERVADO') }}</span>
-                </div>
-              </div>
-
-              <!-- 2D Slot Grid -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                <app-space-slot *ngFor="let space of getSpacesByZone(z.zoneId)" 
-                  [space]="space"
-                  (selectSpace)="openSpaceDetails($event)">
-                </app-space-slot>
-              </div>
-            </div>
+          <div *ngIf="!loading && filteredSpaces.length > 0"
+            class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+            <app-space-slot *ngFor="let space of filteredSpaces"
+              [space]="space"
+              (selectSpace)="openSpaceDetails($event)">
+            </app-space-slot>
           </div>
+        </div>
+
+      </div>
 
           <!-- Space Action Modal -->
           <div *ngIf="selectedSpace" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
@@ -204,6 +241,8 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
 
   loading = true;
   selectedZoneId = '';
+  selectedStatus = '';
+  searchQuery = '';
   selectedSpace: ParkingSpace | null = null;
   showCreateModal = false;
 
@@ -249,7 +288,7 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
     this.parkingService.getSpaces().subscribe({
       next: data => {
         this.spaces = data;
-        this.filteredSpaces = data;
+        this.filterSpaces();
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -280,11 +319,17 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
   }
 
   filterSpaces(): void {
-    if (!this.selectedZoneId) {
-      this.filteredSpaces = this.spaces;
-    } else {
-      this.filteredSpaces = this.spaces.filter(s => s.zoneId === this.selectedZoneId);
-    }
+    this.filteredSpaces = this.spaces.filter(s => {
+      if (this.selectedZoneId && s.zoneId !== this.selectedZoneId) return false;
+      if (this.selectedStatus && s.estado !== this.selectedStatus) return false;
+      if (this.searchQuery.trim()) {
+        const q = this.searchQuery.toLowerCase();
+        const matchId = (s.numero || s.description || s.id).toLowerCase().includes(q);
+        const matchPlate = s.vehiculoId?.toLowerCase().includes(q);
+        if (!matchId && !matchPlate) return false;
+      }
+      return true;
+    });
   }
 
   get visibleZones(): Zone[] {

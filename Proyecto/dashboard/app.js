@@ -503,19 +503,24 @@ const fetchEspacios = async () => {
 };
 
 const renderizarEspacios = (espacios) => {
+    const container = document.getElementById('espaciosContainer');
+    const totalSpan = document.getElementById('totalEspacios');
+    const kpiTotal = document.getElementById('kpiTotal');
+    const kpiDisponibles = document.getElementById('kpiDisponibles');
+    const kpiOcupadas = document.getElementById('kpiOcupadas');
+    const kpiReservadas = document.getElementById('kpiReservadas');
+
     if (!espacios || espacios.length === 0) {
         container.innerHTML = `
-            <div class="col-span-full text-center py-12 text-gray-400 bg-white border border-outline-variant/30 rounded-xl shadow-sm">
-                <p class="text-lg">No hay espacios registrados</p>
+            <div class="col-span-full text-center py-12 text-slate-500 bg-white border border-slate-300 rounded-xl shadow-sm">
+                <p class="text-base font-semibold">No hay plazas de estacionamiento registradas.</p>
             </div>
         `;
-        totalSpan.textContent = '0';
-        kpiTotal.textContent = '0';
-        kpiDisponibles.textContent = '0';
-        kpiOcupadas.textContent = '0';
-        kpiReservadas.textContent = '0';
-        kpiPorcentaje.textContent = '0%';
-        kpiProgressBar.style.width = '0%';
+        if (totalSpan) totalSpan.textContent = '0 plazas';
+        if (kpiTotal) kpiTotal.textContent = '0';
+        if (kpiDisponibles) kpiDisponibles.textContent = '0';
+        if (kpiOcupadas) kpiOcupadas.textContent = '0';
+        if (kpiReservadas) kpiReservadas.textContent = '0';
         return;
     }
 
@@ -524,85 +529,105 @@ const renderizarEspacios = (espacios) => {
     const disponibles = espacios.filter(e => e.estado === 'DISPONIBLE').length;
     const ocupadas = espacios.filter(e => e.estado === 'OCUPADO').length;
     const reservadas = espacios.filter(e => e.estado === 'RESERVADO').length;
-    const porcentaje = total > 0 ? Math.round(((ocupadas + reservadas) / total) * 100) : 0;
 
     // Pintar KPIs
-    kpiTotal.textContent = total;
-    kpiDisponibles.textContent = disponibles;
-    kpiOcupadas.textContent = ocupadas;
-    kpiReservadas.textContent = reservadas;
-    kpiPorcentaje.textContent = `${porcentaje}%`;
-    kpiProgressBar.style.width = `${porcentaje}%`;
+    if (kpiTotal) kpiTotal.textContent = total;
+    if (kpiDisponibles) kpiDisponibles.textContent = disponibles;
+    if (kpiOcupadas) kpiOcupadas.textContent = ocupadas;
+    if (kpiReservadas) kpiReservadas.textContent = reservadas;
+    if (totalSpan) totalSpan.textContent = `${total} Plazas Total`;
 
-    // Cambiar color de la barra de progreso
-    if (porcentaje >= 85) {
-        kpiProgressBar.className = "bg-error h-2 rounded-full transition-all duration-500";
-    } else if (porcentaje >= 60) {
-        kpiProgressBar.className = "bg-amber-500 h-2 rounded-full transition-all duration-500";
-    } else {
-        kpiProgressBar.className = "bg-secondary h-2 rounded-full transition-all duration-500";
-    }
-
-    // Renderizar tarjetas de espacio
     const canEdit = hasPermission(mainRole, 'editar_estados');
-    const html = espacios.map((esp) => {
-        const estado = esp.estado || 'DISPONIBLE';
-        
-        let stateBadgeColor = '';
-        let pulseColor = '';
-        let borderHoverColor = '';
+    const cursorClass = canEdit ? 'cursor-pointer hover:scale-[1.03] transition-all' : 'cursor-default';
+
+    // Generar la distribución de plano con carriles de tráfico entre bloques de estacionamiento
+    const renderCard = (esp, index) => {
+        const estado = (esp.estado || 'DISPONIBLE').toUpperCase();
+        const code = esp.name || esp.nombre || esp.numero || `A-${101 + index}`;
+        const vehiculoPlaca = esp.vehiculoId || esp.placa || 'P-1234-XYZ';
 
         if (estado === 'DISPONIBLE') {
-            stateBadgeColor = 'bg-secondary/10 text-secondary border-secondary/20';
-            pulseColor = 'bg-secondary pulse-green';
-            borderHoverColor = 'hover:border-secondary/40';
+            return `
+                <div 
+                    class="bg-[#DCFCE7] border-[3px] border-emerald-600 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-md ${cursorClass}"
+                    data-id="${esp.id}"
+                    data-nombre="${code}"
+                    data-estado="${estado}"
+                    title="${canEdit ? 'Haz clic para modificar estado' : 'Plaza Disponible'}"
+                >
+                    <span class="text-xs font-black text-emerald-800 uppercase tracking-wider mb-1">LIBRE</span>
+                    <span class="text-sm font-extrabold text-emerald-950 font-mono">${code}</span>
+                </div>
+            `;
         } else if (estado === 'OCUPADO') {
-            stateBadgeColor = 'bg-error/10 text-error border-error/20';
-            pulseColor = 'bg-error pulse-red';
-            borderHoverColor = 'hover:border-error/40';
+            return `
+                <div 
+                    class="bg-[#FEE2E2] border-[3px] border-red-600 rounded-xl p-2.5 flex items-center justify-between shadow-md ${cursorClass}"
+                    data-id="${esp.id}"
+                    data-nombre="${code}"
+                    data-estado="${estado}"
+                    title="${canEdit ? 'Haz clic para modificar estado' : 'Plaza Ocupada'}"
+                >
+                    <!-- Icono / Silueta del Vehículo Rojo -->
+                    <div class="w-12 h-10 flex items-center justify-center bg-red-100 rounded-lg text-red-600 flex-shrink-0 border border-red-300">
+                        <svg class="w-8 h-8 fill-current text-red-600" viewBox="0 0 24 24">
+                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4h14v4z"/>
+                            <circle cx="7.5" cy="15" r="1.5"/>
+                            <circle cx="16.5" cy="15" r="1.5"/>
+                        </svg>
+                    </div>
+
+                    <!-- Insignia de Estado y Placa -->
+                    <div class="flex flex-col text-right pl-2">
+                        <span class="text-xs font-black text-red-800 uppercase tracking-wider">OCUPADO</span>
+                        <span class="text-[11px] font-extrabold text-slate-800 font-mono tracking-tight">${vehiculoPlaca}</span>
+                    </div>
+                </div>
+            `;
         } else {
-            stateBadgeColor = 'bg-amber-500/10 text-amber-600 border-amber-500/20';
-            pulseColor = 'bg-amber-500 pulse-yellow';
-            borderHoverColor = 'hover:border-amber-500/40';
+            // RESERVADO
+            return `
+                <div 
+                    class="bg-[#FEF3C7] border-[3px] border-amber-500 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-md ${cursorClass}"
+                    data-id="${esp.id}"
+                    data-nombre="${code}"
+                    data-estado="${estado}"
+                    title="${canEdit ? 'Haz clic para modificar estado' : 'Plaza Reservada'}"
+                >
+                    <span class="text-xs font-black text-amber-800 uppercase tracking-wider mb-1">RESERVADO</span>
+                    <div class="w-7 h-7 rounded-full bg-amber-400 text-amber-950 flex items-center justify-center font-bold text-xs shadow-inner">
+                        <span class="material-symbols-outlined text-base">schedule</span>
+                    </div>
+                </div>
+            `;
+        }
+    };
+
+    // Estructurar el render en columnas con carriles de circulación
+    let mapHtml = `<div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-4 items-stretch relative">`;
+
+    espacios.forEach((esp, idx) => {
+        // Insertar carril de tráfico vial cada 4 o 6 slots
+        if (idx > 0 && idx % 6 === 0) {
+            mapHtml += `
+                <!-- Driving Aisle / Lane Marker -->
+                <div class="flex flex-col items-center justify-center py-4 bg-slate-400/40 rounded-xl border-x-2 border-dashed border-slate-100 text-white font-black text-lg select-none">
+                    <span class="text-white drop-shadow-md">${idx % 12 === 0 ? '↑' : '↓'}</span>
+                    <div class="w-full my-2 border-t-2 border-dashed border-white/60"></div>
+                    <span class="text-white drop-shadow-md">${idx % 12 === 0 ? '↑' : '↓'}</span>
+                </div>
+            `;
         }
 
-        const cursorClass = canEdit ? 'cursor-pointer hover:shadow-lg transition-all' : 'cursor-default';
-        const interactiveTitle = canEdit ? 'title="Haz clic para cambiar el estado de esta plaza"' : '';
+        mapHtml += renderCard(esp, idx);
+    });
 
-        return `
-            <div 
-                class="bg-white border border-outline-variant/30 rounded-xl p-6 flex flex-col justify-between h-44 shadow-[0px_4px_20px_rgba(0,0,0,0.04)] ${cursorClass} ${borderHoverColor}" 
-                data-id="${esp.id}"
-                data-nombre="${esp.name || esp.nombre || 'Sin Nombre'}"
-                data-estado="${estado}"
-                ${interactiveTitle}
-            >
-                <div class="flex items-start justify-between">
-                    <div>
-                        <div class="font-headline-md text-headline-md text-primary line-clamp-1">${esp.name || esp.nombre || 'Sin nombre'}</div>
-                        <div class="text-xs text-on-surface-variant mt-0.5 font-medium uppercase tracking-wider">Zona: ${esp.nombreZona || 'N/A'}</div>
-                        <div class="text-xs text-on-surface-variant font-medium">Tipo: ${esp.type || esp.tipo || 'N/A'}</div>
-                    </div>
-                    <!-- Indicador parpadeante -->
-                    <span class="w-3.5 h-3.5 rounded-full flex-shrink-0 ${pulseColor}"></span>
-                </div>
-                
-                <div class="flex items-center justify-between border-t border-outline-variant/20 pt-3 mt-3">
-                    <span class="px-3 py-1 text-[11px] font-bold rounded-full border ${stateBadgeColor}">
-                        ${estado}
-                    </span>
-                    <span class="text-[10px] text-outline font-mono">ID: ${esp.id.slice(0, 8)}</span>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    container.innerHTML = html;
-    totalSpan.textContent = total;
+    mapHtml += `</div>`;
+    container.innerHTML = mapHtml;
 
     // Listener de clics si el usuario tiene privilegios de edición
     if (canEdit) {
-        document.querySelectorAll('#espaciosContainer > div').forEach(card => {
+        document.querySelectorAll('#espaciosContainer [data-id]').forEach(card => {
             card.addEventListener('click', () => {
                 const id = card.getAttribute('data-id');
                 const nombre = card.getAttribute('data-nombre');
