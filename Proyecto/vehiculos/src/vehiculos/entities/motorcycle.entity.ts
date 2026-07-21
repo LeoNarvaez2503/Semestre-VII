@@ -5,6 +5,8 @@ export enum MotorcycleType {
   DEPORTIVA = 'Deportiva',
   SCOOTER = 'Scooter',
   MOTOCROSS = 'Motocross',
+  CUSTOM = 'Custom',
+  CRUISER = 'Cruiser',
 }
 
 @ChildEntity('moto')

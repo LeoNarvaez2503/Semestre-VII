@@ -19,17 +19,20 @@ export class AuthService {
 
   private loadStoredUser(): void {
     const savedRoles = localStorage.getItem('user_roles');
-    if (!savedRoles) return;
-
-    try {
-      const roles: unknown = JSON.parse(savedRoles);
-      if (!Array.isArray(roles) || !roles.every(role => typeof role === 'string')) {
-        throw new Error('Invalid stored roles');
+    if (savedRoles) {
+      try {
+        const roles: unknown = JSON.parse(savedRoles);
+        if (Array.isArray(roles) && roles.every(role => typeof role === 'string')) {
+          this.userRoles.set(roles);
+        }
+      } catch {
+        localStorage.removeItem('user_roles');
+        this.userRoles.set([]);
       }
-      this.userRoles.set(roles);
-    } catch {
-      localStorage.removeItem('user_roles');
-      this.userRoles.set([]);
+    }
+
+    if (this.isAuthenticated()) {
+      this.fetchProfile().subscribe({ error: () => {} });
     }
   }
 

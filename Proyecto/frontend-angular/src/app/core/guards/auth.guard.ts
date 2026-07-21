@@ -12,14 +12,19 @@ function tokenIsExpired(token: string): boolean {
   }
 }
 
-export const authGuard: CanActivateFn = (_route, state) => {
+export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const authService = inject(AuthService);
   const token = localStorage.getItem('access_token');
   const loginUrl = router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });
 
+  const publicPaths = ['dashboard', 'parking-map', ''];
+  const isPublicRoute = publicPaths.includes(route.routeConfig?.path || '');
+
   if (!token || tokenIsExpired(token)) {
-    authService.logout();
+    if (isPublicRoute) {
+      return true; // Allow guest access for public consultation
+    }
     return loginUrl;
   }
 
@@ -28,7 +33,7 @@ export const authGuard: CanActivateFn = (_route, state) => {
   return authService.fetchProfile().pipe(
     map(() => true),
     catchError(() => {
-      authService.logout();
+      if (isPublicRoute) return of(true);
       return of(loginUrl);
     })
   );

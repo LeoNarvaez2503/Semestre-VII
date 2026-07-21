@@ -32,11 +32,16 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    // A customer may register a vehicle that will immediately be associated
-    // with their account by the assignments service. Listing the global fleet
-    // remains an administrator-only operation.
-    if (userRoles.includes('Cliente') && request.method === 'POST' && path.endsWith('/vehiculos/crear')) {
-      return true;
+    // Allow Cliente role to create, delete, update, and get vehicle details
+    if (userRoles.includes('Cliente')) {
+      if (
+        path.includes('/vehiculos/crear') ||
+        path.includes('/vehiculos/eliminar') ||
+        path.includes('/vehiculos/actualizar') ||
+        path.includes('/vehiculos/obtener')
+      ) {
+        return true;
+      }
     }
 
     throw new HttpException('Acceso denegado: permisos insuficientes', HttpStatus.FORBIDDEN);

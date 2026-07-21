@@ -34,7 +34,7 @@ export class VehicleFactory {
         moto.color = d.color;
         moto.year = d.year;
         moto.classification = d.classification;
-        moto.motorcycleType = d.type as MotorcycleType;
+        moto.motorcycleType = (d.type || d.motorcycleType || MotorcycleType.SCOOTER) as MotorcycleType;
         return moto;
       }
       case 'camioneta':

@@ -185,12 +185,13 @@ export class AsignacionService {
 
           // Mapear Tipo
           let mappedType = 'Automóvil';
-          const rawType = (vehicleData.tipo || '').toLowerCase();
-          if (rawType === 'moto') {
+          const rawType = (vehicleData.tipo || vehicleData.type || '').toLowerCase();
+          const isMotoPlate = vehicleData.plate && /^[A-Z]{2}\d{3,4}[A-Z]?$/i.test(vehicleData.plate.replace(/[^A-Z0-9]/gi, ''));
+          if (rawType === 'moto' || rawType === 'motorcycle' || vehicleData.motorcycleType || vehicleData.tipoMoto || isMotoPlate) {
             mappedType = 'Moto';
-          } else if (rawType === 'camioneta') {
+          } else if (rawType === 'camioneta' || vehicleData.cabin !== undefined) {
             mappedType = 'Camioneta';
-          } else if (rawType === 'auto') {
+          } else {
             mappedType = 'Automóvil';
           }
 

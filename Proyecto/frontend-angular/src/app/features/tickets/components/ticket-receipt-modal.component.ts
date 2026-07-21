@@ -1,0 +1,105 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { Ticket } from '../../../core/models/ticket.model';
+
+@Component({
+  selector: 'app-ticket-receipt-modal',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 font-sans select-none animate-fadeIn">
+      <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-sm w-full overflow-hidden text-gray-900">
+        
+        <!-- Header -->
+        <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-receipt text-amber-400 text-lg"></i>
+            <h3 class="text-sm font-extrabold tracking-tight">Comprobante de Ticket</h3>
+          </div>
+          <button (click)="close.emit()" class="text-slate-400 hover:text-white p-1 transition">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Receipt Content -->
+        <div class="p-6 space-y-4 text-xs select-none">
+          <div class="text-center border-b border-dashed border-gray-300 pb-3">
+            <div class="text-amber-600 font-black text-lg tracking-tight">UrbanFlow Logistics</div>
+            <div class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Sistema de Parqueadero & Control</div>
+            <div class="text-xs font-mono font-extrabold text-gray-900 mt-1 bg-amber-100 px-3 py-1 rounded inline-block border border-amber-300">
+              TICKET #{{ ticket.id.substring(0, 8) }}
+            </div>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl p-3.5 border border-gray-200 space-y-2 font-mono">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500 font-bold">Cliente / Usuario:</span>
+              <span class="font-extrabold text-gray-900 truncate max-w-[150px]">{{ userName }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500 font-bold">Placa del Vehículo:</span>
+              <span class="font-extrabold text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded border border-amber-300">
+                {{ vehiclePlate }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500 font-bold">Espacio Asignado:</span>
+              <span class="font-bold text-gray-800">{{ spaceDesc }}</span>
+            </div>
+            <div class="flex justify-between items-center pt-1 border-t border-gray-200">
+              <span class="text-gray-500 font-bold">Hora Entrada:</span>
+              <span class="text-gray-800 font-bold">{{ ticket.hora_ingreso | date:'short' }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-500 font-bold">Hora Salida:</span>
+              <span class="text-gray-800 font-bold">
+                {{ ticket.hora_salida ? (ticket.hora_salida | date:'short') : 'En Estancia (En Curso)' }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-gray-300 text-sm font-black">
+              <span class="text-gray-900 uppercase">Monto Total:</span>
+              <span class="text-emerald-600 text-base">
+                {{ ticket.tarifa_total ? ('$' + ticket.tarifa_total + ' USD') : '$3.50 USD' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- QR Code -->
+          <div class="text-center py-2 space-y-1">
+            <div class="inline-block p-2.5 bg-white border border-gray-300 rounded-xl shadow-sm">
+              <i class="fa-solid fa-qrcode text-4xl text-slate-900"></i>
+            </div>
+            <p class="text-[9px] text-gray-400 font-bold uppercase">Válido para garita y salida</p>
+          </div>
+
+          <!-- Footer Action Buttons -->
+          <div class="pt-2 flex items-center gap-3">
+            <button (click)="close.emit()"
+              class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 rounded-lg text-xs transition">
+              Cerrar
+            </button>
+            <button (click)="printReceipt()"
+              class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-lg text-xs shadow transition flex items-center justify-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-print"></i>
+              Imprimir Recibo
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `
+})
+export class TicketReceiptModalComponent {
+  @Input() ticket!: Ticket;
+  @Input() vehiclePlate = 'Sin placa';
+  @Input() spaceDesc = 'Bahía';
+  @Input() userName = 'Cliente';
+
+  @Output() close = new EventEmitter<void>();
+
+  printReceipt(): void {
+    window.print();
+  }
+}

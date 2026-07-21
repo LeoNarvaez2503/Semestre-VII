@@ -1,0 +1,83 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-kpi-cards',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-sans select-none">
+      <!-- TOTAL PLAZAS -->
+      <div (click)="filterChange.emit('TODOS')"
+        [class.ring-2]="activeFilter === 'TODOS'"
+        class="bg-white rounded-xl p-5 border shadow-sm transition-all duration-200 cursor-pointer border-l-[6px] border-l-amber-400 hover:shadow-md border-gray-200">
+        <div class="text-gray-500 font-bold text-xs tracking-wider uppercase mb-1">
+          TOTAL PLAZAS
+        </div>
+        <div class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+          {{ totalCount }}
+        </div>
+      </div>
+
+      <!-- DISPONIBLES -->
+      <div (click)="filterChange.emit('DISPONIBLE')"
+        [class.ring-2]="activeFilter === 'DISPONIBLE'"
+        class="bg-white rounded-xl p-5 border shadow-sm transition-all duration-200 cursor-pointer border-l-[6px] border-l-emerald-600 hover:shadow-md flex items-center justify-between border-gray-200">
+        <div>
+          <div class="text-gray-500 font-bold text-xs tracking-wider uppercase mb-1">
+            DISPONIBLES
+          </div>
+          <div class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+            {{ availableCount }}
+          </div>
+        </div>
+        <div class="p-2.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
+          <i class="fa-solid fa-circle-check text-2xl"></i>
+        </div>
+      </div>
+
+      <!-- OCUPADAS -->
+      <div (click)="filterChange.emit('OCUPADO')"
+        [class.ring-2]="activeFilter === 'OCUPADO'"
+        class="bg-white rounded-xl p-5 border shadow-sm transition-all duration-200 cursor-pointer border-l-[6px] border-l-red-600 hover:shadow-md flex items-center justify-between border-gray-200">
+        <div>
+          <div class="text-gray-500 font-bold text-xs tracking-wider uppercase mb-1">
+            OCUPADAS
+          </div>
+          <div class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+            {{ occupiedCount }}
+          </div>
+        </div>
+        <div class="p-2.5 rounded-full bg-red-50 text-red-600 border border-red-200">
+          <i class="fa-solid fa-car text-2xl"></i>
+        </div>
+      </div>
+
+      <!-- RESERVADAS -->
+      <div (click)="filterChange.emit('RESERVADO')"
+        [class.ring-2]="activeFilter === 'RESERVADO'"
+        class="bg-white rounded-xl p-5 border shadow-sm transition-all duration-200 cursor-pointer border-l-[6px] border-l-amber-500 hover:shadow-md flex items-center justify-between border-gray-200">
+        <div>
+          <div class="text-gray-500 font-bold text-xs tracking-wider uppercase mb-1">
+            RESERVADAS
+          </div>
+          <div class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+            {{ reservedCount }}
+          </div>
+        </div>
+        <div class="p-2.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+          <i class="fa-solid fa-clock text-2xl"></i>
+        </div>
+      </div>
+    </div>
+  `
+})
+export class KpiCardsComponent {
+  @Input() totalCount = 0;
+  @Input() availableCount = 0;
+  @Input() occupiedCount = 0;
+  @Input() reservedCount = 0;
+  @Input() activeFilter = 'TODOS';
+
+  @Output() filterChange = new EventEmitter<string>();
+}

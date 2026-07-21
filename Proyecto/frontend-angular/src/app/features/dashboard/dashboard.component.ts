@@ -4,94 +4,44 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { SpaceSlotComponent } from '../../shared/components/space-slot/space-slot.component';
+import { KpiCardsComponent } from './components/kpi-cards.component';
+import { SpotDetailModalComponent } from './components/spot-detail-modal.component';
+
 import { ParkingService } from '../../infrastructure/api/parking.service';
-import { TicketService } from '../../infrastructure/api/ticket.service';
-import { VehicleService } from '../../infrastructure/api/vehicle.service';
 import { AuthService } from '../../infrastructure/api/auth.service';
 import { ParkingSpace, SpaceStatus } from '../../core/models/space.model';
-import { Ticket } from '../../core/models/ticket.model';
-import { Vehicle } from '../../core/models/vehicle.model';
 import { Zone } from '../../core/models/zone.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, SpaceSlotComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    SpaceSlotComponent,
+    KpiCardsComponent,
+    SpotDetailModalComponent
+  ],
   template: `
-    <section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)]">
+    <section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] font-sans">
       <div class="max-w-7xl mx-auto space-y-6">
 
-        <!-- 4 Bento KPI Cards matching KpiCards.tsx -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <!-- TOTAL PLAZAS -->
-          <div (click)="filterStatus = 'TODOS'"
-            [class.ring-2]="filterStatus === 'TODOS'"
-            class="bg-white rounded-lg p-5 border shadow-sm transition-all duration-200 cursor-pointer border-l-[6px] border-l-amber-400 hover:shadow-md border-gray-200">
-            <div class="text-gray-500 font-bold text-xs sm:text-sm tracking-wider uppercase mb-1">
-              TOTAL PLAZAS
-            </div>
-            <div class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-              {{ spaces.length || 300 }}
-            </div>
-          </div>
-
-          <!-- DISPONIBLES -->
-          <div (click)="filterStatus = 'DISPONIBLE'"
-            [class.ring-2]="filterStatus === 'DISPONIBLE'"
-            class="bg-white rounded-lg p-5 border shadow-sm transition-all duration-200 cursor-pointer border-l-[6px] border-l-emerald-600 hover:shadow-md flex items-center justify-between border-gray-200">
-            <div>
-              <div class="text-gray-500 font-bold text-xs sm:text-sm tracking-wider uppercase mb-1">
-                DISPONIBLES
-              </div>
-              <div class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-                {{ availableCount }}
-              </div>
-            </div>
-            <div class="p-2 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200">
-              <i class="fa-solid fa-circle-check text-2xl"></i>
-            </div>
-          </div>
-
-          <!-- OCUPADAS -->
-          <div (click)="filterStatus = 'OCUPADO'"
-            [class.ring-2]="filterStatus === 'OCUPADO'"
-            class="bg-white rounded-lg p-5 border shadow-sm transition-all duration-200 cursor-pointer border-l-[6px] border-l-red-600 hover:shadow-md flex items-center justify-between border-gray-200">
-            <div>
-              <div class="text-gray-500 font-bold text-xs sm:text-sm tracking-wider uppercase mb-1">
-                OCUPADAS
-              </div>
-              <div class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-                {{ occupiedCount }}
-              </div>
-            </div>
-            <div class="p-2 rounded-full bg-red-50 text-red-600 border border-red-200">
-              <i class="fa-solid fa-car text-2xl"></i>
-            </div>
-          </div>
-
-          <!-- RESERVADAS -->
-          <div (click)="filterStatus = 'RESERVADO'"
-            [class.ring-2]="filterStatus === 'RESERVADO'"
-            class="bg-white rounded-lg p-5 border shadow-sm transition-all duration-200 cursor-pointer border-l-[6px] border-l-amber-500 hover:shadow-md flex items-center justify-between border-gray-200">
-            <div>
-              <div class="text-gray-500 font-bold text-xs sm:text-sm tracking-wider uppercase mb-1">
-                RESERVADAS
-              </div>
-              <div class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-                {{ reservedCount }}
-              </div>
-            </div>
-            <div class="p-2 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
-              <i class="fa-solid fa-clock text-2xl"></i>
-            </div>
-          </div>
-        </div>
+        <!-- 4 Bento KPI Cards Subcomponent -->
+        <app-kpi-cards
+          [totalCount]="spaces.length || 300"
+          [availableCount]="availableCount"
+          [occupiedCount]="occupiedCount"
+          [reservedCount]="reservedCount"
+          [activeFilter]="filterStatus"
+          (filterChange)="filterStatus = $event">
+        </app-kpi-cards>
 
         <!-- Floor Map Component Container matching FloorMap.tsx -->
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-8">
           
           <!-- Control Bar -->
-          <div class="p-4 sm:p-5 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="p-4 sm:p-5 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row md:items-center justify-between gap-4 select-none">
             <div class="flex flex-wrap items-center gap-3">
               <h2 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
                 Miniature Floor Map: <span class="text-amber-600">{{ activeZoneName }}</span>
@@ -153,7 +103,7 @@ import { Zone } from '../../core/models/zone.model';
                 <div class="flex-1 flex flex-col justify-between">
                   <!-- Top Block -->
                   <div class="flex flex-col gap-3">
-                    <app-space-slot *ngFor="let spot of col.slice(0, 3)" [space]="spot" (selectSpace)="openSpotDetail($event)"></app-space-slot>
+                    <app-space-slot *ngFor="let spot of col.slice(0, 3)" [space]="spot" (selectSpace)="selectedSpot = $event"></app-space-slot>
                   </div>
 
                   <!-- Horizontal Zebra Buffer Row -->
@@ -161,7 +111,7 @@ import { Zone } from '../../core/models/zone.model';
 
                   <!-- Bottom Block -->
                   <div class="flex flex-col gap-3">
-                    <app-space-slot *ngFor="let spot of col.slice(3, 5)" [space]="spot" (selectSpace)="openSpotDetail($event)"></app-space-slot>
+                    <app-space-slot *ngFor="let spot of col.slice(3, 5)" [space]="spot" (selectSpace)="selectedSpot = $event"></app-space-slot>
                   </div>
                 </div>
 
@@ -181,7 +131,7 @@ import { Zone } from '../../core/models/zone.model';
           </div>
 
           <!-- Map Legend Footer -->
-          <div class="bg-gray-100 px-6 py-3 border-t border-gray-300 flex flex-wrap items-center justify-between text-xs text-gray-700 font-semibold gap-4">
+          <div class="bg-gray-100 px-6 py-3 border-t border-gray-300 flex flex-wrap items-center justify-between text-xs text-gray-700 font-semibold gap-4 select-none">
             <div class="flex items-center gap-6">
               <div class="flex items-center gap-2">
                 <span class="w-4 h-4 rounded bg-[#e6f4ea] border-2 border-[#15803d] inline-block"></span>
@@ -208,59 +158,12 @@ import { Zone } from '../../core/models/zone.model';
 
       </div>
 
-      <!-- Spot Detail Modal -->
-      <div *ngIf="selectedSpot" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white rounded-xl shadow-2xl border border-gray-200 max-w-lg w-full overflow-hidden">
-          <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="text-amber-400 font-extrabold text-xl">{{ selectedSpot.numero || selectedSpot.id }}</span>
-              <span class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded font-semibold border border-slate-700">
-                Plaza {{ selectedSpot.tipo || selectedSpot.type || 'ESTÁNDAR' }}
-              </span>
-            </div>
-            <button (click)="selectedSpot = null" class="text-slate-400 hover:text-white">
-              <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-          </div>
-
-          <div class="p-6 space-y-5">
-            <div class="flex items-center justify-between p-3.5 rounded-lg border">
-              <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Estado Actual</span>
-              <span class="font-extrabold text-xs px-3 py-1 rounded-full border uppercase"
-                [class.bg-emerald-100]="selectedSpot.estado === 'DISPONIBLE'" [class.text-emerald-800]="selectedSpot.estado === 'DISPONIBLE'"
-                [class.bg-red-100]="selectedSpot.estado === 'OCUPADO'" [class.text-red-800]="selectedSpot.estado === 'OCUPADO'"
-                [class.bg-amber-100]="selectedSpot.estado === 'RESERVADO'" [class.text-amber-900]="selectedSpot.estado === 'RESERVADO'">
-                ● {{ selectedSpot.estado }}
-              </span>
-            </div>
-
-            <div *ngIf="selectedSpot.vehiculoId" class="bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-2 text-xs">
-              <div class="flex justify-between items-center">
-                <span class="text-gray-500 font-bold">Vehículo Registrado:</span>
-                <span class="font-mono font-extrabold text-gray-900 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-300">
-                  {{ selectedSpot.vehiculoId }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Action buttons for editing space status -->
-            <div *ngIf="authService.hasRole('Administrador') || authService.hasRole('Root')" class="space-y-2 pt-2 border-t border-gray-200">
-              <p class="text-[10px] font-bold text-gray-500 uppercase">Cambiar Estado de la Plaza:</p>
-              <div class="grid grid-cols-3 gap-2 text-xs">
-                <button (click)="changeSpotState('DISPONIBLE')" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow">
-                  LIBRE
-                </button>
-                <button (click)="changeSpotState('OCUPADO')" class="py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow">
-                  OCUPADO
-                </button>
-                <button (click)="changeSpotState('RESERVADO')" class="py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg shadow">
-                  RESERVADO
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Spot Detail Subcomponent -->
+      <app-spot-detail-modal *ngIf="selectedSpot"
+        [spot]="selectedSpot"
+        (close)="selectedSpot = null"
+        (stateChange)="changeSpotState($event)">
+      </app-spot-detail-modal>
     </section>
   `
 })
@@ -344,16 +247,11 @@ export class DashboardComponent implements OnInit {
     return cols;
   }
 
-  openSpotDetail(spot: ParkingSpace): void {
-    this.selectedSpot = spot;
-    this.cdr.markForCheck();
-  }
-
   changeSpotState(newStatus: SpaceStatus): void {
     if (!this.selectedSpot) return;
     const spotId = this.selectedSpot.id;
     this.parkingService.updateSpaceState(spotId, newStatus).subscribe({
-      next: updated => {
+      next: () => {
         this.spaces = this.spaces.map(s => s.id === spotId ? { ...s, estado: newStatus } : s);
         this.updateCounts();
         this.selectedSpot = null;

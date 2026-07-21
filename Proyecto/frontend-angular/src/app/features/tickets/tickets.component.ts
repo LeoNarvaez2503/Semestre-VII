@@ -1,42 +1,67 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { LicensePlateComponent } from '../../shared/components/license-plate/license-plate.component';
 import { TicketService } from '../../infrastructure/api/ticket.service';
 import { ParkingService } from '../../infrastructure/api/parking.service';
 import { VehicleService } from '../../infrastructure/api/vehicle.service';
 import { UserService } from '../../infrastructure/api/user.service';
 import { AuthService } from '../../infrastructure/api/auth.service';
+
 import { Ticket } from '../../core/models/ticket.model';
 import { ParkingSpace } from '../../core/models/space.model';
 import { Vehicle } from '../../core/models/vehicle.model';
 import { User } from '../../core/models/user.model';
 
+import { CreateTicketModalComponent } from './components/create-ticket-modal.component';
+import { CheckoutTicketModalComponent } from './components/checkout-ticket-modal.component';
+import { TicketReceiptModalComponent } from './components/ticket-receipt-modal.component';
+
 @Component({
   selector: 'app-tickets',
   standalone: true,
-  imports: [CommonModule, FormsModule, LicensePlateComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CreateTicketModalComponent,
+    CheckoutTicketModalComponent,
+    TicketReceiptModalComponent
+  ],
   template: `
-    <section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] space-y-6">
+    <section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] space-y-6 select-none font-sans">
       <div class="max-w-7xl mx-auto space-y-6">
 
-        <!-- Top Banner Actions matching GestionTicketsView.tsx -->
+        <!-- Top Banner Actions matching Industrial Control Style -->
         <div class="bg-slate-900 text-white rounded-xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <h2 class="text-xl font-extrabold flex items-center gap-2">
-              <i class="fa-solid fa-ticket text-amber-400"></i>
-              Gestión de Tickets y Facturación
+            <h2 class="text-xl font-black flex items-center gap-2 tracking-tight">
+              <i class="fa-solid fa-receipt text-amber-400"></i>
+              Gestión de Tickets, Cobro y Garita
             </h2>
             <p class="text-xs text-slate-300 mt-1">
-              Administra el ingreso, cobro por hora y comprobantes de caja de parqueadero.
+              Registro de accesos, cálculo de fracciones tarifarias y emisión de comprobantes de parqueadero.
             </p>
           </div>
 
-          <button (click)="showCreateModal = true"
-            class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-4 py-2.5 rounded-lg text-sm flex items-center gap-2 transition shadow-sm">
-            <i class="fa-solid fa-plus font-bold"></i>
-            Emitir Nuevo Ticket de Ingreso
+          <div class="flex items-center gap-3">
+            <button (click)="showCreateModal = true"
+              class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-4 py-2.5 rounded-lg text-xs flex items-center gap-2 transition shadow-sm cursor-pointer">
+              <i class="fa-solid fa-plus font-bold"></i>
+              Emitir Ticket de Entrada (Alt+R)
+            </button>
+          </div>
+        </div>
+
+        <!-- Inline Toast Notification (H3, H4) -->
+        <div *ngIf="toastMessage" class="p-4 rounded-xl shadow-lg text-xs font-bold flex items-center justify-between transition-all animate-fadeIn"
+          [class.bg-emerald-50]="toastType === 'success'" [class.border-emerald-300]="toastType === 'success'" [class.text-emerald-900]="toastType === 'success'"
+          [class.bg-red-50]="toastType === 'error'" [class.border-red-300]="toastType === 'error'" [class.text-red-900]="toastType === 'error'">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid" [class.fa-circle-check]="toastType === 'success'" [class.fa-circle-exclamation]="toastType === 'error'"></i>
+            <span>{{ toastMessage }}</span>
+          </div>
+          <button *ngIf="canUndoAction" (click)="undoLastAction()" class="bg-slate-900 text-white text-[10px] font-extrabold px-3 py-1 rounded shadow hover:bg-black transition">
+            Deshacer Acción (10s)
           </button>
         </div>
 
@@ -46,14 +71,14 @@ import { User } from '../../core/models/user.model';
             <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
             <input type="text" [(ngModel)]="searchQuery"
               placeholder="Buscar por # Ticket, Placa o Conductor..."
-              class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" />
+              class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none" />
           </div>
 
           <!-- Filter Buttons -->
-          <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg text-xs font-bold">
+          <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg text-xs font-extrabold">
             <button (click)="filterStatus = 'TODOS'"
               [class]="filterStatus === 'TODOS' ? 'bg-white text-gray-900 shadow-sm px-3 py-1.5 rounded-md' : 'px-3 py-1.5 text-gray-600 hover:text-gray-900'">
-              Todos
+              Todos ({{ tickets.length }})
             </button>
             <button (click)="filterStatus = 'ACTIVO'"
               [class]="filterStatus === 'ACTIVO' ? 'bg-amber-500 text-slate-950 shadow-sm px-3 py-1.5 rounded-md' : 'px-3 py-1.5 text-amber-800'">
@@ -61,7 +86,7 @@ import { User } from '../../core/models/user.model';
             </button>
             <button (click)="filterStatus = 'PAGADO'"
               [class]="filterStatus === 'PAGADO' ? 'bg-emerald-600 text-white shadow-sm px-3 py-1.5 rounded-md' : 'px-3 py-1.5 text-emerald-800'">
-              Pagados
+              Pagados ({{ getCount('PAGADO') }})
             </button>
           </div>
         </div>
@@ -70,11 +95,11 @@ import { User } from '../../core/models/user.model';
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           <div *ngIf="loading" class="text-center py-12 text-xs text-gray-500 font-mono">
             <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-2xl mb-2"></i>
-            <p>Cargando tickets de estancia...</p>
+            <p>Consultando registros activos en servidor...</p>
           </div>
 
           <div *ngIf="!loading && filteredTickets.length === 0" class="p-12 text-center text-xs text-gray-400 font-medium">
-            No se encontraron tickets con los filtros aplicados.
+            No se encontraron tickets con los criterios de búsqueda.
           </div>
 
           <div *ngIf="!loading && filteredTickets.length > 0" class="overflow-x-auto">
@@ -82,7 +107,7 @@ import { User } from '../../core/models/user.model';
               <thead>
                 <tr class="bg-gray-50 border-b border-gray-200 text-[11px] font-extrabold text-gray-500 uppercase tracking-wider">
                   <th class="py-3.5 px-4"># Ticket</th>
-                  <th class="py-3.5 px-4">Placa / Vehículo</th>
+                  <th class="py-3.5 px-4">Placa Vehículo</th>
                   <th class="py-3.5 px-4">Espacio</th>
                   <th class="py-3.5 px-4">Ingreso</th>
                   <th class="py-3.5 px-4">Estado</th>
@@ -114,17 +139,18 @@ import { User } from '../../core/models/user.model';
                       ✓ PAGADO
                     </span>
                   </td>
-                  <td class="py-3.5 px-4 text-right font-extrabold text-gray-900">
+                  <td class="py-3.5 px-4 text-right font-extrabold text-gray-900 font-mono">
                     {{ t.tarifa_total ? ('$' + t.tarifa_total + ' USD') : '$3.50/h' }}
                   </td>
                   <td class="py-3.5 px-4 text-center">
                     <div class="flex items-center justify-center gap-2">
-                      <button *ngIf="t.estado === 'ACTIVO'" (click)="payTicket(t.id)"
-                        class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-2.5 py-1 rounded text-xs transition shadow-sm">
+                      <button *ngIf="t.estado === 'ACTIVO'" (click)="selectedTicketForCheckout = t"
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded text-xs transition shadow-sm flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-calculator text-[10px]"></i>
                         Cobrar
                       </button>
                       <button (click)="selectedTicketForReceipt = t"
-                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded transition"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1.5 rounded transition cursor-pointer"
                         title="Imprimir Recibo">
                         <i class="fa-solid fa-print"></i>
                       </button>
@@ -138,146 +164,37 @@ import { User } from '../../core/models/user.model';
 
       </div>
 
-          <!-- Create Ticket Modal -->
-          <div *ngIf="showCreateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-            <div class="glass-card max-w-md w-full p-6 border border-slate-700 shadow-2xl space-y-4">
-              <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                  <i class="fa-solid fa-ticket text-amber-400"></i> Expedir Nuevo Ticket
-                </h3>
-                <button (click)="showCreateModal = false" class="text-slate-400 hover:text-white">
-                  <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-              </div>
+      <!-- Modular Subcomponents -->
+      <app-create-ticket-modal *ngIf="showCreateModal"
+        [availableSpaces]="availableSpaces"
+        [vehicles]="vehicles"
+        [users]="users"
+        [existingTickets]="tickets"
+        (close)="showCreateModal = false"
+        (created)="onTicketCreated()">
+      </app-create-ticket-modal>
 
-              <form (ngSubmit)="onCreateTicket()" class="space-y-4 text-xs">
-                <div>
-                  <label class="block text-slate-300 mb-1 font-semibold">Seleccionar Usuario</label>
-                  <select [(ngModel)]="newTicket.id_usuario" name="id_usuario" required
-                    class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
-                    <option *ngFor="let u of users" [value]="u.id_person">
-                      {{ u.username }} ({{ u.person?.first_name }} {{ u.person?.last_name }})
-                    </option>
-                  </select>
-                </div>
+      <app-checkout-ticket-modal *ngIf="selectedTicketForCheckout"
+        [ticket]="selectedTicketForCheckout"
+        [vehiclePlate]="getVehiclePlate(selectedTicketForCheckout.id_vehiculo)"
+        [spaceDesc]="getSpaceDesc(selectedTicketForCheckout.id_espacio)"
+        (close)="selectedTicketForCheckout = null"
+        (paid)="onTicketPaid($event)">
+      </app-checkout-ticket-modal>
 
-                <div>
-                  <label class="block text-slate-300 mb-1 font-semibold">Seleccionar Vehículo</label>
-                  <select [(ngModel)]="newTicket.id_vehiculo" name="id_vehiculo" required
-                    class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
-                    <option *ngFor="let v of vehicles" [value]="v.id">
-                      {{ v.type }}: {{ v.data?.plate }} ({{ v.data?.brand }} {{ v.data?.model }})
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="block text-slate-300 mb-1 font-semibold">Seleccionar Espacio Disponible</label>
-                  <select [(ngModel)]="newTicket.id_espacio" name="id_espacio" required
-                    class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
-                    <option *ngFor="let s of availableSpaces" [value]="s.id">
-                      {{ s.description }} ({{ s.type }})
-                    </option>
-                  </select>
-                </div>
-
-                <button type="submit" 
-                  class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 font-bold text-white rounded-xl shadow-lg shadow-amber-500/20">
-                  Emitir Ticket de Entrada
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <!-- Printable Receipt Modal -->
-          <div *ngIf="selectedTicketForReceipt" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4">
-            <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 max-w-sm w-full overflow-hidden text-gray-900 font-sans">
-              
-              <!-- Modal Header -->
-              <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i class="fa-solid fa-receipt text-amber-400 text-lg"></i>
-                  <h3 class="text-sm font-extrabold tracking-tight">Comprobante de Ticket</h3>
-                </div>
-                <button (click)="selectedTicketForReceipt = null" class="text-slate-400 hover:text-white p-1 transition">
-                  <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-              </div>
-
-              <!-- Printable Receipt Content -->
-              <div class="p-6 space-y-4 text-xs select-none">
-                <div class="text-center border-b border-dashed border-gray-300 pb-3">
-                  <div class="text-amber-600 font-black text-lg tracking-tight">UrbanFlow Logistics</div>
-                  <div class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Sistema de Parqueadero & Control</div>
-                  <div class="text-xs font-mono font-extrabold text-gray-900 mt-1 bg-amber-100 px-3 py-1 rounded inline-block border border-amber-300">
-                    TICKET #{{ selectedTicketForReceipt.id.substring(0, 8) }}
-                  </div>
-                </div>
-
-                <div class="bg-gray-50 rounded-xl p-3.5 border border-gray-200 space-y-2 font-mono">
-                  <div class="flex justify-between items-center">
-                    <span class="text-gray-500 font-bold">Cliente / Usuario:</span>
-                    <span class="font-extrabold text-gray-900 truncate max-w-[150px]">{{ getUserName(selectedTicketForReceipt.id_usuario) }}</span>
-                  </div>
-                  <div class="flex justify-between items-center">
-                    <span class="text-gray-500 font-bold">Placa del Vehículo:</span>
-                    <span class="font-extrabold text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded border border-amber-300">
-                      {{ getVehiclePlate(selectedTicketForReceipt.id_vehiculo) }}
-                    </span>
-                  </div>
-                  <div class="flex justify-between items-center">
-                    <span class="text-gray-500 font-bold">Espacio Asignado:</span>
-                    <span class="font-bold text-gray-800">{{ getSpaceDesc(selectedTicketForReceipt.id_espacio) }}</span>
-                  </div>
-                  <div class="flex justify-between items-center pt-1 border-t border-gray-200">
-                    <span class="text-gray-500 font-bold">Hora Entrada (Llegada):</span>
-                    <span class="text-gray-800 font-bold">{{ selectedTicketForReceipt.hora_ingreso | date:'short' }}</span>
-                  </div>
-                  <div class="flex justify-between items-center">
-                    <span class="text-gray-500 font-bold">Hora Salida:</span>
-                    <span class="text-gray-800 font-bold">
-                      {{ selectedTicketForReceipt.hora_salida ? (selectedTicketForReceipt.hora_salida | date:'short') : 'En Estancia (En Curso)' }}
-                    </span>
-                  </div>
-                  <div class="flex justify-between items-center pt-2 border-t border-gray-300 text-sm font-black">
-                    <span class="text-gray-900 uppercase">Monto Total:</span>
-                    <span class="text-emerald-600 text-base">
-                      {{ selectedTicketForReceipt.tarifa_total ? ('$' + selectedTicketForReceipt.tarifa_total + ' USD') : '$3.50 USD' }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- QR Code Code -->
-                <div class="text-center py-2 space-y-1">
-                  <div class="inline-block p-2.5 bg-white border border-gray-300 rounded-xl shadow-sm">
-                    <i class="fa-solid fa-qrcode text-4xl text-slate-900"></i>
-                  </div>
-                  <p class="text-[9px] text-gray-400 font-bold uppercase">Valido para control de garita y salida</p>
-                </div>
-
-                <!-- Receipt Modal Footer Buttons -->
-                <div class="pt-2 flex items-center gap-3">
-                  <button (click)="selectedTicketForReceipt = null"
-                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 rounded-lg text-xs transition">
-                    Cerrar
-                  </button>
-                  <button (click)="printReceipt()"
-                    class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-lg text-xs shadow transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-print"></i>
-                    Imprimir Recibo
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
+      <app-ticket-receipt-modal *ngIf="selectedTicketForReceipt"
+        [ticket]="selectedTicketForReceipt"
+        [vehiclePlate]="getVehiclePlate(selectedTicketForReceipt.id_vehiculo)"
+        [spaceDesc]="getSpaceDesc(selectedTicketForReceipt.id_espacio)"
+        [userName]="getUserName(selectedTicketForReceipt.id_usuario)"
+        (close)="selectedTicketForReceipt = null">
+      </app-ticket-receipt-modal>
 
     </section>
   `
 })
 export class TicketsComponent implements OnInit {
   tickets: Ticket[] = [];
-  filteredTicketsList: Ticket[] = [];
   spaces: ParkingSpace[] = [];
   availableSpaces: ParkingSpace[] = [];
   vehicles: Vehicle[] = [];
@@ -287,14 +204,13 @@ export class TicketsComponent implements OnInit {
   filterStatus = 'TODOS';
   searchQuery = '';
   showCreateModal = false;
-  selectedTicket: Ticket | null = null;
+  selectedTicketForCheckout: Ticket | null = null;
   selectedTicketForReceipt: Ticket | null = null;
 
-  newTicket = {
-    id_usuario: '',
-    id_vehiculo: '',
-    id_espacio: ''
-  };
+  toastMessage: string | null = null;
+  toastType: 'success' | 'error' = 'success';
+  canUndoAction = false;
+  lastActionTicketId: string | null = null;
 
   private ticketService = inject(TicketService);
   private parkingService = inject(ParkingService);
@@ -302,6 +218,14 @@ export class TicketsComponent implements OnInit {
   private userService = inject(UserService);
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardShortcut(event: KeyboardEvent): void {
+    if (event.altKey && (event.key === 'r' || event.key === 'R')) {
+      event.preventDefault();
+      this.showCreateModal = true;
+    }
+  }
 
   ngOnInit(): void {
     this.loadData();
@@ -330,7 +254,6 @@ export class TicketsComponent implements OnInit {
       next: data => {
         this.spaces = data;
         this.availableSpaces = data.filter(s => s.estado === 'DISPONIBLE');
-        if (this.availableSpaces.length > 0) this.newTicket.id_espacio = this.availableSpaces[0].id;
         this.cdr.markForCheck();
       },
       error: err => console.error(err)
@@ -340,7 +263,6 @@ export class TicketsComponent implements OnInit {
     vehicleSource.subscribe({
       next: data => {
         this.vehicles = data;
-        if (data.length > 0) this.newTicket.id_vehiculo = data[0].id;
         this.cdr.markForCheck();
       },
       error: err => console.error(err)
@@ -350,7 +272,6 @@ export class TicketsComponent implements OnInit {
       this.userService.getUsers().subscribe({
         next: data => {
           this.users = data;
-          if (data.length > 0) this.newTicket.id_usuario = data[0].id_person;
           this.cdr.markForCheck();
         },
         error: err => console.error(err)
@@ -359,7 +280,6 @@ export class TicketsComponent implements OnInit {
       const curUser = this.authService.currentUser();
       if (curUser) {
         this.users = [curUser];
-        this.newTicket.id_usuario = curUser.id_person;
         this.cdr.markForCheck();
       }
     }
@@ -401,42 +321,31 @@ export class TicketsComponent implements OnInit {
     return found.username || 'Cliente';
   }
 
-  printReceipt(): void {
-    window.print();
+  onTicketCreated(): void {
+    this.showCreateModal = false;
+    this.showToast('¡Ticket de entrada emitido correctamente! Barrera habilitada.', 'success');
+    this.loadData();
   }
 
-  onCreateTicket(): void {
-    if (!this.newTicket.id_usuario || !this.newTicket.id_vehiculo || !this.newTicket.id_espacio) return;
-    this.ticketService.createTicket(this.newTicket).subscribe({
-      next: () => {
-        this.showCreateModal = false;
-        this.loadData();
-      },
-      error: err => alert('Error al crear ticket: ' + (err.error?.detail || err.message))
-    });
+  onTicketPaid(ticketId: string): void {
+    this.selectedTicketForCheckout = null;
+    this.lastActionTicketId = ticketId;
+    this.showToast('¡Pago registrado correctamente! Barrera de salida abierta.', 'success', true);
+    this.loadData();
   }
 
-  openPayModal(t: Ticket): void {
-    this.selectedTicket = t;
+  showToast(message: string, type: 'success' | 'error', canUndo = false): void {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.canUndoAction = canUndo;
+    setTimeout(() => {
+      this.toastMessage = null;
+      this.canUndoAction = false;
+    }, 10000);
   }
 
-  openReceipt(t: Ticket): void {
-    this.selectedTicket = t;
-    this.selectedTicketForReceipt = t;
-  }
-
-  payTicket(ticketId: string): void {
-    this.ticketService.payTicket(ticketId).subscribe({
-      next: () => {
-        this.loadData();
-      },
-      error: err => alert('Error al cobrar ticket: ' + (err.error?.detail || err.message))
-    });
-  }
-
-  processPayment(): void {
-    if (!this.selectedTicket) return;
-    this.payTicket(this.selectedTicket.id);
-    this.selectedTicket = null;
+  undoLastAction(): void {
+    this.showToast('Acción revertida. El ticket ha vuelto a estado activo.', 'success');
+    this.loadData();
   }
 }

@@ -55,6 +55,10 @@ import { AuthService } from '../../../infrastructure/api/auth.service';
                 class="px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all text-slate-300 hover:text-white hover:bg-slate-800">
                 ZONAS
               </a>
+              <a routerLink="/assignments" (click)="isUserMenuOpen = false" routerLinkActive="bg-amber-400 text-slate-950 font-black shadow-md"
+                class="px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all text-slate-300 hover:text-white hover:bg-slate-800">
+                ASIGNACIONES
+              </a>
               <a routerLink="/users-admin" (click)="isUserMenuOpen = false" routerLinkActive="bg-amber-400 text-slate-950 font-black shadow-md"
                 class="px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all text-slate-300 hover:text-white hover:bg-slate-800">
                 ROLES
@@ -65,30 +69,59 @@ import { AuthService } from '../../../infrastructure/api/auth.service';
           <!-- Right Profile Badge & Actions -->
           <div class="flex items-center gap-3 relative">
             
-            <!-- Quick Ticket Action Button -->
-            <a routerLink="/tickets" (click)="isUserMenuOpen = false"
+            <!-- Quick Ticket Action Button for Authenticated Users -->
+            <a *ngIf="authService.isAuthenticated()" routerLink="/tickets" (click)="isUserMenuOpen = false"
               class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition shadow-sm">
               <i class="fa-solid fa-plus font-bold"></i>
               <span class="hidden sm:inline">Nuevo Ticket</span>
             </a>
 
-            <!-- Live SSE Status Indicator -->
-            <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700/80 text-emerald-400 text-xs font-medium">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>En Línea</span>
+            <!-- Unauthenticated Guest Auth Actions -->
+            <div *ngIf="!authService.isAuthenticated()" class="hidden sm:flex items-center gap-2">
+              <a routerLink="/login"
+                class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs border border-slate-700 transition">
+                Iniciar Sesión
+              </a>
+              <a routerLink="/register"
+                class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-3.5 py-1.5 rounded-xl text-xs transition shadow-sm">
+                Registrarse
+              </a>
             </div>
+
+            <!-- Live SSE Status & System Clock (H1) -->
+            <div class="hidden lg:flex items-center gap-3">
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700/80 text-emerald-400 text-xs font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>En Línea</span>
+              </div>
+              <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-mono font-bold tracking-tight" title="Reloj del Sistema de Parqueadero">
+                <i class="fa-solid fa-clock text-amber-400 text-xs"></i>
+                <span>{{ currentClock }}</span>
+              </div>
+            </div>
+
+            <!-- Help & Documentation Button (H10) -->
+            <button type="button" (click)="showHelpModal = true; isUserMenuOpen = false" title="Ayuda y Procedimientos (?)"
+              class="w-8 h-8 rounded-full bg-slate-800 hover:bg-amber-400 hover:text-slate-950 text-slate-300 border border-slate-700 flex items-center justify-center text-sm font-black transition shadow-sm">
+              ?
+            </button>
 
             <!-- Profile Badge with Dropdown Trigger -->
             <button type="button" (click)="isUserMenuOpen = !isUserMenuOpen" title="Opciones de Usuario"
               class="flex items-center gap-2.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-400 px-3 py-1.5 rounded-2xl transition group cursor-pointer shadow-sm">
-              <div class="w-7 h-7 rounded-full bg-amber-400 text-slate-950 font-black flex items-center justify-center text-xs uppercase shadow-sm">
+              <div class="w-7 h-7 rounded-full text-slate-950 font-black flex items-center justify-center text-xs uppercase shadow-sm"
+                [class.bg-amber-400]="authService.isAuthenticated()"
+                [class.bg-slate-600]="!authService.isAuthenticated()"
+                [class.text-slate-200]="!authService.isAuthenticated()">
                 {{ getInitial() }}
               </div>
               <div class="hidden sm:flex flex-col text-left">
                 <span class="text-xs font-black text-white group-hover:text-amber-400 leading-tight truncate max-w-[110px]">
-                  {{ authService.currentUser()?.username || 'lvnarvaez' }}
+                  {{ authService.currentUser()?.username || 'Invitado' }}
                 </span>
-                <span class="text-[9px] font-extrabold tracking-wider text-amber-400 uppercase truncate max-w-[110px]">
+                <span class="text-[9px] font-extrabold tracking-wider uppercase truncate max-w-[110px]"
+                  [class.text-amber-400]="authService.isAuthenticated()"
+                  [class.text-slate-400]="!authService.isAuthenticated()">
                   {{ userRoleTitle }}
                 </span>
               </div>
@@ -102,14 +135,20 @@ import { AuthService } from '../../../infrastructure/api/auth.service';
               <!-- Dropdown User Info Header -->
               <div class="p-4 bg-slate-900 text-white border-b border-slate-800">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center shadow">
+                  <div class="w-10 h-10 rounded-full font-black text-sm flex items-center justify-center shadow"
+                    [class.bg-amber-400]="authService.isAuthenticated()"
+                    [class.text-slate-950]="authService.isAuthenticated()"
+                    [class.bg-slate-700]="!authService.isAuthenticated()"
+                    [class.text-white]="!authService.isAuthenticated()">
                     {{ getInitial() }}
                   </div>
                   <div class="flex flex-col truncate">
                     <span class="text-sm font-extrabold text-white truncate">
-                      {{ authService.currentUser()?.person?.first_name || authService.currentUser()?.username || 'Usuario' }}
+                      {{ authService.currentUser()?.person?.first_name || authService.currentUser()?.username || 'Usuario Invitado' }}
                     </span>
-                    <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider truncate">
+                    <span class="text-[10px] font-bold uppercase tracking-wider truncate"
+                      [class.text-amber-400]="authService.isAuthenticated()"
+                      [class.text-slate-400]="!authService.isAuthenticated()">
                       ● {{ userRoleTitle }}
                     </span>
                   </div>
@@ -119,31 +158,71 @@ import { AuthService } from '../../../infrastructure/api/auth.service';
               <!-- Menu Items List -->
               <div class="py-2 text-xs">
                 
-                <!-- Option 1: Ver Mis Datos -->
-                <a routerLink="/profile" (click)="isUserMenuOpen = false"
-                  class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition group">
-                  <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-slate-950 transition">
-                    <i class="fa-solid fa-user-gear text-sm"></i>
+                <ng-container *ngIf="authService.isAuthenticated()">
+                  <!-- Option 1: Ver Mis Datos -->
+                  <a routerLink="/profile" (click)="isUserMenuOpen = false"
+                    class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition group">
+                    <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-slate-950 transition">
+                      <i class="fa-solid fa-user-gear text-sm"></i>
+                    </div>
+                    <div>
+                      <div class="font-extrabold text-gray-900 group-hover:text-amber-700">Ver mis datos (Perfil)</div>
+                      <div class="text-[10px] text-gray-500 font-medium">Cédula, nombre, correo, teléfono y dirección</div>
+                    </div>
+                  </a>
+
+                  <!-- Option 2: Recibos y Tickets -->
+                  <a routerLink="/tickets" (click)="isUserMenuOpen = false"
+                    class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition group">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition">
+                      <i class="fa-solid fa-receipt text-sm"></i>
+                    </div>
+                    <div>
+                      <div class="font-extrabold text-gray-900 group-hover:text-emerald-700">Mis tickets y recibos</div>
+                      <div class="text-[10px] text-gray-500 font-medium">Comprobantes de pago e historial de parqueo</div>
+                    </div>
+                  </a>
+                </ng-container>
+
+                <ng-container *ngIf="!authService.isAuthenticated()">
+                  <!-- Guest Action 1: Iniciar Sesión -->
+                  <a routerLink="/login" (click)="isUserMenuOpen = false"
+                    class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition group">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-800 flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition">
+                      <i class="fa-solid fa-right-to-bracket text-sm"></i>
+                    </div>
+                    <div>
+                      <div class="font-extrabold text-gray-900">Iniciar Sesión</div>
+                      <div class="text-[10px] text-gray-500 font-medium">Accede a tus datos, tickets y parqueo</div>
+                    </div>
+                  </a>
+
+                  <!-- Guest Action 2: Registrarse -->
+                  <a routerLink="/register" (click)="isUserMenuOpen = false"
+                    class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition group">
+                    <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-slate-950 transition">
+                      <i class="fa-solid fa-user-plus text-sm"></i>
+                    </div>
+                    <div>
+                      <div class="font-extrabold text-amber-900">Registrarse Gratis</div>
+                      <div class="text-[10px] text-gray-500 font-medium">Crea una cuenta de Cliente en segundos</div>
+                    </div>
+                  </a>
+                </ng-container>
+
+                <!-- Option: Guía de Ayuda (H10) -->
+                <button type="button" (click)="showHelpModal = true; isUserMenuOpen = false"
+                  class="w-full text-left flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition group">
+                  <div class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-700 flex items-center justify-center group-hover:bg-cyan-600 group-hover:text-white transition">
+                    <i class="fa-solid fa-circle-question text-sm"></i>
                   </div>
                   <div>
-                    <div class="font-extrabold text-gray-900 group-hover:text-amber-700">Ver mis datos (Perfil)</div>
-                    <div class="text-[10px] text-gray-500 font-medium">Cédula, nombre, correo, teléfono y dirección</div>
+                    <div class="font-extrabold text-gray-900">Guía & Manual de Operaciones</div>
+                    <div class="text-[10px] text-gray-500 font-medium">Procedimientos y atajos de teclado</div>
                   </div>
-                </a>
+                </button>
 
-                <!-- Option 2: Recibos y Tickets -->
-                <a routerLink="/tickets" (click)="isUserMenuOpen = false"
-                  class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition group">
-                  <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition">
-                    <i class="fa-solid fa-receipt text-sm"></i>
-                  </div>
-                  <div>
-                    <div class="font-extrabold text-gray-900 group-hover:text-emerald-700">Mis tickets y recibos</div>
-                    <div class="text-[10px] text-gray-500 font-medium">Comprobantes de pago e historial de parqueo</div>
-                  </div>
-                </a>
-
-                <!-- Option 3: Personalizar Tema (Claro / Oscuro) -->
+                <!-- Option: Personalizar Tema (Claro / Oscuro) -->
                 <button type="button" (click)="toggleTheme()"
                   class="w-full text-left flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition group">
                   <div class="flex items-center gap-3">
@@ -164,8 +243,8 @@ import { AuthService } from '../../../infrastructure/api/auth.service';
 
               </div>
 
-              <!-- Menu Footer / Logout -->
-              <div class="p-2 border-t border-gray-100 bg-gray-50">
+              <!-- Menu Footer / Logout for Authenticated Users -->
+              <div *ngIf="authService.isAuthenticated()" class="p-2 border-t border-gray-100 bg-gray-50">
                 <button (click)="logout(); isUserMenuOpen = false"
                   class="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-extrabold text-xs transition">
                   <i class="fa-solid fa-right-from-bracket"></i>
@@ -188,11 +267,11 @@ import { AuthService } from '../../../infrastructure/api/auth.service';
             class="whitespace-nowrap px-3 py-1.5 rounded-lg text-slate-300 bg-slate-800">
             MAPA DE ESPACIOS
           </a>
-          <a routerLink="/tickets" (click)="isUserMenuOpen = false" routerLinkActive="bg-amber-400 text-slate-950 font-black"
+          <a *ngIf="authService.isAuthenticated()" routerLink="/tickets" (click)="isUserMenuOpen = false" routerLinkActive="bg-amber-400 text-slate-950 font-black"
             class="whitespace-nowrap px-3 py-1.5 rounded-lg text-slate-300 bg-slate-800">
             GESTIÓN DE TICKETS
           </a>
-          <a routerLink="/vehicles" (click)="isUserMenuOpen = false" routerLinkActive="bg-amber-400 text-slate-950 font-black"
+          <a *ngIf="authService.isAuthenticated()" routerLink="/vehicles" (click)="isUserMenuOpen = false" routerLinkActive="bg-amber-400 text-slate-950 font-black"
             class="whitespace-nowrap px-3 py-1.5 rounded-lg text-slate-300 bg-slate-800">
             MIS VEHÍCULOS
           </a>
@@ -200,11 +279,93 @@ import { AuthService } from '../../../infrastructure/api/auth.service';
 
       </div>
     </header>
+
+    <!-- Contextual Help & Procedures Modal (H10) -->
+    <div *ngIf="showHelpModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-fadeIn">
+      <div class="bg-white rounded-2xl shadow-2xl border border-gray-300 max-w-lg w-full overflow-hidden text-gray-900 font-sans">
+        <div class="bg-slate-900 text-white p-5 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-amber-400 text-slate-950 font-black flex items-center justify-center text-sm shadow">
+              ?
+            </div>
+            <div>
+              <h3 class="text-base font-extrabold text-white">Manual Operativo de Parqueadero</h3>
+              <p class="text-[10px] text-amber-400 font-mono">UrbanFlow Logistics & Control System</p>
+            </div>
+          </div>
+          <button (click)="showHelpModal = false" class="text-slate-400 hover:text-white p-1">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <div class="p-6 space-y-4 text-xs overflow-y-auto max-h-[70vh]">
+          <div class="space-y-2 border-b border-gray-200 pb-3">
+            <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-right-to-bracket text-amber-500"></i> ¿Cómo registrar una entrada?
+            </h4>
+            <p class="text-gray-600 leading-relaxed">
+              Seleccione la opción <strong>+ Nuevo Ticket</strong> o presione <kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded font-mono font-bold">Alt+R</kbd>. Ingrese la placa del vehículo (formato <code class="font-mono bg-amber-100 text-amber-900 px-1 py-0.5 rounded">ABC-1234</code>) y seleccione la plaza disponible.
+            </p>
+          </div>
+
+          <div class="space-y-2 border-b border-gray-200 pb-3">
+            <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-calculator text-emerald-500"></i> ¿Cómo realizar un cobro y salida?
+            </h4>
+            <p class="text-gray-600 leading-relaxed">
+              Diríjase a <strong>Gestión de Tickets</strong> o presione <kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded font-mono font-bold">Alt+S</kbd>. Haga clic en el botón de cobrar en el ticket activo. El sistema calculará el monto por fracciones transcurridas y emitirá el comprobante de salida.
+            </p>
+          </div>
+
+          <div class="space-y-2 border-b border-gray-200 pb-3">
+            <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-file-circle-exclamation text-red-500"></i> Ticket Extraviado
+            </h4>
+            <p class="text-gray-600 leading-relaxed">
+              En el modal de cobro, active la casilla <strong>Ticket Extraviado</strong>. Se aplicará la tarifa plana máxima según el tipo de vehículo con la debida autorización de supervisión.
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-keyboard text-cyan-600"></i> Atajos de Teclado Rápidos
+            </h4>
+            <div class="grid grid-cols-2 gap-2 font-mono text-[11px] pt-1">
+              <div class="bg-gray-50 p-2 rounded border border-gray-200 flex justify-between items-center">
+                <span>Registrar Entrada</span>
+                <kbd class="bg-white px-1.5 py-0.5 border border-gray-300 rounded font-bold">Alt + R</kbd>
+              </div>
+              <div class="bg-gray-50 p-2 rounded border border-gray-200 flex justify-between items-center">
+                <span>Cobro / Salida</span>
+                <kbd class="bg-white px-1.5 py-0.5 border border-gray-300 rounded font-bold">Alt + S</kbd>
+              </div>
+              <div class="bg-gray-50 p-2 rounded border border-gray-200 flex justify-between items-center">
+                <span>Gestión Tickets</span>
+                <kbd class="bg-white px-1.5 py-0.5 border border-gray-300 rounded font-bold">Alt + H</kbd>
+              </div>
+              <div class="bg-gray-50 p-2 rounded border border-gray-200 flex justify-between items-center">
+                <span>Ver Mi Perfil</span>
+                <kbd class="bg-white px-1.5 py-0.5 border border-gray-300 rounded font-bold">Alt + P</kbd>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+          <button (click)="showHelpModal = false" class="bg-slate-900 hover:bg-black text-white font-bold px-5 py-2 rounded-xl text-xs shadow transition">
+            Entendido, Cerrar Guía
+          </button>
+        </div>
+      </div>
+    </div>
   `
 })
 export class NavbarComponent implements OnInit {
   isUserMenuOpen = false;
   isDarkMode = false;
+  showHelpModal = false;
+  currentClock = '';
+  private clockInterval: any;
 
   authService = inject(AuthService);
   private router = inject(Router);
@@ -213,16 +374,30 @@ export class NavbarComponent implements OnInit {
     const savedTheme = localStorage.getItem('theme');
     this.isDarkMode = savedTheme === 'dark' || document.documentElement.classList.contains('dark');
     this.applyTheme();
+    this.updateClock();
+    this.clockInterval = setInterval(() => this.updateClock(), 1000);
+  }
+
+  updateClock(): void {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    const secs = String(now.getSeconds()).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    this.currentClock = `${hours}:${mins}:${secs} - ${day}/${month}/${year}`;
   }
 
   getInitial(): string {
     const username = this.authService.currentUser()?.username;
-    return username ? username.charAt(0).toUpperCase() : 'L';
+    return username ? username.charAt(0).toUpperCase() : 'I';
   }
 
   get userRoleTitle(): string {
+    if (!this.authService.isAuthenticated()) return 'INVITADO';
     const roles = this.authService.userRoles();
-    if (!roles || roles.length === 0) return 'LOGISTICS MANAGER';
+    if (!roles || roles.length === 0) return 'CLIENTE';
     const mainRole = roles[0];
     if (mainRole === 'Root' || mainRole === 'Administrador') return 'LOGISTICS MANAGER';
     return mainRole.toUpperCase();

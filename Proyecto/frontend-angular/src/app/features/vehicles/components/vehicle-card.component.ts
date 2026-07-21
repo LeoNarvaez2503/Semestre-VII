@@ -1,0 +1,55 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { Vehicle } from '../../../core/models/vehicle.model';
+
+@Component({
+  selector: 'app-vehicle-card',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition space-y-3 font-sans select-none">
+      
+      <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+        <div>
+          <span class="font-mono font-extrabold text-base text-gray-900 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-300">
+            {{ vehicle.data?.plate || 'P-1234-UF' }}
+          </span>
+          <div class="text-xs text-gray-500 font-bold mt-1">{{ vehicle.data?.brand }} {{ vehicle.data?.model }}</div>
+        </div>
+
+        <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase bg-slate-100 text-slate-800 border border-slate-300">
+          {{ vehicle.type }}
+        </span>
+      </div>
+
+      <div class="space-y-1.5 text-xs text-gray-600">
+        <div class="flex justify-between">
+          <span class="font-medium">Año / Modelo:</span>
+          <span class="font-bold text-gray-800">{{ vehicle.data?.year || '2024' }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="font-medium">Color / Tipo:</span>
+          <span class="font-bold text-gray-800">{{ vehicle.data?.color || 'Gris' }} - {{ vehicle.data?.classification || 'Comercial' }}</span>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+        <span class="text-emerald-700 font-extrabold flex items-center gap-1">
+          <i class="fa-solid fa-circle-check text-emerald-600"></i>
+          Registrado en Flota
+        </span>
+
+        <button (click)="delete.emit(vehicle.id)" class="text-slate-400 hover:text-red-600 transition cursor-pointer" title="Eliminar Vehículo">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
+
+    </div>
+  `
+})
+export class VehicleCardComponent {
+  @Input() vehicle!: Vehicle;
+
+  @Output() delete = new EventEmitter<string>();
+}

@@ -64,10 +64,11 @@ export class VehicleService {
 
   private fromApi(vehicle: VehicleApiResponse): Vehicle {
     const { id, type, tipo, created_at, updated_at, ...data } = vehicle;
+    const rawType = type ?? tipo ?? (data as any)?.type ?? (data as any)?.motorcycleType;
 
     return {
       id,
-      type: this.normalizeType(type ?? tipo),
+      type: this.normalizeType(rawType, data.plate),
       data,
       created_at,
       updated_at
@@ -91,28 +92,43 @@ export class VehicleService {
       motorcycleType: vehicle.motorcycleType
     };
 
+    const rawType = vehicle.type ?? vehicle.motorcycleType;
+
     return {
       id: vehicle.vehicleId,
-      type: this.normalizeType(vehicle.type),
+      type: this.normalizeType(rawType, vehicle.plate),
       data,
       created_at: vehicle.createdAt
     };
   }
 
-  private normalizeType(type?: string): VehicleType {
-    switch (type?.trim().toLowerCase()) {
-      case 'moto':
-        return 'Moto';
-      case 'camioneta':
-        return 'Camioneta';
-      case 'electrico':
-      case 'eléctrico':
-        return 'Electrico';
-      case 'automóvil':
-      case 'automovil':
-      case 'auto':
-      default:
-        return 'Auto';
+  private normalizeType(type?: string, plate?: string): VehicleType {
+    const raw = (type || '').trim().toLowerCase();
+    if (
+      raw === 'moto' ||
+      raw === 'motorcycle' ||
+      raw === 'scooter' ||
+      raw === 'deportiva' ||
+      raw === 'motocross' ||
+      raw === 'custom' ||
+      raw === 'cruiser'
+    ) {
+      return 'Moto';
     }
+    if (raw === 'camioneta' || raw === 'truck') {
+      return 'Camioneta';
+    }
+    if (raw === 'electrico' || raw === 'eléctrico') {
+      return 'Electrico';
+    }
+
+    if (plate) {
+      const cleanPlate = plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (/^[A-Z]{2}\d{3,4}[A-Z]?$/.test(cleanPlate)) {
+        return 'Moto';
+      }
+    }
+
+    return 'Auto';
   }
 }
