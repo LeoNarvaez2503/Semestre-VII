@@ -5,7 +5,7 @@ from typing import Optional
 
 SECRET_KEY = "super-secret-key-for-jwt-signing-change-in-production"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
+ACCESS_TOKEN_EXPIRE_MINUTES = 120
 REFRESH_TOKEN_EXPIRE_MINUTES = 10080
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:

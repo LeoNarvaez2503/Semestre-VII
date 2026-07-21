@@ -29,7 +29,7 @@ import { Zone } from '../../core/models/zone.model';
 
         <!-- 4 Bento KPI Cards Subcomponent -->
         <app-kpi-cards
-          [totalCount]="spaces.length || 300"
+          [totalCount]="spaces.length"
           [availableCount]="availableCount"
           [occupiedCount]="occupiedCount"
           [reservedCount]="reservedCount"

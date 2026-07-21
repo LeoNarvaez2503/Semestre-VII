@@ -11,24 +11,22 @@ import {
   ValidateNested,
   Max,
   IsEnum,
-  IsUUID,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { ApiProperty, ApiExtraModels, getSchemaPath } from '@nestjs/swagger';
 import { Classification } from '../entities/vehicle.entity';
-import { IsNoSpaces, IsSafeText } from '../validators/custom-validators';
+import { IsSafeText } from '../validators/custom-validators';
 
 export class BaseVehicleDto {
   @ApiProperty({
-    description: 'La placa del vehículo (AAA1234 para autos/camionetas)',
+    description: 'La placa del vehículo (AAA1234 o AAA123 para autos/camionetas)',
     example: 'PCG1234',
   })
   @IsString({ message: 'La placa debe ser un texto' })
   @IsNotEmpty({ message: 'La placa no puede estar vacía' })
-  @Transform(({ value }) => typeof value === 'string' ? value.trim().toUpperCase().replace(/\s+/g, '') : value)
-  @IsNoSpaces({ message: 'La placa no puede contener espacios' })
-  @Matches(/^[A-Z]{3}\d{4}$/, {
-    message: 'La placa debe tener el formato AAA1234',
+  @Transform(({ value }) => typeof value === 'string' ? value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '') : value)
+  @Matches(/^[A-Z]{3}\d{3,4}$/, {
+    message: 'La placa debe contener 3 letras y 3 o 4 dígitos (ej. PBA1234)',
   })
   plate!: string;
 
@@ -39,12 +37,11 @@ export class BaseVehicleDto {
   @IsString({ message: 'La marca debe ser un texto' })
   @IsNotEmpty({ message: 'La marca no puede estar vacía' })
   @Transform(({ value }) => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value)
-  @IsNoSpaces({ message: 'La marca no puede contener espacios' })
-  @IsSafeText({ message: 'La marca contiene caracteres o términos reservados no permitidos (Inyección SQL)' })
+  @IsSafeText({ message: 'La marca contiene caracteres no permitidos' })
   @MinLength(2, { message: 'La marca debe tener al menos 2 caracteres' })
   @MaxLength(30, { message: 'La marca debe tener como máximo 30 caracteres' })
-  @Matches(/^[a-zA-Z\-áéíóúÁÉÍÓÚñÑ]+$/, {
-    message: 'La marca solo puede contener letras y guiones',
+  @Matches(/^[a-zA-Z0-9\s\-áéíóúÁÉÍÓÚñÑ]+$/, {
+    message: 'La marca solo puede contener letras, números, espacios y guiones',
   })
   brand!: string;
 
@@ -55,12 +52,11 @@ export class BaseVehicleDto {
   @IsString({ message: 'El modelo debe ser un texto' })
   @IsNotEmpty({ message: 'El modelo no puede estar vacío' })
   @Transform(({ value }) => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value)
-  @IsNoSpaces({ message: 'El modelo no puede contener espacios' })
-  @IsSafeText({ message: 'El modelo contiene caracteres o términos reservados no permitidos (Inyección SQL)' })
-  @MinLength(2, { message: 'El modelo debe tener al menos 2 caracteres' })
+  @IsSafeText({ message: 'El modelo contiene caracteres no permitidos' })
+  @MinLength(1, { message: 'El modelo debe tener al menos 1 caracter' })
   @MaxLength(30, { message: 'El modelo debe tener como máximo 30 caracteres' })
-  @Matches(/^[a-zA-Z\-áéíóúÁÉÍÓÚñÑ]+$/, {
-    message: 'El modelo solo puede contener letras y guiones',
+  @Matches(/^[a-zA-Z0-9\s\-áéíóúÁÉÍÓÚñÑ]+$/, {
+    message: 'El modelo solo puede contener letras, números, espacios y guiones',
   })
   model!: string;
 
@@ -71,12 +67,11 @@ export class BaseVehicleDto {
   @IsString({ message: 'El color debe ser un texto' })
   @IsNotEmpty({ message: 'El color no puede estar vacío' })
   @Transform(({ value }) => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value)
-  @IsNoSpaces({ message: 'El color no puede contener espacios' })
-  @IsSafeText({ message: 'El color contiene caracteres o términos reservados no permitidos (Inyección SQL)' })
+  @IsSafeText({ message: 'El color contiene caracteres no permitidos' })
   @MinLength(2, { message: 'El color debe tener al menos 2 caracteres' })
   @MaxLength(30, { message: 'El color debe tener como máximo 30 caracteres' })
-  @Matches(/^[a-zA-Z\-áéíóúÁÉÍÓÚñÑ]+$/, {
-    message: 'El color solo puede contener letras y guiones',
+  @Matches(/^[a-zA-Z\s\-áéíóúÁÉÍÓÚñÑ]+$/, {
+    message: 'El color solo puede contener letras, espacios y guiones',
   })
   color!: string;
 
@@ -118,16 +113,15 @@ export class CarDto extends BaseVehicleDto {
   @IsString({ message: 'El tipo de combustible debe ser un texto' })
   @IsNotEmpty({ message: 'El tipo de combustible no puede estar vacío' })
   @Transform(({ value }) => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value)
-  @IsNoSpaces({ message: 'El tipo de combustible no puede contener espacios' })
-  @IsSafeText({ message: 'El tipo de combustible contiene caracteres o términos reservados no permitidos (Inyección SQL)' })
+  @IsSafeText({ message: 'El tipo de combustible contiene caracteres no permitidos' })
   @MinLength(2, {
     message: 'El tipo de combustible debe tener al menos 2 caracteres',
   })
   @MaxLength(30, {
     message: 'El tipo de combustible debe tener como máximo 30 caracteres',
   })
-  @Matches(/^[a-zA-Z\-áéíóúÁÉÍÓÚñÑ]+$/, {
-    message: 'El tipo de combustible solo puede contener letras y guiones',
+  @Matches(/^[a-zA-Z0-9\s\-áéíóúÁÉÍÓÚñÑ]+$/, {
+    message: 'El tipo de combustible solo puede contener letras, números y espacios',
   })
   fuelType!: string;
 
@@ -143,15 +137,14 @@ export class CarDto extends BaseVehicleDto {
 
 export class MotorcycleDto extends BaseVehicleDto {
   @ApiProperty({
-    description: 'La placa de la motocicleta (formato AA-123A)',
+    description: 'La placa de la motocicleta (formato AA-123A o AB-123C)',
     example: 'AB-123C',
   })
   @IsString({ message: 'La placa debe ser un texto' })
   @IsNotEmpty({ message: 'La placa no puede estar vacía' })
   @Transform(({ value }) => typeof value === 'string' ? value.trim().toUpperCase().replace(/\s+/g, '') : value)
-  @IsNoSpaces({ message: 'La placa no puede contener espacios' })
-  @Matches(/^[A-Z]{2}-\d{3}[A-Z]{1}$/, {
-    message: 'La placa debe tener el formato AA-123A',
+  @Matches(/^[A-Z]{2,3}-?\d{3,4}[A-Z]?$/, {
+    message: 'La placa de moto debe tener un formato válido (ej. AB-123C)',
   })
   declare plate: string;
 
@@ -162,12 +155,11 @@ export class MotorcycleDto extends BaseVehicleDto {
   @IsString({ message: 'El tipo debe ser un texto' })
   @IsNotEmpty({ message: 'El tipo no puede estar vacío' })
   @Transform(({ value }) => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value)
-  @IsNoSpaces({ message: 'El tipo no puede contener espacios' })
-  @IsSafeText({ message: 'El tipo contiene caracteres o términos reservados no permitidos (Inyección SQL)' })
+  @IsSafeText({ message: 'El tipo contiene caracteres no permitidos' })
   @MinLength(2, { message: 'El tipo debe tener al menos 2 caracteres' })
   @MaxLength(30, { message: 'El tipo debe tener como máximo 30 caracteres' })
-  @Matches(/^[a-zA-Z\-áéíóúÁÉÍÓÚñÑ]+$/, {
-    message: 'El tipo solo puede contener letras y guiones',
+  @Matches(/^[a-zA-Z0-9\s\/\-áéíóúÁÉÍÓÚñÑ]+$/, {
+    message: 'El tipo solo puede contener letras, números y espacios',
   })
   type!: string;
 }
