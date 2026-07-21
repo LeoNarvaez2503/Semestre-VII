@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { ParkingService } from '../../infrastructure/api/parking.service';
 import { TicketService } from '../../infrastructure/api/ticket.service';
 import { VehicleService } from '../../infrastructure/api/vehicle.service';
+import { AuthService } from '../../infrastructure/api/auth.service';
 import { ParkingSpace } from '../../core/models/space.model';
 import { Ticket } from '../../core/models/ticket.model';
 import { Vehicle } from '../../core/models/vehicle.model';
@@ -177,6 +178,7 @@ export class DashboardComponent implements OnInit {
   private parkingService = inject(ParkingService);
   private ticketService = inject(TicketService);
   private vehicleService = inject(VehicleService);
+  private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
@@ -217,7 +219,9 @@ export class DashboardComponent implements OnInit {
       error: err => console.error(err)
     });
 
-    this.vehicleService.getVehicles().subscribe({
+    const isAdmin = this.authService.hasRole('Administrador') || this.authService.hasRole('Root');
+    const vehicleSource = isAdmin ? this.vehicleService.getVehicles() : this.vehicleService.getMyVehicles();
+    vehicleSource.subscribe({
       next: data => {
         this.vehiclesCount = data.length;
         this.cdr.markForCheck();

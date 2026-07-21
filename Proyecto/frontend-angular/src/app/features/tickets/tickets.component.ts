@@ -7,6 +7,7 @@ import { TicketService } from '../../infrastructure/api/ticket.service';
 import { ParkingService } from '../../infrastructure/api/parking.service';
 import { VehicleService } from '../../infrastructure/api/vehicle.service';
 import { UserService } from '../../infrastructure/api/user.service';
+import { AuthService } from '../../infrastructure/api/auth.service';
 import { Ticket } from '../../core/models/ticket.model';
 import { ParkingSpace } from '../../core/models/space.model';
 import { Vehicle } from '../../core/models/vehicle.model';
@@ -254,6 +255,7 @@ export class TicketsComponent implements OnInit {
   private parkingService = inject(ParkingService);
   private vehicleService = inject(VehicleService);
   private userService = inject(UserService);
+  private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
@@ -263,6 +265,8 @@ export class TicketsComponent implements OnInit {
   loadData(): void {
     this.loading = true;
     this.cdr.markForCheck();
+
+    const isAdmin = this.authService.hasRole('Administrador') || this.authService.hasRole('Root');
 
     this.ticketService.getAllTickets().subscribe({
       next: data => {
@@ -287,7 +291,8 @@ export class TicketsComponent implements OnInit {
       error: err => console.error(err)
     });
 
-    this.vehicleService.getVehicles().subscribe({
+    const vehicleSource = isAdmin ? this.vehicleService.getVehicles() : this.vehicleService.getMyVehicles();
+    vehicleSource.subscribe({
       next: data => {
         this.vehicles = data;
         if (data.length > 0) this.newTicket.id_vehiculo = data[0].id;
@@ -296,14 +301,23 @@ export class TicketsComponent implements OnInit {
       error: err => console.error(err)
     });
 
-    this.userService.getUsers().subscribe({
-      next: data => {
-        this.users = data;
-        if (data.length > 0) this.newTicket.id_usuario = data[0].id_person;
+    if (isAdmin) {
+      this.userService.getUsers().subscribe({
+        next: data => {
+          this.users = data;
+          if (data.length > 0) this.newTicket.id_usuario = data[0].id_person;
+          this.cdr.markForCheck();
+        },
+        error: err => console.error(err)
+      });
+    } else {
+      const curUser = this.authService.currentUser();
+      if (curUser) {
+        this.users = [curUser];
+        this.newTicket.id_usuario = curUser.id_person;
         this.cdr.markForCheck();
-      },
-      error: err => console.error(err)
-    });
+      }
+    }
   }
 
   get filteredTickets(): Ticket[] {
