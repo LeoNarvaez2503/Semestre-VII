@@ -32,6 +32,12 @@ export class RolesGuard implements CanActivate {
 
     // Cliente role has restricted access
     if (userRoles.includes('Cliente')) {
+      // A customer can only create an assignment for themselves. This is the
+      // second half of the "register my vehicle" flow in the frontend.
+      if (request.method === 'POST' && path.endsWith('/asignaciones') && request.body?.userId === userId) {
+        return true;
+      }
+
       // Cliente can ONLY check their own fleet: GET /asignaciones/propietario/:propietarioId
       const matchesOwner = path.match(/\/asignaciones\/propietario\/([^/]+)/);
       if (matchesOwner && matchesOwner[1] === userId) {

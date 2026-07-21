@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -95,7 +95,7 @@ import { Zone } from '../../core/models/zone.model';
                 <div class="flex items-start justify-between mb-3">
                   <div>
                     <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Espacio</span>
-                    <h4 class="text-lg font-bold text-black">{{ space.numero || space.description }}</h4>
+                    <h4 class="text-lg font-bold text-black">{{ space.numero || space.description || space.id.substring(0, 6) }}</h4>
                   </div>
                   <div class="w-3 h-3 rounded-full mt-1"
                     [class.bg-emerald-500]="space.estado === 'DISPONIBLE'"
@@ -112,9 +112,9 @@ import { Zone } from '../../core/models/zone.model';
                 <!-- Space type icon -->
                 <div class="flex items-center gap-2 mb-3">
                   <span class="material-symbols-outlined text-gray-400" style="font-size: 18px;">
-                    {{ space.type === 'MOTO' ? 'two_wheeler' : 'directions_car' }}
+                    {{ space.tipo === 'MOTO' ? 'two_wheeler' : space.tipo === 'DISCAPACIDAD' ? 'accessible' : 'directions_car' }}
                   </span>
-                  <span class="text-xs text-gray-500 font-medium">{{ space.type }}</span>
+                  <span class="text-xs text-gray-500 font-medium">{{ space.tipo || space.type || 'AUTOMÓVIL' }}</span>
                 </div>
 
                 <!-- Status badge -->
@@ -177,6 +177,7 @@ export class DashboardComponent implements OnInit {
   private parkingService = inject(ParkingService);
   private ticketService = inject(TicketService);
   private vehicleService = inject(VehicleService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.loadData();
@@ -190,15 +191,20 @@ export class DashboardComponent implements OnInit {
         this.occupiedCount = data.filter(s => s.estado === 'OCUPADO').length;
         this.reservedCount = data.filter(s => s.estado === 'RESERVADO').length;
         this.loadingSpaces = false;
+        this.cdr.markForCheck();
       },
       error: err => {
         console.error(err);
         this.loadingSpaces = false;
+        this.cdr.markForCheck();
       }
     });
 
     this.parkingService.getZones().subscribe({
-      next: data => this.zones = data,
+      next: data => {
+        this.zones = data;
+        this.cdr.markForCheck();
+      },
       error: err => console.error(err)
     });
 
@@ -206,12 +212,16 @@ export class DashboardComponent implements OnInit {
       next: data => {
         this.recentTickets = data.slice(0, 5);
         this.activeTicketsCount = data.filter(t => t.estado === 'ACTIVO').length;
+        this.cdr.markForCheck();
       },
       error: err => console.error(err)
     });
 
     this.vehicleService.getVehicles().subscribe({
-      next: data => this.vehiclesCount = data.length,
+      next: data => {
+        this.vehiclesCount = data.length;
+        this.cdr.markForCheck();
+      },
       error: err => console.error(err)
     });
   }

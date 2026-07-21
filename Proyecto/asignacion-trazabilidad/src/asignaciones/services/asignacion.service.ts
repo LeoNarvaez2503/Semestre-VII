@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto';
 import { Asignacion } from '../entities/asignacion.entity';
 import { Auditoria } from '../entities/auditoria.entity';
 import { CreateAsignacionDto } from '../dto/create-asignacion.dto';
@@ -176,7 +177,9 @@ export class AsignacionService {
     // 2. Comunicarse con vehiculos-app para enriquecer cada vehículo
     for (const assign of asignaciones) {
       try {
-        const response = await fetch(`${this.vehiculosApiUrl}/vehiculos/obtener/${assign.vehicleId}`);
+        const response = await fetch(`${this.vehiculosApiUrl}/vehiculos/obtener/${assign.vehicleId}`, {
+          headers: { Authorization: `Bearer ${this.createServiceToken()}` },
+        });
         if (response.ok) {
           const vehicleData = await response.json();
 
@@ -235,6 +238,23 @@ export class AsignacionService {
     }
 
     return fleet;
+  }
+
+  private createServiceToken(): string {
+    const encode = (value: object) => Buffer.from(JSON.stringify(value)).toString('base64url');
+    const header = encode({ alg: 'HS256', typ: 'JWT' });
+    const payload = encode({
+      sub: 'asignaciones-service',
+      username: 'asignaciones-service',
+      roles: ['Root'],
+      exp: Math.floor(Date.now() / 1000) + 60,
+      type: 'access',
+    });
+    const signature = crypto
+      .createHmac('sha256', 'super-secret-key-for-jwt-signing-change-in-production')
+      .update(`${header}.${payload}`)
+      .digest('base64url');
+    return `${header}.${payload}.${signature}`;
   }
 
   async getAuditLogs(): Promise<Auditoria[]> {

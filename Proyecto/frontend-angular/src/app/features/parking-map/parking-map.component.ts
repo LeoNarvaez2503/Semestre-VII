@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -218,6 +218,7 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
 
   private parkingService = inject(ParkingService);
   private spaceSseService = inject(SpaceSseService);
+  private cdr = inject(ChangeDetectorRef);
   authService = inject(AuthService);
 
   ngOnInit(): void {
@@ -231,12 +232,18 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
 
   loadData(): void {
     this.loading = true;
+    this.cdr.markForCheck();
+
     this.parkingService.getZones().subscribe({
       next: data => {
         this.zones = data;
         if (data.length > 0) this.newSpace.zoneId = data[0].zoneId;
+        this.cdr.markForCheck();
       },
-      error: err => console.error(err)
+      error: err => {
+        console.error(err);
+        this.cdr.markForCheck();
+      }
     });
 
     this.parkingService.getSpaces().subscribe({
@@ -244,10 +251,12 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
         this.spaces = data;
         this.filteredSpaces = data;
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: err => {
         console.error(err);
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -263,6 +272,7 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
             this.spaces[idx].vehiculoId = msg.vehiculoId;
           }
           this.filterSpaces();
+          this.cdr.markForCheck();
         }
       },
       error: err => console.warn('SSE warning:', err)

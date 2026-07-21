@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { Zone } from '../../core/models/zone.model';
@@ -27,6 +27,7 @@ export class ZonesComponent implements OnInit {
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly parkingService = inject(ParkingService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly zoneForm = this.formBuilder.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(32)]],
@@ -42,12 +43,22 @@ export class ZonesComponent implements OnInit {
   loadZones(): void {
     this.loading = true;
     this.errorMessage = '';
+    this.cdr.markForCheck();
 
     this.parkingService.getZones().pipe(
-      finalize(() => this.loading = false)
+      finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      })
     ).subscribe({
-      next: zones => this.zones = zones,
-      error: error => this.errorMessage = this.getErrorMessage(error, 'No fue posible cargar las zonas.')
+      next: zones => {
+        this.zones = zones;
+        this.cdr.markForCheck();
+      },
+      error: error => {
+        this.errorMessage = this.getErrorMessage(error, 'No fue posible cargar las zonas.');
+        this.cdr.markForCheck();
+      }
     });
   }
 

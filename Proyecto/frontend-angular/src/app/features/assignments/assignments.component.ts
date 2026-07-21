@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, finalize, forkJoin, of } from 'rxjs';
 import { Assignment, AssignmentTrace } from '../../core/models/assignment.model';
@@ -31,6 +31,7 @@ export class AssignmentsComponent implements OnInit {
   private readonly assignmentService = inject(AssignmentService);
   private readonly userService = inject(UserService);
   private readonly vehicleService = inject(VehicleService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   readonly assignmentForm = this.formBuilder.nonNullable.group({
     userId: ['', Validators.required],
@@ -68,6 +69,7 @@ export class AssignmentsComponent implements OnInit {
   loadData(): void {
     this.loading = true;
     this.clearMessages();
+    this.cdr.markForCheck();
     const warnings: string[] = [];
 
     forkJoin({
@@ -83,12 +85,16 @@ export class AssignmentsComponent implements OnInit {
         warnings.push(this.getErrorMessage(error, 'No se pudo cargar la trazabilidad.'));
         return of([] as AssignmentTrace[]);
       }))
-    }).pipe(finalize(() => this.loading = false)).subscribe(result => {
+    }).pipe(finalize(() => {
+      this.loading = false;
+      this.cdr.markForCheck();
+    })).subscribe(result => {
       this.users = result.users;
       this.vehicles = result.vehicles;
       this.traces = result.traces;
       this.errorMessage = warnings.join(' ');
       this.setInitialSelections();
+      this.cdr.markForCheck();
     });
   }
 

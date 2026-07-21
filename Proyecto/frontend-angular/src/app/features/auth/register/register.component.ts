@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -242,6 +242,7 @@ export class RegisterComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   loading = false;
   showPassword = false;
@@ -267,6 +268,10 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
+    // The button is disabled once change detection runs, but this guard also
+    // protects against double clicks and Enter being pressed twice.
+    if (this.loading || this.createdUser) return;
+
     this.errorMessage = '';
     this.registerForm.markAllAsTouched();
 
@@ -294,10 +299,14 @@ export class RegisterComponent {
       next: user => {
         this.loading = false;
         this.createdUser = user;
+        // HttpClient callbacks do not update plain component fields by
+        // themselves when zoneless change detection is enabled.
+        this.changeDetector.markForCheck();
       },
       error: (error: HttpErrorResponse) => {
         this.loading = false;
         this.errorMessage = this.getErrorMessage(error);
+        this.changeDetector.markForCheck();
       }
     });
   }

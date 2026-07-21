@@ -1,7 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { map, switchMap } from 'rxjs';
+import { map, switchMap, of } from 'rxjs';
 
 import { LicensePlateComponent } from '../../shared/components/license-plate/license-plate.component';
 import { VehicleService } from '../../infrastructure/api/vehicle.service';
@@ -109,9 +109,15 @@ import { Vehicle, VehicleType } from '../../core/models/vehicle.model';
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                  <div>
-                                    <label class="block text-slate-300 mb-1 font-semibold">Placa (ej. PDF9876)</label>
-                    <input type="text" [(ngModel)]="newVehicle.data.plate" name="plate" required placeholder="PDF9876"
+                  <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">
+                      Placa 
+                      <span class="text-[10px] text-cyan-400 font-mono">
+                        ({{ newVehicle.type === 'Moto' ? 'Formato Moto: AB-123C' : 'Formato Auto: PBA1234' }})
+                      </span>
+                    </label>
+                    <input type="text" [(ngModel)]="newVehicle.data.plate" name="plate" required 
+                      [placeholder]="newVehicle.type === 'Moto' ? 'AB-123C' : 'PBA1234'"
                       class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none uppercase font-mono">
                   </div>
                   <div>
@@ -137,25 +143,54 @@ import { Vehicle, VehicleType } from '../../core/models/vehicle.model';
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label class="block text-slate-300 mb-1 font-semibold">Año</label>
-                    <input type="number" [(ngModel)]="newVehicle.data.year" name="year" min="1900" [max]="currentYear + 1" required class="form-dark w-full">
+                    <input type="number" [(ngModel)]="newVehicle.data.year" name="year" min="1900" [max]="currentYear + 1" required
+                      class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
                   </div>
                   <div>
                     <label class="block text-slate-300 mb-1 font-semibold">Clasificación</label>
-                    <input type="text" [(ngModel)]="newVehicle.data.classification" name="classification" required placeholder="Particular" class="form-dark w-full">
+                    <select [(ngModel)]="newVehicle.data.classification" name="classification" required
+                      class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
+                      <option value="Gasolina">Gasolina ⛽</option>
+                      <option value="Diesel">Diesel 🚛</option>
+                      <option value="Hibrido">Híbrido 🔋</option>
+                      <option value="Electrico">Eléctrico ⚡</option>
+                    </select>
                   </div>
                 </div>
 
                 <div *ngIf="newVehicle.type === 'Auto'" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <input type="number" [(ngModel)]="newVehicle.data.doors" name="doors" min="2" required placeholder="Puertas" class="form-dark">
-                  <input type="text" [(ngModel)]="newVehicle.data.fuelType" name="fuelType" required placeholder="Combustible" class="form-dark">
-                  <input type="number" [(ngModel)]="newVehicle.data.trunkCapacity" name="trunkCapacity" min="0" required placeholder="Maletero (L)" class="form-dark">
+                  <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Puertas</label>
+                    <input type="number" [(ngModel)]="newVehicle.data.doors" name="doors" min="2" required placeholder="4"
+                      class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Combustible</label>
+                    <input type="text" [(ngModel)]="newVehicle.data.fuelType" name="fuelType" required placeholder="Gasolina / Super"
+                      class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Maletero (L)</label>
+                    <input type="number" [(ngModel)]="newVehicle.data.trunkCapacity" name="trunkCapacity" min="2" required placeholder="350"
+                      class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
+                  </div>
                 </div>
                 <div *ngIf="newVehicle.type === 'Moto'">
-                  <input type="text" [(ngModel)]="newVehicle.data.motorcycleType" name="motorcycleType" required placeholder="Tipo de moto" class="form-dark w-full">
+                  <label class="block text-slate-300 mb-1 font-semibold">Tipo de Moto (ej. Scooter)</label>
+                  <input type="text" [(ngModel)]="newVehicle.data.motorcycleType" name="motorcycleType" required placeholder="Scooter / Urbana"
+                    class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
                 </div>
                 <div *ngIf="newVehicle.type === 'Camioneta'" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input type="number" [(ngModel)]="newVehicle.data.cabin" name="cabin" min="1" required placeholder="Cabina" class="form-dark">
-                  <input type="number" [(ngModel)]="newVehicle.data.loadCapacity" name="loadCapacity" min="0" required placeholder="Carga (kg)" class="form-dark">
+                  <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Cabina (1 ó 2)</label>
+                    <input type="number" [(ngModel)]="newVehicle.data.cabin" name="cabin" min="1" max="2" required placeholder="2"
+                      class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-slate-300 mb-1 font-semibold">Carga (kg)</label>
+                    <input type="number" [(ngModel)]="newVehicle.data.loadCapacity" name="loadCapacity" min="1" required placeholder="800"
+                      class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-slate-200 outline-none">
+                  </div>
                 </div>
 
                 <button type="submit" 
@@ -183,7 +218,7 @@ export class VehiclesComponent implements OnInit {
       model: '',
       color: '',
       year: new Date().getFullYear(),
-      classification: 'Particular',
+      classification: 'Gasolina',
       doors: 4,
       fuelType: 'Gasolina',
       trunkCapacity: 400,
@@ -196,6 +231,7 @@ export class VehiclesComponent implements OnInit {
   private vehicleService = inject(VehicleService);
   private assignmentService = inject(AssignmentService);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.loadData();
@@ -203,17 +239,20 @@ export class VehiclesComponent implements OnInit {
 
   loadData(): void {
     this.loading = true;
-    const source = this.authService.hasRole('Administrador')
+    this.cdr.markForCheck();
+    const source = (this.authService.hasRole('Administrador') || this.authService.hasRole('Root'))
       ? this.vehicleService.getVehicles()
       : this.vehicleService.getMyVehicles();
     source.subscribe({
       next: data => {
         this.vehicles = data;
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: err => {
         console.error(err);
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -229,17 +268,46 @@ export class VehiclesComponent implements OnInit {
 
   onCreateVehicle(): void {
     if (!this.newVehicle.data.plate || !this.newVehicle.data.brand) return;
-    const currentUserId = this.authService.hasRole('Administrador') ? undefined : this.authService.currentUser()?.id_person;
+
+    // Clean payload fields
+    let rawPlate = this.newVehicle.data.plate.trim().toUpperCase().replace(/\s+/g, '');
+    
+    // Auto-insert dash for Moto if user typed e.g. AB123C
+    if (this.newVehicle.type === 'Moto' && /^[A-Z]{2}\d{3}[A-Z]{1}$/.test(rawPlate)) {
+      rawPlate = `${rawPlate.slice(0, 2)}-${rawPlate.slice(2)}`;
+    }
+
+    this.newVehicle.data.plate = rawPlate;
+    this.newVehicle.data.brand = this.newVehicle.data.brand.trim().replace(/\s+/g, '');
+    this.newVehicle.data.model = this.newVehicle.data.model.trim().replace(/\s+/g, '');
+    this.newVehicle.data.color = this.newVehicle.data.color.trim().replace(/\s+/g, '');
+
+    if (this.newVehicle.type === 'Auto') {
+      this.newVehicle.data.fuelType = (this.newVehicle.data.fuelType || 'Gasolina').trim().replace(/\s+/g, '');
+    } else if (this.newVehicle.type === 'Moto') {
+      this.newVehicle.data.motorcycleType = (this.newVehicle.data.motorcycleType || 'Urbana').trim().replace(/\s+/g, '');
+    }
+
+    const currentUserId = (this.authService.hasRole('Administrador') || this.authService.hasRole('Root'))
+      ? undefined 
+      : this.authService.currentUser()?.id_person;
+
     this.vehicleService.createVehicle(this.newVehicle).pipe(
       switchMap(vehicle => currentUserId
         ? this.assignmentService.createAssignment({ userId: currentUserId, vehicleId: vehicle.id }).pipe(map(() => vehicle))
-        : [vehicle])
+        : of(vehicle))
     ).subscribe({
       next: () => {
         this.showCreateModal = false;
         this.loadData();
       },
-      error: err => alert('Error al crear vehículo: ' + (err.error?.detail || err.message))
+      error: err => {
+        let msg = err.error?.message;
+        if (Array.isArray(msg)) {
+          msg = msg.map((m: string) => m.replace(/^data\./, '')).join('\n• ');
+        }
+        alert('Error de validación al crear vehículo:\n• ' + (msg || err.error?.detail || err.message));
+      }
     });
   }
 

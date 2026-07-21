@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -254,6 +254,7 @@ export class TicketsComponent implements OnInit {
   private parkingService = inject(ParkingService);
   private vehicleService = inject(VehicleService);
   private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.loadData();
@@ -261,14 +262,18 @@ export class TicketsComponent implements OnInit {
 
   loadData(): void {
     this.loading = true;
+    this.cdr.markForCheck();
+
     this.ticketService.getAllTickets().subscribe({
       next: data => {
         this.tickets = data;
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: err => {
         console.error(err);
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
 
@@ -277,6 +282,7 @@ export class TicketsComponent implements OnInit {
         this.spaces = data;
         this.availableSpaces = data.filter(s => s.estado === 'DISPONIBLE');
         if (this.availableSpaces.length > 0) this.newTicket.id_espacio = this.availableSpaces[0].id;
+        this.cdr.markForCheck();
       },
       error: err => console.error(err)
     });
@@ -285,6 +291,7 @@ export class TicketsComponent implements OnInit {
       next: data => {
         this.vehicles = data;
         if (data.length > 0) this.newTicket.id_vehiculo = data[0].id;
+        this.cdr.markForCheck();
       },
       error: err => console.error(err)
     });
@@ -293,6 +300,7 @@ export class TicketsComponent implements OnInit {
       next: data => {
         this.users = data;
         if (data.length > 0) this.newTicket.id_usuario = data[0].id_person;
+        this.cdr.markForCheck();
       },
       error: err => console.error(err)
     });

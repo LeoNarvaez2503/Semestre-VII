@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -270,6 +270,7 @@ export class UsersAdminComponent implements OnInit {
   };
 
   private userService = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.loadData();
@@ -277,19 +278,25 @@ export class UsersAdminComponent implements OnInit {
 
   loadData(): void {
     this.loading = true;
+    this.cdr.markForCheck();
     this.userService.getUsers().subscribe({
       next: data => {
         this.users = data;
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: err => {
         console.error(err);
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
 
     this.userService.getRoles().subscribe({
-      next: data => this.roles = data,
+      next: data => {
+        this.roles = data;
+        this.cdr.markForCheck();
+      },
       error: err => console.error(err)
     });
   }
@@ -323,6 +330,8 @@ export class UsersAdminComponent implements OnInit {
   }
 
   onCreateUser(): void {
+    if (this.saving) return;
+
     if (!this.newUser.person.dni || !this.newUser.person.email || !this.newUser.password || !this.newUser.person.first_name || !this.newUser.person.last_name) {
       this.modalErrorMessage = 'Por favor completa todos los campos requeridos (*).';
       return;

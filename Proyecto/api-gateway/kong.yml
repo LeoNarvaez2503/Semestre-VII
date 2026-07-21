@@ -31,7 +31,9 @@ plugins:
         - Cache-Control
         - Content-Type
         - Authorization
-      credentials: true
+      # Authentication uses the Authorization header, not cookies. Keeping
+      # credentials disabled makes the wildcard origin valid in browsers.
+      credentials: false
 
 services:
   - name: usuarios-service
