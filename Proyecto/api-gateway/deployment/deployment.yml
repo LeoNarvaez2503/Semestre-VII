@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: narvaezsolismorales
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: kong
+          image: kong:3.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: proxy
+            - containerPort: 8001
+              name: admin
+          envFrom:
+            - configMapRef:
+                name: api-gateway-config
+          volumeMounts:
+            - name: kong-config-volume
+              mountPath: /etc/kong/kong.yml
+              subPath: kong.yml
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8001
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8001
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "150m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: kong-config-volume
+          configMap:
+            name: kong-declarative-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kong-declarative-config
+  namespace: narvaezsolismorales
+data:
+  kong.yml: |
+    _format_version: "3.0"
+    plugins:
+      - name: response-transformer
+        enabled: true
+        config:
+          add:
+            headers:
+              - "X-Frame-Options:DENY"
+              - "X-Content-Type-Options:nosniff"
+              - "X-XSS-Protection:1; mode=block"
+              - "Referrer-Policy:no-referrer"
+      - name: cors
+        enabled: true
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Keep-Alive
+            - User-Agent
+            - X-Requested-With
+            - If-Modified-Since
+            - Cache-Control
+            - Content-Type
+            - Authorization
+          credentials: false
+    services:
+      - name: auth-service
+        url: http://auth-service:8000
+        routes:
+          - name: auth-routes
+            paths:
+              - /usuario
+      - name: parking-service
+        url: http://parking-service:8080
+        routes:
+          - name: parking-routes
+            paths:
+              - /api/v1/espacios
+              - /api/v1/zonas
+      - name: ticket-service
+        url: http://ticket-service:8001
+        routes:
+          - name: ticket-routes
+            paths:
+              - /tickets
+      - name: billing-service
+        url: http://billing-service:3002
+        routes:
+          - name: billing-routes
+            paths:
+              - /billing
+      - name: notification-service
+        url: http://notification-service:3003
+        routes:
+          - name: notification-routes
+            paths:
+              - /notifications
+      - name: frontend-service
+        url: http://frontend-angular:80
+        routes:
+          - name: frontend-routes
+            paths:
+              - /

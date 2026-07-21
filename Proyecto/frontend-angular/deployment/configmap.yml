@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-angular-config
+  namespace: narvaezsolismorales
+data:
+  NGINX_PORT: "80"

@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: narvaezsolismorales
+
+resources:
+  - 00-namespace.yml
+  - databases/deployment
+  - rabbitmq/deployment
+  - auth-service/deployment
+  - parking-service/deployment
+  - ticket-service/deployment
+  - billing-service/deployment
+  - notification-service/deployment
+  - api-gateway/deployment
+  - frontend-angular/deployment

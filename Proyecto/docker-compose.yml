@@ -282,7 +282,7 @@ services:
 
   audit-app:
     build:
-      context: ../ms-audit
+      context: ./ms-audit
       dockerfile: Dockerfile
     container_name: audit_app
     restart: always
