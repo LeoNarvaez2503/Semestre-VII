@@ -83,6 +83,7 @@ export class BaseVehicleDto {
   @IsInt({ message: 'El año debe ser un número entero' })
   @IsNotEmpty({ message: 'El año no puede estar vacío' })
   @Min(1885, { message: 'El año debe ser mayor o igual a 1885' })
+  @Max(new Date().getFullYear() + 1, { message: 'El año no puede ser superior a 1 año más del año actual' })
   year!: number;
 
   @ApiProperty({

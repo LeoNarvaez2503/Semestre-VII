@@ -6,60 +6,8 @@ import { ParkingSpace } from '../../../core/models/space.model';
   selector: 'app-space-slot',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <!-- LIBRE -->
-    <button *ngIf="space.estado === 'DISPONIBLE'"
-      (click)="selectSpace.emit(space)"
-      type="button"
-      class="w-full h-[68px] bg-[#e6f4ea] hover:bg-[#d4edda] border-2 border-[#15803d] rounded-lg p-1.5 flex flex-col items-center justify-center shadow-xs transition-all duration-150 hover:scale-[1.02] cursor-pointer group">
-      <span class="text-[11px] font-black text-gray-800 tracking-wider uppercase group-hover:text-emerald-900 leading-tight">
-        LIBRE
-      </span>
-      <span class="text-xs font-bold text-gray-700 tracking-tight mt-0.5">
-        {{ space.numero || space.description || space.id }}
-      </span>
-    </button>
-
-    <!-- OCUPADO -->
-    <button *ngIf="space.estado === 'OCUPADO'"
-      (click)="selectSpace.emit(space)"
-      type="button"
-      class="w-full h-[68px] bg-[#e6f4ea] hover:bg-[#d4edda] border-2 border-[#15803d] rounded-lg p-1.5 flex flex-col items-center justify-center shadow-xs transition-all duration-150 hover:scale-[1.02] cursor-pointer group">
-      <!-- Red Car Top-Down Graphic -->
-      <div class="mb-0.5">
-        <svg width="42" height="20" viewBox="0 0 42 22" fill="none" xmlns="http://www.w3.org/2000/svg" class="mx-auto">
-          <rect x="4" y="3" width="34" height="16" rx="5" fill="#CC1F1F" stroke="#991B1B" stroke-width="1" />
-          <rect x="12" y="6" width="18" height="10" rx="3" fill="#7F1D1D" />
-          <rect x="14" y="7" width="14" height="8" rx="2" fill="#EF4444" opacity="0.6" />
-          <rect x="7" y="1" width="7" height="3" rx="1" fill="#1E293B" />
-          <rect x="28" y="1" width="7" height="3" rx="1" fill="#1E293B" />
-          <rect x="7" y="18" width="7" height="3" rx="1" fill="#1E293B" />
-          <rect x="28" y="18" width="7" height="3" rx="1" fill="#1E293B" />
-          <rect x="2" y="5" width="2" height="3" rx="1" fill="#FEF08A" />
-          <rect x="2" y="14" width="2" height="3" rx="1" fill="#FEF08A" />
-        </svg>
-      </div>
-      <div class="text-[10px] font-black text-gray-900 tracking-wider uppercase leading-none">
-        OCUPADO
-      </div>
-      <div class="text-[10px] font-extrabold text-gray-900 tracking-tight font-mono mt-0.5">
-        {{ space.vehiculoId || 'P-1234-XYZ' }}
-      </div>
-    </button>
-
-    <!-- RESERVADO -->
-    <button *ngIf="space.estado === 'RESERVADO'"
-      (click)="selectSpace.emit(space)"
-      type="button"
-      class="w-full h-[68px] bg-[#f59e0b] hover:bg-amber-500 border-2 border-[#d97706] text-slate-950 rounded-lg p-1.5 flex flex-col items-center justify-center shadow-xs transition-all duration-150 hover:scale-[1.02] cursor-pointer group">
-      <span class="text-[11px] font-black tracking-wider uppercase text-slate-950">
-        RESERVADO
-      </span>
-      <div class="mt-1 w-5 h-5 rounded-full border-2 border-slate-900 flex items-center justify-center">
-        <i class="fa-solid fa-clock text-[10px] text-slate-900"></i>
-      </div>
-    </button>
-  `
+  templateUrl: './space-slot.component.html',
+  styleUrl: './space-slot.component.css'
 })
 export class SpaceSlotComponent {
   @Input() space!: ParkingSpace;

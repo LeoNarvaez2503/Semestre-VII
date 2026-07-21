@@ -15,6 +15,8 @@ def validate_no_spaces(field_name: str, value: Optional[str]) -> Optional[str]:
     """
     if value is not None:
         trimmed = value.strip()
+        if not trimmed:
+            return None
         if ' ' in trimmed:
             raise ValueError(f"El {field_name} no puede contener espacios")
         return trimmed
@@ -26,6 +28,8 @@ def validate_real_name(field_name: str, value: Optional[str]) -> Optional[str]:
     """
     if value is not None:
         trimmed = value.strip()
+        if not trimmed:
+            return None
         if ' ' in trimmed:
             raise ValueError(f"El {field_name} no puede contener espacios")
         if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+$", trimmed):
@@ -41,6 +45,8 @@ def validate_username_format(value: Optional[str]) -> Optional[str]:
     """
     if value is not None:
         trimmed = value.strip()
+        if not trimmed:
+            return None
         if ' ' in trimmed:
             raise ValueError("El nombre de usuario no puede contener espacios")
         if not re.match(r"^[a-zA-Z0-9_\-]+$", trimmed):
@@ -56,6 +62,8 @@ def validate_safe_text(field_name: str, value: Optional[str]) -> Optional[str]:
     """
     if value is not None:
         trimmed = value.strip()
+        if not trimmed:
+            return None
         # Verificar caracteres de comentarios y terminadores SQL peligrosos
         if any(seq in trimmed for seq in (";", "--", "/*", "*/")):
             raise ValueError(f"La {field_name} contiene caracteres no permitidos")

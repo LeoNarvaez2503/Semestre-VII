@@ -1,0 +1,7 @@
+<div class="license-plate-badge" [class.size-sm]="size === 'sm'" [class.size-lg]="size === 'lg'">
+  <div class="license-plate-header">ECUADOR</div>
+  <div class="license-plate-body">
+    <i *ngIf="showIcon" [class]="getVehicleIcon()" class="mr-1.5 text-xs text-slate-700"></i>
+    <span class="license-plate-number">{{ formatPlate(plateNumber) }}</span>
+  </div>
+</div>

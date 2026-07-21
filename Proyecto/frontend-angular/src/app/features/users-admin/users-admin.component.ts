@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { CreateUserModalComponent } from './components/create-user-modal.component';
+import { CreateRoleModalComponent } from './components/create-role-modal.component';
 
 import { UserService } from '../../infrastructure/api/user.service';
 import { User } from '../../core/models/user.model';
@@ -13,122 +14,17 @@ import { User } from '../../core/models/user.model';
   imports: [
     CommonModule,
     FormsModule,
-    CreateUserModalComponent
+    CreateUserModalComponent,
+    CreateRoleModalComponent
   ],
-  template: `
-    <section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] space-y-6 font-sans">
-      <div class="max-w-7xl mx-auto space-y-6">
-        
-        <!-- Header Bar -->
-        <div class="bg-slate-900 text-white rounded-xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 class="text-xl font-extrabold flex items-center gap-2 tracking-tight">
-              <i class="fa-solid fa-users-gear text-amber-400"></i>
-              Administración de Usuarios y Roles (RBAC)
-            </h2>
-            <p class="text-xs text-slate-300 mt-1">
-              Control de usuarios, datos personales (DNI, Nombres, Correo) y asignación de permisos del sistema.
-            </p>
-          </div>
-
-          <button (click)="showCreateUserModal = true"
-            class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-4 py-2.5 rounded-lg text-xs flex items-center gap-2 transition shadow-sm cursor-pointer">
-            <i class="fa-solid fa-user-plus font-bold"></i>
-            Crear Nuevo Usuario
-          </button>
-        </div>
-
-        <!-- Alert Notification Banner -->
-        <div *ngIf="notificationMessage" 
-          [class.bg-emerald-50]="notificationType === 'success'" [class.border-emerald-300]="notificationType === 'success'" [class.text-emerald-900]="notificationType === 'success'"
-          [class.bg-red-50]="notificationType === 'error'" [class.border-red-300]="notificationType === 'error'" [class.text-red-900]="notificationType === 'error'"
-          class="p-4 rounded-xl border text-xs font-bold flex items-center justify-between gap-3 animate-fadeIn">
-          <div class="flex items-center gap-2.5">
-            <i class="fa-solid" [class.fa-circle-check]="notificationType === 'success'" [class.fa-circle-exclamation]="notificationType === 'error'"></i>
-            <span>{{ notificationMessage }}</span>
-          </div>
-          <button (click)="notificationMessage = ''" class="hover:opacity-75">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <!-- Users Table -->
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <div class="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between select-none">
-            <h3 class="text-xs font-extrabold text-gray-700 uppercase tracking-wider">Usuarios del Sistema</h3>
-            <span class="text-xs font-mono font-bold text-gray-500">{{ users.length }} Registrados</span>
-          </div>
-
-          <div *ngIf="loading" class="text-center py-12 text-xs text-gray-500 font-mono">
-            <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-2xl mb-2"></i>
-            <p>Cargando lista de usuarios...</p>
-          </div>
-
-          <div *ngIf="!loading && users.length > 0" class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs sm:text-sm">
-              <thead>
-                <tr class="bg-gray-50 border-b border-gray-200 text-[11px] font-extrabold text-gray-500 uppercase tracking-wider">
-                  <th class="py-3.5 px-4">Usuario</th>
-                  <th class="py-3.5 px-4">Persona / DNI</th>
-                  <th class="py-3.5 px-4">Correo Electrónico</th>
-                  <th class="py-3.5 px-4">Roles Asignados</th>
-                  <th class="py-3.5 px-4">Estado</th>
-                  <th class="py-3.5 px-4 text-right">Acción</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200">
-                <tr *ngFor="let u of users" class="hover:bg-gray-50/80 transition">
-                  <td class="py-3.5 px-4 font-mono font-bold text-amber-600">{{ u.username }}</td>
-                  <td class="py-3.5 px-4">
-                    <div class="font-bold text-gray-900">{{ u.person?.first_name }} {{ u.person?.last_name }}</div>
-                    <div class="text-[10px] text-gray-500 font-mono">DNI: {{ u.person?.dni }}</div>
-                  </td>
-                  <td class="py-3.5 px-4 font-mono text-gray-600">{{ u.person?.email }}</td>
-                  <td class="py-3.5 px-4">
-                    <div class="flex flex-wrap gap-1">
-                      <span *ngFor="let r of getRoleList(u.roles || u.user_roles)"
-                        class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border"
-                        [class.bg-purple-100]="r === 'Root'" [class.text-purple-800]="r === 'Root'" [class.border-purple-300]="r === 'Root'"
-                        [class.bg-blue-100]="r === 'Administrador'" [class.text-blue-800]="r === 'Administrador'" [class.border-blue-300]="r === 'Administrador'"
-                        [class.bg-gray-100]="r === 'Cliente'" [class.text-gray-800]="r === 'Cliente'" [class.border-gray-300]="r === 'Cliente'">
-                        {{ r }}
-                      </span>
-                    </div>
-                  </td>
-                  <td class="py-3.5 px-4">
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300" *ngIf="u.active">
-                      ● Activo
-                    </span>
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-800 border border-red-300" *ngIf="!u.active">
-                      ● Inactivo
-                    </span>
-                  </td>
-                  <td class="py-3.5 px-4 text-right">
-                    <button (click)="onDeleteUser(u.id_person)" [disabled]="u.username === 'root'"
-                      class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-lg text-xs font-bold transition disabled:opacity-30 cursor-pointer">
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Modular Create User Modal -->
-      <app-create-user-modal *ngIf="showCreateUserModal"
-        (close)="showCreateUserModal = false"
-        (created)="onUserCreated()">
-      </app-create-user-modal>
-    </section>
-  `
+  templateUrl: './users-admin.component.html',
+  styleUrl: './users-admin.component.css'
 })
 export class UsersAdminComponent implements OnInit {
   users: User[] = [];
   loading = true;
   showCreateUserModal = false;
+  showCreateRoleModal = false;
 
   notificationMessage = '';
   notificationType: 'success' | 'error' = 'success';
@@ -170,6 +66,11 @@ export class UsersAdminComponent implements OnInit {
     this.showCreateUserModal = false;
     this.showNotification('¡Usuario creado y asignado correctamente!', 'success');
     this.loadUsers();
+  }
+
+  onRoleCreated(): void {
+    this.showCreateRoleModal = false;
+    this.showNotification('¡Nuevo Rol de Sistema creado exitosamente!', 'success');
   }
 
   onDeleteUser(personId: string): void {

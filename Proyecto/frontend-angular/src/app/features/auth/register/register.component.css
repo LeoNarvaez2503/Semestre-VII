@@ -1,0 +1,51 @@
+.dot-pattern {
+  background-color: #f8fafc;
+  background-image: radial-gradient(#e2e8f0 1.25px, transparent 1.25px);
+  background-size: 24px 24px;
+}
+.field-label {
+  display: block;
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+.field-input {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: #f8fafc;
+  color: #1e293b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  outline: none;
+  transition: 160ms ease;
+}
+.field-input:focus {
+  border-color: #0f172a;
+  background: white;
+  box-shadow: 0 0 0 2px #0f172a;
+}
+.field-input.ng-invalid.ng-touched {
+  border-color: #fca5a5;
+  background: #fffafa;
+}
+.field-error {
+  display: block;
+  margin-top: 0.375rem;
+  color: #b91c1c;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: normal;
+}
+.required { color: #b45309; }
+.optional {
+  margin-left: 0.25rem;
+  color: #94a3b8;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}

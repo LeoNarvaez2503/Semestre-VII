@@ -1,0 +1,159 @@
+<div class="min-h-screen w-full flex bg-slate-50 font-sans antialiased overflow-hidden">
+  
+  <!-- Left Side: Form Container with Subtle Dot Pattern -->
+  <div class="w-full lg:w-[55%] min-h-screen flex flex-col justify-between items-center p-6 sm:p-12 dot-pattern relative overflow-y-auto">
+    
+    <!-- Top Spacer -->
+    <div class="w-full max-w-lg pt-4 flex justify-between items-center">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-md">
+          <span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+        </div>
+        <span class="text-lg font-black text-slate-900 tracking-tight">UrbanFlow</span>
+      </div>
+      <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 bg-slate-100 px-3 py-1 rounded-full">v3.0 FrontEnd</span>
+    </div>
+
+    <!-- Main Login Card -->
+    <div class="w-full max-w-lg my-auto py-8">
+      <div class="bg-white border border-slate-200/80 rounded-3xl shadow-2xl shadow-slate-200/80 p-8 sm:p-11 space-y-7 animate-fade-in">
+        
+        <!-- Card Header -->
+        <div class="space-y-1.5">
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Bienvenido de nuevo
+          </h2>
+          <p class="text-sm font-medium text-slate-500">
+            Gestiona tu estacionamiento y accesos con UrbanFlow
+          </p>
+        </div>
+
+        <!-- Error Alert -->
+        <div *ngIf="errorMessage" 
+          class="p-4 rounded-2xl bg-red-50 border border-red-200/90 text-red-700 text-xs font-medium flex items-center gap-3 animate-fade-in">
+          <span class="material-symbols-outlined text-lg text-red-500">warning</span>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <!-- Form -->
+        <form (ngSubmit)="onLogin()" class="space-y-5">
+          
+          <!-- Username / Email Field -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Correo electrónico o Usuario
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                <span class="material-symbols-outlined text-xl">person</span>
+              </span>
+              <input 
+                type="text" 
+                [(ngModel)]="username" 
+                name="username" 
+                required
+                placeholder="ej. root o janarvaez"
+                class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 text-sm font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all shadow-sm"
+              >
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold uppercase tracking-wider text-slate-700">Contraseña</label>
+
+            </div>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                <span class="material-symbols-outlined text-xl">lock</span>
+              </span>
+              <input 
+                [type]="showPassword ? 'text' : 'password'" 
+                [(ngModel)]="password" 
+                name="password" 
+                required
+                placeholder="••••••••••••"
+                class="w-full pl-12 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 text-sm font-medium placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all shadow-sm"
+              >
+              <button 
+                type="button"
+                (click)="showPassword = !showPassword"
+                class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 hover:text-slate-700 focus:outline-none transition-colors">
+                <span class="material-symbols-outlined text-xl">
+                  {{ showPassword ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember Me Checkbox -->
+          <div class="flex items-center justify-between pt-1">
+            <label class="flex items-center gap-2.5 cursor-pointer select-none">
+              <input 
+                type="checkbox" 
+                id="remember"
+                class="w-4 h-4 text-slate-900 border-slate-300 rounded focus:ring-slate-900 cursor-pointer accent-slate-900"
+              >
+              <span class="text-xs font-medium text-slate-600">Recordarme en este equipo</span>
+            </label>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit"
+            [disabled]="loading"
+            class="w-full py-4 px-6 bg-slate-900 hover:bg-black active:scale-[0.99] disabled:opacity-70 text-white font-bold text-sm rounded-2xl shadow-xl shadow-slate-900/20 hover:shadow-slate-900/30 transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+            <span *ngIf="!loading" class="flex items-center gap-2">
+              Iniciar Sesión
+              <span class="material-symbols-outlined text-lg">arrow_forward</span>
+            </span>
+            <span *ngIf="loading" class="flex items-center gap-2">
+              <span class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+              Autenticando...
+            </span>
+          </button>
+        </form>
+
+
+
+        <!-- Sign Up Footer -->
+        <div class="pt-2 text-center text-xs text-slate-500 font-medium">
+          <span>¿No tienes una cuenta aún?</span>
+          <a routerLink="/register" class="font-bold text-amber-700 hover:text-amber-800 ml-1 hover:underline transition-colors">
+            Regístrate gratis
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer terms -->
+    <p class="pb-4 text-xs text-slate-400 text-center font-medium">
+      Acceso protegido a la plataforma UrbanFlow.
+    </p>
+
+  </div>
+
+  <!-- Right Side: Parking Hero Image Panel (Hidden on Mobile) -->
+  <div class="hidden lg:block w-[45%] h-screen relative sticky top-0 overflow-hidden">
+    <div class="absolute inset-0 bg-slate-900/10 mix-blend-multiply z-10"></div>
+    <img 
+      src="assets/images/parking_bg.png" 
+      alt="Estacionamiento UrbanFlow" 
+      class="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 hover:scale-100"
+    >
+    <!-- Gradient Overlay with Text -->
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent z-20 flex flex-col justify-end p-12 space-y-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium w-fit">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        Sistema en Línea
+      </div>
+      <h3 class="text-white text-3xl font-extrabold tracking-tight drop-shadow-md">UrbanFlow</h3>
+      <p class="text-slate-200 text-sm leading-relaxed max-w-md drop-shadow">
+        Plataforma inteligente de control de estacionamiento, monitoreo en tiempo real y gestión automatizada de plazas.
+      </p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,41 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-fadeIn font-sans select-none">
+  <div class="bg-white rounded-2xl shadow-2xl border border-gray-300 max-w-md w-full p-6 space-y-4 text-gray-900">
+    
+    <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+      <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+        <i class="fa-solid fa-shield-halved text-amber-500"></i> Crear Nuevo Rol de Sistema
+      </h3>
+      <button (click)="close.emit()" class="text-gray-400 hover:text-gray-900 transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="space-y-3.5 text-xs">
+      
+      <div *ngIf="errorMessage" class="p-3.5 rounded-xl bg-red-50 border border-red-300 text-red-900 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+        <i class="fa-solid fa-circle-exclamation text-red-600"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-bold mb-1">Nombre del Rol *</label>
+        <input type="text" [(ngModel)]="roleName" name="name" required placeholder="Ej. Auditor / Supervisor"
+          class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-bold outline-none focus:ring-2 focus:ring-amber-500">
+        <span class="text-[10px] text-gray-500 mt-1 block">Solo letras sin espacios (se convertirá en TitleCase automáticamente).</span>
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-bold mb-1">Descripción del Rol</label>
+        <textarea [(ngModel)]="roleDescription" name="description" rows="3" placeholder="Descripción de permisos..."
+          class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+      </div>
+
+      <button type="submit" [disabled]="submitting"
+        class="w-full py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-2 cursor-pointer mt-2">
+        <i class="fa-solid fa-check font-bold"></i>
+        {{ submitting ? 'Guardando Rol...' : 'Crear Rol' }}
+      </button>
+    </form>
+
+  </div>
+</div>

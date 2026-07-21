@@ -18,70 +18,8 @@ import { Vehicle } from '../../core/models/vehicle.model';
     VehicleCardComponent,
     VehicleModalComponent
   ],
-  template: `
-    <section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] space-y-6 font-sans">
-      <div class="max-w-7xl mx-auto space-y-6">
-
-        <!-- Top Banner matching MisVehiculosView.tsx -->
-        <div class="bg-slate-900 text-white rounded-xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <h2 class="text-xl font-black flex items-center gap-2 tracking-tight">
-              <i class="fa-solid fa-truck text-amber-400"></i>
-              Flota de Vehículos Registrados
-            </h2>
-            <p class="text-xs text-slate-300 mt-1">
-              Administración centralizada de flotas comerciales, asignación directa de plazas y contacto.
-            </p>
-          </div>
-
-          <button (click)="showCreateModal = true"
-            class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold px-4 py-2.5 rounded-lg text-xs flex items-center gap-2 transition shadow-sm cursor-pointer">
-            <i class="fa-solid fa-plus font-bold"></i>
-            Registrar Vehículo en Flota
-          </button>
-        </div>
-
-        <!-- Toolbar -->
-        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
-          <div class="relative w-full sm:w-80">
-            <i class="fa-solid fa-magnifying-glass text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
-            <input type="text" [(ngModel)]="searchQuery"
-              placeholder="Buscar vehículo por placa, marca o modelo..."
-              class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-amber-500 focus:outline-none" />
-          </div>
-
-          <span class="text-xs font-bold text-gray-500">
-            Total Flota: <strong class="text-gray-900">{{ filteredVehicles.length }} vehículos</strong>
-          </span>
-        </div>
-
-        <!-- Vehicles Grid -->
-        <div *ngIf="loading" class="text-center py-12 text-xs text-gray-500 font-mono">
-          <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-2xl mb-2"></i>
-          <p>Cargando vehículos de la flota...</p>
-        </div>
-
-        <div *ngIf="!loading && filteredVehicles.length === 0" class="bg-white p-12 rounded-xl border border-gray-200 text-center text-xs text-gray-400 font-medium">
-          No hay vehículos registrados en la plataforma.
-        </div>
-
-        <!-- Modular Vehicle Cards Grid -->
-        <div *ngIf="!loading && filteredVehicles.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          <app-vehicle-card *ngFor="let v of filteredVehicles"
-            [vehicle]="v"
-            (delete)="onDeleteVehicle($event)">
-          </app-vehicle-card>
-        </div>
-
-      </div>
-
-      <!-- Modular Vehicle Creation Modal -->
-      <app-vehicle-modal *ngIf="showCreateModal"
-        (close)="showCreateModal = false"
-        (created)="onVehicleCreated()">
-      </app-vehicle-modal>
-    </section>
-  `
+  templateUrl: './vehicles.component.html',
+  styleUrl: './vehicles.component.css'
 })
 export class VehiclesComponent implements OnInit {
   vehicles: Vehicle[] = [];

@@ -25,9 +25,13 @@ class PersonBase(BaseModel):
     @field_validator('dni')
     @classmethod
     def validate_dni(cls, v: str) -> str:
-        if not ci.is_valid(v):
+        if not v or not v.strip():
+            raise ValueError('El DNI no puede estar vacío')
+        clean_v = v.strip()
+        if not ci.is_valid(clean_v) and not clean_v.isdigit() and len(clean_v) < 5:
             raise ValueError('DNI inválido')
-        return validate_no_spaces('DNI', v)
+        res = validate_no_spaces('DNI', clean_v)
+        return res or clean_v
 
     @field_validator('email')
     @classmethod
