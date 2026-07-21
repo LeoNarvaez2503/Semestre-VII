@@ -39,8 +39,8 @@ Ejecuta desde la raíz del proyecto (`Proyecto/`):
 kubectl apply -f .
 ```
 
-Este comando creará automáticamente el namespace `narvaezsolismorales` (mediante `00-namespace.yml` y `kustomization.yaml`) y desplegará en orden idempotente:
-1. Namespace `narvaezsolismorales`
+Este comando creará automáticamente el namespace `FloresGuamanMoralesNarvaez` (mediante `00-namespace.yml` y `kustomization.yaml`) y desplegará en orden idempotente:
+1. Namespace `FloresGuamanMoralesNarvaez`
 2. Bases de datos PostgreSQL (`auth-db`, `parking-db`, `ticket-db`, `billing-db`, `notification-db`) con sus PVCs
 3. RabbitMQ con PVC para colas y eventos asíncronos
 4. Microservicios (`auth-service`, `parking-service`, `ticket-service`, `billing-service`, `notification-service`)
@@ -107,7 +107,7 @@ El Frontend Angular escucha directamente este endpoint a través de `SpaceSseSer
 
 ## 🛡️ 6. Arquitectura y Restricciones Cumplidas
 
-* **Namespace Unificado:** Todos los recursos se despliegan bajo el namespace `narvaezsolismorales`.
+* **Namespace Unificado:** Todos los recursos se despliegan bajo el namespace `FloresGuamanMoralesNarvaez`.
 * **Aislamiento de Red:** Los microservicios backend no están expuestos al exterior; todo el tráfico transita obligatoriamente por Kong.
 * **Resiliencia & Health Checks:** Todos los Deployments cuentan con `livenessProbe` y `readinessProbe` configurados.
 * **Persistencia:** Las bases de datos y RabbitMQ utilizan `PersistentVolumeClaim` (PVC) para garantizar la integridad de los datos.

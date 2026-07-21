@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: api-gateway-config
-  namespace: narvaezsolismorales
+  namespace: FloresGuamanMoralesNarvaez
 data:
   KONG_DATABASE: "off"
   KONG_DECLARATIVE_CONFIG: "/etc/kong/kong.yml"

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: billing-service-config
-  namespace: narvaezsolismorales
+  namespace: FloresGuamanMoralesNarvaez
 data:
   PORT: "3002"
   DATABASE_URL: "postgresql://billing_user:billing_pass@billing-db:5432/billing_db"

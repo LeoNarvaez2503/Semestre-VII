@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ticket-service
-  namespace: narvaezsolismorales
+  namespace: FloresGuamanMoralesNarvaez
 spec:
   replicas: 1
   selector:
