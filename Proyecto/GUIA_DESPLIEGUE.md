@@ -1,150 +1,204 @@
-# 🚀 Guía de Despliegue y Ejecución - UrbanFlow
+# 🚀 Guía Completa de Despliegue y Ejecución - UrbanFlow
 
-Esta guía detalla los pasos para compilar, levantar y ejecutar el proyecto **UrbanFlow (Smart Parking System)** completo (Backend Microservicios + Kong API Gateway + Frontend Angular) en cualquier sistema operativo (**Linux, Windows o macOS**).
+Esta guía detalla los pasos para compilar, desplegar y ejecutar el sistema distribuido **UrbanFlow (Smart Parking System)** tanto en **Kubernetes (Minikube + Ingress + Kong API Gateway)** como **sin Kubernetes (Docker Compose)**. 
+
+Compatible con **Linux, macOS y Windows**.
+
+---
+
+# 🚀 OPCIÓN 1: Despliegue en Kubernetes (Minikube + Ingress + Kong)
+
+Esta opción despliega el sistema distribuido completo (17 Pods: Microservicios, Bases de Datos PostgreSQL con persisencia PVC, RabbitMQ, Kong API Gateway y Frontend Angular) expuesto al exterior mediante un recurso **Ingress** con el dominio local `http://parqueo-espe.local`.
 
 ---
 
 ## 📋 Requisitos Previos
 
-Antes de iniciar, asegúrate de contar con los siguientes programas instalados en tu equipo:
-
-1. **Git** (Para clonar el repositorio).
-2. **Docker Desktop** (en Windows/macOS) o **Docker Engine + Docker Compose** (en Linux).
-3. **Node.js >= 22.x** y **npm** *(Opcional, solo si deseas ejecutar el Frontend Angular en modo desarrollo local).*
-
-> [!IMPORTANT]
-> Verificación rápida de instalación en tu terminal:
-> ```bash
-> docker --version
-> docker compose version
-> node -v
-> ```
+Asegúrate de contar con los siguientes programas instalados en tu sistema operativo:
+1. **Docker Desktop** (Windows/macOS) o **Docker Engine** (Linux).
+2. **Minikube** (v1.30+).
+3. **kubectl** (v1.26+).
 
 ---
 
-## 💻 Paso 1: Obtener el Código Fuente
+## 🛠️ Pasos de Despliegue en Kubernetes
 
-Clona el repositorio e ingresa a la rama de desarrollo del Frontend:
+### Paso 1: Iniciar Minikube
+Abre una terminal y ejecuta:
 
 ```bash
-# Clonar el repositorio
-git clone <URL_DEL_REPOSITORIO>
+minikube start
+```
 
-# Entrar a la carpeta del proyecto
+---
+
+### Paso 2: Configurar la terminal para usar el demonio Docker de Minikube
+
+Este paso permite compilar las imágenes directamente en la memoria interna de Minikube sin necesidad de subirlas a un registro público (`Docker Hub`).
+
+* **En Linux / macOS (Bash / Zsh):**
+  ```bash
+  eval $(minikube docker-env)
+  ```
+* **En Windows (PowerShell):**
+  ```powershell
+  minikube docker-env | Invoke-Expression
+  ```
+* **En Windows (Command Prompt / CMD):**
+  ```cmd
+  @FOR /f "tokens=*" %i IN ('minikube -p minikube docker-env --shell cmd') DO @%i
+  ```
+
+---
+
+### Paso 3: Construir las imágenes Docker de los Microservicios
+Ejecuta los siguientes comandos desde la raíz del proyecto (`Proyecto/`):
+
+```bash
+docker build -t auth-service:latest ./auth-service
+docker build -t parking-service:latest ./parking-service
+docker build -t ticket-service:latest ./ticket-service
+docker build -t billing-service:latest ./billing-service
+docker build -t notification-service:latest ./notification-service
+docker build -t vehiculos-service:latest ./vehiculos
+docker build -t asignacion-service:latest ./asignacion-trazabilidad
+docker build -t api-gateway:latest ./api-gateway
+docker build -t frontend-angular:latest ./frontend-angular
+```
+
+---
+
+### Paso 4: Desplegar todo en Kubernetes
+Ejecuta un solo comando desde la raíz del proyecto (`Proyecto/`):
+
+```bash
+kubectl apply -k .
+```
+
+Este comando creará automáticamente el namespace `floresguamanmoralesnarvaez` y desplegará en orden idempotente:
+1. Bases de Datos PostgreSQL con persisencia (PVCs).
+2. Broker de mensajes RabbitMQ.
+3. Microservicios backend (Auth, Parking, Tickets, Billing, Notification, Vehículos, Asignaciones).
+4. Kong API Gateway.
+5. Frontend Angular.
+6. Recurso Ingress con anotaciones SSE sin buffering.
+
+---
+
+### Paso 5: Habilitar el Addon de Ingress en Minikube
+
+```bash
+minikube addons enable ingress
+```
+
+Verifica que los Pods estén listos (`1/1 Running`):
+
+```bash
+# Pods de la aplicación
+kubectl get pods -n floresguamanmoralesnarvaez
+
+# Pods del Ingress Controller
+kubectl get pods -n ingress-nginx
+```
+
+---
+
+### Paso 6: Configurar el Dominio Local `parqueo-espe.local`
+
+Obtén la IP interna de Minikube:
+
+```bash
+minikube ip
+```
+
+Agrega la entrada al archivo de hosts de tu sistema operativo:
+
+* **En Linux / macOS:**
+  ```bash
+  echo "$(minikube ip) parqueo-espe.local" | sudo tee -a /etc/hosts
+  ```
+* **En Windows (Ejecutar PowerShell como Administrador):**
+  ```powershell
+  Add-Content -Path "C:\Windows\System32\drivers\etc\hosts" -Value "$((minikube ip).Trim()) parqueo-espe.local"
+  ```
+
+---
+
+### Paso 7: Acceso a la Aplicación
+Abre en tu navegador web:
+
+👉 **[http://parqueo-espe.local](http://parqueo-espe.local)**
+
+---
+
+### 🧹 Limpieza en Kubernetes
+Para eliminar todo el despliegue del clúster:
+
+```bash
+kubectl delete -k .
+```
+
+---
+---
+
+# 🐳 OPCIÓN 2: Despliegue Sin Kubernetes (Docker Compose)
+
+Esta opción permite levantar todo el sistema en contenedores aislados mediante **Docker Compose** en un solo comando, ideal para desarrollo local o pruebas rápidas.
+
+---
+
+## 📋 Requisitos Previos
+
+1. **Git**
+2. **Docker Engine / Docker Desktop** (v24+) con **Docker Compose** (v2+).
+
+---
+
+## 🛠️ Pasos de Despliegue con Docker Compose
+
+### Paso 1: Ingresar a la carpeta del proyecto
+```bash
 cd Proyecto
-
-# Asegurarse de estar en la rama del frontend
-git checkout ParkingAppP3FrontEnd
 ```
+
+### Paso 2: Levantar todos los contenedores
+Ejecuta desde la raíz del proyecto (`Proyecto/`):
+
+* **Linux / macOS / Windows (Docker Compose v2+):**
+  ```bash
+  docker compose up --build -d
+  ```
+* **En versiones antiguas (Docker Compose v1):**
+  ```bash
+  docker-compose up --build -d
+  ```
 
 ---
 
-## 🐳 Método 1: Ejecución Completa con Docker (Recomendado)
-
-Este método levanta los **15 contenedores** aislados en background (Bases de datos PostgreSQL, RabbitMQ, Microservicios FastAPI / NestJS / Spring Boot, Kong API Gateway y el Frontend Angular en Nginx).
-
-### 1️⃣ Levantar todos los servicios
-
-Abre una terminal en la carpeta principal del proyecto (`Proyecto/`) y ejecuta:
-
-#### En Linux / macOS / Windows (Bash o PowerShell):
-```bash
-docker compose up --build -d
-```
-
-> 💡 *En versiones antiguas de Docker Compose, el comando equivalente es `docker-compose up --build -d`.*
-
-### 2️⃣ Verificar que los contenedores estén activos
+### Paso 3: Verificar Contenedores Activos
 
 ```bash
 docker ps
 ```
+Deberás ver activos los **15 contenedores** principales (Bases de datos, RabbitMQ, Microservicios, Kong API Gateway y Frontend Angular).
 
-Deberás ver activos los 15 servicios principales, incluyendo `frontend_angular_app`, `api_gateway_seguro`, `usuarios_api`, `tickets_api`, `vehiculos_app`, `zonas_app`, `asignaciones_app`, `audit_app`, `rabbitmq-audit` y las 6 bases de datos PostgreSQL.
+---
 
-### 🌐 Puertos y URLs de Acceso
+### 🌐 URLs de Acceso en Modo Docker Compose
 
-Una vez levantado el entorno, accede a través de tu navegador:
-
-| Servicio | URL de Acceso | Descripción |
+| Componente | Dirección / URL | Descripción |
 | :--- | :--- | :--- |
-| 📱 **Frontend Angular** | **[http://localhost:4200](http://localhost:4200)** | Interfaz gráfica moderna (Clean Architecture) |
-| 🌐 **Kong API Gateway** | **[http://localhost:9000](http://localhost:9000)** | Punto de entrada seguro para las APIs |
-| 🖥️ **Dashboard Clásico** | **[http://localhost:8070](http://localhost:8070)** | Interfaz de respaldo minimalista |
-| 🐇 **RabbitMQ Admin** | **[http://localhost:15672](http://localhost:15672)** | Panel de gestión de eventos (User: `guest` / Pass: `guest`) |
+| 📱 **Frontend Angular** | **[http://localhost:4200](http://localhost:4200)** | Interfaz Web Principal |
+| 🌐 **Kong API Gateway** | **[http://localhost:9000](http://localhost:9000)** | Punto de entrada a las APIs REST |
+| 🐇 **RabbitMQ Admin** | **[http://localhost:15672](http://localhost:15672)** | Panel de Control de Eventos (`guest` / `guest`) |
 
 ---
 
-## 🛠️ Método 2: Modo Desarrollo (Backend en Docker + Frontend Angular Local)
+### ⚙️ Comandos Útiles de Mantenimiento Docker
 
-Si eres desarrollador y deseas modificar el código del Frontend Angular recibiendo **Hot Reload** (recarga en vivo automática al guardar cambios):
-
-### 1️⃣ Iniciar solo el Backend en Docker
-
-```bash
-cd Proyecto
-docker compose up -d
-```
-
-### 2️⃣ Detener el contenedor Docker del Frontend (para evitar conflicto en el puerto 4200)
-
-```bash
-docker compose stop frontend-angular
-```
-
-### 3️⃣ Iniciar el servidor de desarrollo local del Frontend
-
-```bash
-cd frontend-angular
-
-# Instalar dependencias
-npm install
-
-# Iniciar servidor local
-npm start
-```
-
-Navega a **[http://localhost:4200](http://localhost:4200)**. Cada cambio que guardes en los archivos `.ts`, `.html` o `.css` se reflejará al instante.
-
----
-
-## 🔐 Credenciales de Acceso Sembradas
-
-El sistema cuenta con datos iniciales listos para probar:
-
-| Rol | Usuario / Correo | Contraseña | Privilegios |
-| :--- | :--- | :--- | :--- |
-| **Root (Superusuario)** | `root`<br>`root@parqueadero.com` | `rootpassword123` | Privilegios totales (Administración RBAC) |
-| **Administrador** | `janarvaez`<br>`admin.jordan@parqueadero.com` | `adminpassword123` | Gestión de plazas, zonas y roles |
-| **Cliente 1** | `jcperez`<br>`cliente.juan@parqueadero.com` | `clientepassword123` | Consulta de espacios de parqueadero |
-| **Cliente 2** | `melopez`<br>`cliente.maria@parqueadero.com` | `clientepassword123` | Consulta de espacios de parqueadero |
-
----
-
-## 🖥️ Notas Específicas por Sistema Operativo
-
-### 🐧 En Linux (Ubuntu / Debian / Fedora)
-Si encuentras errores de permisos al ejecutar Docker sin `sudo`, añade tu usuario al grupo `docker`:
-```bash
-sudo usermod -aG docker $USER
-# Reinicia tu sesión para aplicar el cambio
-```
-
-### 🪟 En Windows (10 / 11)
-* Se recomienda utilizar **Docker Desktop con WSL 2 Backend** (Windows Subsystem for Linux).
-* Puedes ejecutar los comandos desde **PowerShell**, **Command Prompt (CMD)** o la terminal de **Git Bash**.
-
-### 🍎 En macOS (Intel / Apple Silicon M1/M2/M3)
-* Asegúrate de tener **Docker Desktop para Mac** abierto e iniciado antes de ejecutar los comandos en la Terminal.
-* Las imágenes multi-etapa se compilan automáticamente para arquitectura ARM64/x86_64 sin configuración adicional.
-
----
-
-## ⚙️ Comandos Útiles de Mantenimiento
-
-* **Ver logs de un microservicio específico**:
+* **Ver logs de un servicio específico**:
   ```bash
-  docker compose logs -f usuarios-api
+  docker compose logs -f api-gateway
   ```
 * **Detener todos los servicios**:
   ```bash
@@ -154,31 +208,17 @@ sudo usermod -aG docker $USER
   ```bash
   docker compose down -v
   ```
-* **Reconstruir un contenedor específico después de cambios**:
-  ```bash
-  docker compose up -d --build frontend-angular
-  ```
 
 ---
+---
 
-## 🧹 Eliminación y Limpieza Total (Destruir Todo)
+## 🔐 Credenciales de Prueba (Para Ambos Métodos)
 
-Si deseas matar, eliminar y limpiar todos los contenedores, volúmenes de base de datos e imágenes:
+El JWT incluye el rol del usuario en su payload (`role`). El Frontend Angular y el API Gateway adaptan la interfaz dinámicamente:
 
-### 1️⃣ Limpieza completa del proyecto actual:
-```bash
-docker compose down --volumes --rmi all --remove-orphans
-```
-
-### 2️⃣ Limpieza "Nuclear" (Borrar ABSOLUTAMENTE TODO en el sistema Docker):
-```bash
-# 1. Matar e interrumpir todos los contenedores activos
-docker stop $(docker ps -aq) 2>/dev/null
-
-# 2. Borrar todos los contenedores
-docker rm -f $(docker ps -aq) 2>/dev/null
-
-# 3. Eliminar todo el sistema (imágenes, volúmenes, redes no usadas y caché)
-docker system prune -a --volumes -f
-```
-
+| Rol RBAC | Usuario | Contraseña | Privilegios |
+| :--- | :--- | :--- | :--- |
+| **ROOT** | `root` | `rootpassword123` | Administración total del sistema y superusuario |
+| **ADMIN** | `janarvaez` | `adminpassword123` | Gestión de zonas, espacios de parqueo y roles |
+| **CAJERO** | `cajero1` | `cajeropassword123` | Emisión y cobro de tickets de estacionamiento |
+| **USUARIO** | `jcperez` | `clientepassword123` | Consulta de plazas libres y pago de tickets propios |
