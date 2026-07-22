@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: parking-service-config
+  namespace: floresguamanmoralesnarvaez
+data:
+  PORT: "8080"
+  DB_URL: "jdbc:postgresql://parking-db:5432/zonas_db"
+  DB_USERNAME: "zonas_user"
+  RABBITMQ_HOST: "rabbitmq"

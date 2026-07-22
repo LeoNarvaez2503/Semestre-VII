@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: databases-config
+  namespace: floresguamanmoralesnarvaez
+data:
+  AUTH_DB_NAME: "usuarios"
+  AUTH_DB_USER: "postgres"
+  PARKING_DB_NAME: "zonas_db"
+  PARKING_DB_USER: "zonas_user"
+  TICKET_DB_NAME: "tickets"
+  TICKET_DB_USER: "postgres"
+  BILLING_DB_NAME: "billing_db"
+  BILLING_DB_USER: "billing_user"
+  NOTIFICATION_DB_NAME: "notification_db"
+  NOTIFICATION_DB_USER: "notification_user"

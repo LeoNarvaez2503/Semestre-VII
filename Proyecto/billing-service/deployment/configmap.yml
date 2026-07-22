@@ -2,9 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: billing-service-config
-  namespace: FloresGuamanMoralesNarvaez
+  namespace: floresguamanmoralesnarvaez
 data:
   PORT: "3002"
   DATABASE_URL: "postgresql://billing_user:billing_pass@billing-db:5432/billing_db"
   RABBITMQ_HOST: "rabbitmq"
-  RABBITMQ_PORT: "5672"

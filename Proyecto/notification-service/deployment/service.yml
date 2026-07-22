@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: notification-service
-  namespace: FloresGuamanMoralesNarvaez
+  namespace: floresguamanmoralesnarvaez
 spec:
   selector:
     app: notification-service

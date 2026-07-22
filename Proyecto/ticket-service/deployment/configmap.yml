@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: ticket-service-config
-  namespace: FloresGuamanMoralesNarvaez
+  namespace: floresguamanmoralesnarvaez
 data:
   PORT: "8001"
   DATABASE_URL: "postgresql://postgres:admin@ticket-db:5432/tickets"
@@ -10,4 +10,3 @@ data:
   VEHICULOS_API_URL: "http://auth-service:8000"
   ZONAS_API_URL: "http://parking-service:8080"
   RABBITMQ_HOST: "rabbitmq"
-  RABBITMQ_PORT: "5672"

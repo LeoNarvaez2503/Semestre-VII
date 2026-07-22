@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-config
+  namespace: floresguamanmoralesnarvaez
+data:
+  PORT: "8000"
+  DATABASE_URL: "postgresql://postgres:admin@auth-db:5432/usuarios"
+  RABBITMQ_HOST: "rabbitmq"

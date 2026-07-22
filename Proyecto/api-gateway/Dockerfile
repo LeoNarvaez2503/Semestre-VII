@@ -1,4 +1,4 @@
-FROM kong:latest
+FROM kong:3.4
 
 # Copiar la configuración declarativa
 COPY kong.yml /etc/kong/kong.yml

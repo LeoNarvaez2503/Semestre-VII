@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+  namespace: floresguamanmoralesnarvaez
+data:
+  RABBITMQ_USER: "guest"
+  RABBITMQ_EXCHANGE: "audit_exchange"
+  RABBITMQ_QUEUE: "audit_queue"
+  RABBITMQ_ROUTING_KEY: "audit.#"

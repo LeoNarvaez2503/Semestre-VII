@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: zonas-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-zonas_db}
+      POSTGRES_USER: ${POSTGRES_USER:-zonas_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zonas_pass}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - zonas_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-zonas_user} -d ${POSTGRES_DB:-zonas_db}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  zonas-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zonas-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-zonas_db}
+      DB_USERNAME: ${POSTGRES_USER:-zonas_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-zonas_pass}
+      PORT: ${APP_PORT:-8080}
+      ZONA_NAME: ${ZONA_NAME:-Zona Principal}
+      ZONA_CODE: ${ZONA_CODE:-Z001}
+      ZONA_DESCRIPTION: ${ZONA_DESCRIPTION:-Zona creada desde docker-compose}
+      ZONA_TYPE: ${ZONA_TYPE:-REGULAR}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+
+volumes:
+  zonas_postgres_data:

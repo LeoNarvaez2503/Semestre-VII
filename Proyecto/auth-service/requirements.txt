@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlalchemy
+pg8000
+pydantic
+pydantic-settings
+email_validator
+python-dotenv
+passlib
+bcrypt==3.2.2
+python-stdnum==2.2
+pyjwt
+pika

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: notification-service
-  namespace: FloresGuamanMoralesNarvaez
+  namespace: floresguamanmoralesnarvaez
 spec:
   replicas: 1
   selector:

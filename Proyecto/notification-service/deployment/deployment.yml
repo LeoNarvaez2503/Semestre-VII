@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: notification-service
-  namespace: FloresGuamanMoralesNarvaez
+  namespace: floresguamanmoralesnarvaez
 spec:
   replicas: 1
   selector:
@@ -27,17 +27,19 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 3003
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
           livenessProbe:
             tcpSocket:
               port: 3003
-            initialDelaySeconds: 20
-            periodSeconds: 10
+            initialDelaySeconds: 25
+            periodSeconds: 30
+            timeoutSeconds: 5
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: "64Mi"
+              cpu: "20m"
             limits:
               memory: "256Mi"
-              cpu: "250m"
+              cpu: "150m"

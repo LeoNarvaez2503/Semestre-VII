@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ticket-service
-  namespace: FloresGuamanMoralesNarvaez
+  namespace: floresguamanmoralesnarvaez
 spec:
   replicas: 1
   selector:
@@ -28,18 +28,20 @@ spec:
             httpGet:
               path: /tickets/
               port: 8001
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
           livenessProbe:
             httpGet:
               path: /tickets/
               port: 8001
-            initialDelaySeconds: 15
-            periodSeconds: 10
+            initialDelaySeconds: 25
+            periodSeconds: 30
+            timeoutSeconds: 5
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: "64Mi"
+              cpu: "20m"
             limits:
               memory: "256Mi"
-              cpu: "250m"
+              cpu: "150m"
