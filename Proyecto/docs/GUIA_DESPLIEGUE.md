@@ -55,15 +55,15 @@ Este paso permite compilar las imágenes directamente en la memoria interna de M
 Ejecuta los siguientes comandos desde la raíz del proyecto (`Proyecto/`):
 
 ```bash
-docker build -t auth-service:latest ./auth-service
-docker build -t parking-service:latest ./parking-service
-docker build -t ticket-service:latest ./ticket-service
-docker build -t billing-service:latest ./billing-service
-docker build -t notification-service:latest ./notification-service
-docker build -t vehiculos-service:latest ./vehiculos
-docker build -t asignacion-service:latest ./asignacion-trazabilidad
-docker build -t api-gateway:latest ./api-gateway
-docker build -t frontend-angular:latest ./frontend-angular
+docker build -t auth-service:latest ./backend/auth-service
+docker build -t parking-service:latest ./backend/parking-service
+docker build -t ticket-service:latest ./backend/ticket-service
+docker build -t billing-service:latest ./backend/billing-service
+docker build -t notification-service:latest ./backend/notification-service
+docker build -t vehiculos-service:latest ./backend/vehiculos
+docker build -t asignacion-service:latest ./backend/asignacion-trazabilidad
+docker build -t api-gateway:latest ./gateway
+docker build -t frontend-angular:latest ./frontend
 ```
 
 ---

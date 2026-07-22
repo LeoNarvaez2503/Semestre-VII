@@ -4,15 +4,15 @@ kind: Kustomization
 namespace: floresguamanmoralesnarvaez
 
 resources:
-  - 00-namespace.yml
-  - databases/deployment
-  - rabbitmq/deployment
-  - auth-service/deployment
-  - parking-service/deployment
-  - ticket-service/deployment
-  - billing-service/deployment
-  - notification-service/deployment
-  - vehiculos/deployment
-  - asignacion-trazabilidad/deployment
-  - api-gateway/deployment
-  - frontend-angular/deployment
+  - infrastructure/00-namespace.yml
+  - infrastructure/databases/deployment
+  - infrastructure/rabbitmq/deployment
+  - backend/auth-service/deployment
+  - backend/parking-service/deployment
+  - backend/ticket-service/deployment
+  - backend/billing-service/deployment
+  - backend/notification-service/deployment
+  - backend/vehiculos/deployment
+  - backend/asignacion-trazabilidad/deployment
+  - gateway/deployment
+  - frontend/deployment

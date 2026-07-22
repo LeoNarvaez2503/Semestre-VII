@@ -20,7 +20,7 @@ services:
 
   usuarios-api:
     build:
-      context: ./auth-service
+      context: ./backend/auth-service
       dockerfile: Dockerfile
     container_name: usuarios_api
     restart: always
@@ -59,7 +59,7 @@ services:
 
   vehiculos-app:
     build:
-      context: ./vehiculos
+      context: ./backend/vehiculos
       dockerfile: Dockerfile
     container_name: vehiculos_app
     restart: always
@@ -102,7 +102,7 @@ services:
 
   zonas-app:
     build:
-      context: ./parking-service
+      context: ./backend/parking-service
       dockerfile: Dockerfile
     container_name: zonas_app
     restart: always
@@ -147,7 +147,7 @@ services:
 
   asignacion-app:
     build:
-      context: ./asignacion-trazabilidad
+      context: ./backend/asignacion-trazabilidad
       dockerfile: Dockerfile
     container_name: asignaciones_app
     restart: always
@@ -180,7 +180,7 @@ services:
   # --- API GATEWAY SEGURO ---
   api-gateway:
     build:
-      context: ./api-gateway
+      context: ./gateway
       dockerfile: Dockerfile
     container_name: api_gateway_seguro
     restart: always
@@ -219,7 +219,7 @@ services:
 
   tickets-api:
     build:
-      context: ./ticket-service
+      context: ./backend/ticket-service
       dockerfile: Dockerfile
     container_name: tickets_api
     restart: always
@@ -282,7 +282,7 @@ services:
 
   audit-app:
     build:
-      context: ./notification-service
+      context: ./backend/notification-service
       dockerfile: Dockerfile
     container_name: audit_app
     restart: always
@@ -313,7 +313,7 @@ services:
   # --- FRONTEND ANGULAR (CLEAN ARCHITECTURE) ---
   frontend-angular:
     build:
-      context: ./frontend-angular
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend_angular_app
     restart: always
