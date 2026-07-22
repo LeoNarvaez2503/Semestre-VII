@@ -26,14 +26,14 @@ spec:
                 name: ticket-service-secrets
           readinessProbe:
             httpGet:
-              path: /tickets/
+              path: /
               port: 8001
             initialDelaySeconds: 30
             periodSeconds: 20
             timeoutSeconds: 5
           livenessProbe:
             httpGet:
-              path: /tickets/
+              path: /
               port: 8001
             initialDelaySeconds: 60
             periodSeconds: 30

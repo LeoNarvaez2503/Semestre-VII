@@ -5,5 +5,8 @@ metadata:
   namespace: floresguamanmoralesnarvaez
 data:
   PORT: "3002"
-  DATABASE_URL: "postgresql://billing_user:billing_pass@billing-db:5432/billing_db"
+  DB_HOST: "billing-db"
+  DB_PORT: "5432"
+  DB_USUARIO: "billing_user"
+  DB_NOMBRE: "billing_db"
   RABBITMQ_HOST: "rabbitmq"
