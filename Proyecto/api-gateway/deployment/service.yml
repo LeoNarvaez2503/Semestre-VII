@@ -4,14 +4,13 @@ metadata:
   name: api-gateway
   namespace: floresguamanmoralesnarvaez
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: api-gateway
   ports:
     - name: proxy
       port: 9000
       targetPort: 8000
-      nodePort: 30900
     - name: admin
       port: 8001
       targetPort: 8001

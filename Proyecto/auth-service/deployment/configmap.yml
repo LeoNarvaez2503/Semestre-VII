@@ -7,3 +7,5 @@ data:
   PORT: "8000"
   DATABASE_URL: "postgresql://postgres:admin@auth-db:5432/usuarios"
   RABBITMQ_HOST: "rabbitmq"
+  ASIGNACIONES_API_URL: "http://asignacion-service:3001"
+

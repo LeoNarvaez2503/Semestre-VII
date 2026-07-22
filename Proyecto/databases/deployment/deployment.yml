@@ -50,11 +50,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "32Mi"
-              cpu: "10m"
+              memory: "64Mi"
+              cpu: "25m"
             limits:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: "256Mi"
+              cpu: "200m"
           volumeMounts:
             - name: auth-db-data
               mountPath: /var/lib/postgresql/data
@@ -115,11 +115,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "32Mi"
-              cpu: "10m"
+              memory: "64Mi"
+              cpu: "25m"
             limits:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: "256Mi"
+              cpu: "200m"
           volumeMounts:
             - name: parking-db-data
               mountPath: /var/lib/postgresql/data
@@ -180,11 +180,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "32Mi"
-              cpu: "10m"
+              memory: "64Mi"
+              cpu: "25m"
             limits:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: "256Mi"
+              cpu: "200m"
           volumeMounts:
             - name: ticket-db-data
               mountPath: /var/lib/postgresql/data
@@ -245,11 +245,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "32Mi"
-              cpu: "10m"
+              memory: "64Mi"
+              cpu: "25m"
             limits:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: "256Mi"
+              cpu: "200m"
           volumeMounts:
             - name: billing-db-data
               mountPath: /var/lib/postgresql/data
@@ -310,11 +310,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "32Mi"
-              cpu: "10m"
+              memory: "64Mi"
+              cpu: "25m"
             limits:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: "256Mi"
+              cpu: "200m"
           volumeMounts:
             - name: notification-db-data
               mountPath: /var/lib/postgresql/data
@@ -322,3 +322,134 @@ spec:
         - name: notification-db-data
           persistentVolumeClaim:
             claimName: notification-db-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vehiculos-db
+  namespace: floresguamanmoralesnarvaez
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: vehiculos-db
+  template:
+    metadata:
+      labels:
+        app: vehiculos-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: databases-config
+                  key: VEHICULOS_DB_NAME
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: databases-config
+                  key: VEHICULOS_DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secrets
+                  key: VEHICULOS_DB_PASS
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U admin -d vehiculos_db"]
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U admin -d vehiculos_db"]
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          volumeMounts:
+            - name: vehiculos-db-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: vehiculos-db-data
+          persistentVolumeClaim:
+            claimName: vehiculos-db-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: asignaciones-db
+  namespace: floresguamanmoralesnarvaez
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: asignaciones-db
+  template:
+    metadata:
+      labels:
+        app: asignaciones-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: databases-config
+                  key: ASIGNACIONES_DB_NAME
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: databases-config
+                  key: ASIGNACIONES_DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secrets
+                  key: ASIGNACIONES_DB_PASS
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U admin -d asignaciones_db"]
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U admin -d asignaciones_db"]
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          volumeMounts:
+            - name: asignaciones-db-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: asignaciones-db-data
+          persistentVolumeClaim:
+            claimName: asignaciones-db-pvc
+

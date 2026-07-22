@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vehiculos-service-config
+  namespace: floresguamanmoralesnarvaez
+data:
+  PORT: "3000"
+  DB_HOST: "vehiculos-db"
+  DB_PORT: "5432"
+  DB_USUARIO: "admin"
+  DB_NOMBRE: "vehiculos_db"
+  RABBITMQ_HOST: "rabbitmq"
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USER: "guest"
+  RABBITMQ_EXCHANGE: "audit_exchange"
+  RABBITMQ_QUEUE: "audit_queue"
+  RABBITMQ_ROUTING_KEY: "audit.#"

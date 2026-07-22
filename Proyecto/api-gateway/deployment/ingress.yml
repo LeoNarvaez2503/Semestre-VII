@@ -1,0 +1,50 @@
+# ============================================================================
+# INGRESS - Punto de Entrada Externo al Clúster
+# ============================================================================
+# Flujo de red:
+#   Navegador → http://parqueo-espe.local
+#     → NGINX Ingress Controller (minikube addon)
+#       → Service: api-gateway (Kong) puerto 9000
+#         → Kong Pod (puerto 8000) → ruteo interno hacia microservicios
+# ============================================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: urbanflow-ingress
+  namespace: floresguamanmoralesnarvaez
+  annotations:
+    # --- Clase de Ingress Controller ---
+    kubernetes.io/ingress.class: nginx
+
+    # --- Anotaciones SSE (Server-Sent Events) ---
+    # Desactiva el buffering de respuestas para que los eventos SSE
+    # lleguen al navegador en tiempo real sin ser retenidos por NGINX
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+
+    # Tiempo máximo de lectura: 1 hora (3600s) para mantener las
+    # conexiones SSE abiertas sin que NGINX las cierre por timeout
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+
+    # Tiempo máximo de conexión: 1 hora para establecimiento de
+    # conexión con el backend Kong
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+
+    # Tiempo máximo de envío: 1 hora para evitar cortes en
+    # transferencias prolongadas de datos
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: parqueo-espe.local
+      http:
+        paths:
+          # Ruta catch-all: TODO el tráfico hacia Kong API Gateway
+          # Kong internamente ya tiene configuradas las rutas a cada
+          # microservicio (/usuario/*, /ticket/*, /espacio/*, etc.)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 9000

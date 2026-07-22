@@ -47,21 +47,50 @@ Este comando creará automáticamente el namespace `FloresGuamanMoralesNarvaez` 
 5. API Gateway Kong como punto de entrada único
 6. Frontend Angular SPA
 
-### Paso 4: Iniciar el túnel de Minikube para exponer los servicios
+### Paso 4: Configurar Ingress y Dominio Local
+
+#### Paso 4a: Habilitar el Ingress Controller de NGINX en Minikube
+```bash
+minikube addons enable ingress
+```
+> **Nota:** Espera ~1 minuto hasta que los pods del Ingress Controller estén en estado `Running`. Verifica con:
+> ```bash
+> kubectl get pods -n ingress-nginx
+> ```
+
+#### Paso 4b: Agregar el dominio local al archivo de hosts
+```bash
+echo "$(minikube ip) parqueo-espe.local" | sudo tee -a /etc/hosts
+```
+> **Nota:** Este comando obtiene automáticamente la IP de minikube (generalmente `192.168.49.2`) y la asocia al dominio `parqueo-espe.local`. Requiere permisos de superusuario (`sudo`). Si ya existe la entrada, no es necesario ejecutarlo de nuevo.
+
+#### Paso 4c: Iniciar el túnel de Minikube para exponer el Ingress Controller
 ```bash
 minikube tunnel
+```
+> **Nota:** Este comando debe mantenerse ejecutándose en una terminal separada. El túnel asigna una IP al Ingress Controller para que sea accesible desde `127.0.0.1`.
+
+#### Paso 4d: Acceder al sistema desde el navegador
+Abrir en el navegador:
+```
+http://parqueo-espe.local
 ```
 
 ---
 
 ## 🌐 3. Acceso al Sistema
 
-Toda la comunicación externa ingresa a través del API Gateway de Kong.
+Toda la comunicación externa ingresa a través del recurso **Ingress** de Kubernetes, que enruta al **API Gateway Kong** como único punto de entrada.
+
+**Flujo de red:**
+```
+Navegador → http://parqueo-espe.local → NGINX Ingress Controller → Kong API Gateway (ClusterIP) → Microservicios internos
+```
 
 | Componente | Dirección / URL | Descripción |
 | :--- | :--- | :--- |
-| 📱 **Frontend SPA Angular** | `http://localhost:9000/` | Interfaz Web Adaptativa por Roles (Clean Architecture) |
-| 🌐 **Kong API Gateway** | `http://localhost:9000` | Único Punto de Entrada para APIs y Frontend |
+| 📱 **Frontend SPA Angular** | `http://parqueo-espe.local/` | Interfaz Web Adaptativa por Roles (Clean Architecture) |
+| 🌐 **Kong API Gateway** | `http://parqueo-espe.local` | Único Punto de Entrada para APIs y Frontend (vía Ingress) |
 | 🐇 **RabbitMQ Management** | `http://localhost:15672` | Panel de Control de Eventos (User: `guest` / Pass: `guest`) |
 
 ---
@@ -83,11 +112,16 @@ El JWT incluye el rol del usuario en su payload (`role`). El Frontend Angular y 
 
 El sistema utiliza **Server-Sent Events (SSE)** en lugar de polling HTTP para la actualización de plazas y tickets en el mapa del parqueadero.
 
+El recurso Ingress incluye las siguientes anotaciones para garantizar el correcto funcionamiento de SSE:
+* `nginx.ingress.kubernetes.io/proxy-buffering: "off"` — Desactiva el buffering de respuestas
+* `nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"` — Timeout de lectura de 1 hora
+* `nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"` — Timeout de conexión de 1 hora
+
 Para verificar que la conexión SSE está emitiendo eventos sin polling:
 
 ```bash
-# Probar el stream de eventos SSE a través de Kong API Gateway:
-curl -N http://localhost:9000/tickets/stream
+# Probar el stream de eventos SSE a través del dominio Ingress:
+curl -N http://parqueo-espe.local/tickets/stream
 ```
 
 Respuesta esperada en consola (stream continuo mantenido por el servidor):
@@ -107,8 +141,11 @@ El Frontend Angular escucha directamente este endpoint a través de `SpaceSseSer
 
 ## 🛡️ 6. Arquitectura y Restricciones Cumplidas
 
+* **Ingress con Dominio Local:** El sistema es accesible desde `http://parqueo-espe.local` mediante un recurso Ingress de Kubernetes con NGINX Ingress Controller.
 * **Namespace Unificado:** Todos los recursos se despliegan bajo el namespace `FloresGuamanMoralesNarvaez`.
-* **Aislamiento de Red:** Los microservicios backend no están expuestos al exterior; todo el tráfico transita obligatoriamente por Kong.
+* **Aislamiento de Red:** Los microservicios backend no están expuestos al exterior; todo el tráfico transita obligatoriamente por el Ingress → Kong. Ningún microservicio está expuesto directamente en el Ingress.
+* **SSE sin Buffering:** El Ingress cuenta con anotaciones específicas para deshabilitar el buffering y mantener conexiones SSE abiertas hasta 1 hora.
 * **Resiliencia & Health Checks:** Todos los Deployments cuentan con `livenessProbe` y `readinessProbe` configurados.
 * **Persistencia:** Las bases de datos y RabbitMQ utilizan `PersistentVolumeClaim` (PVC) para garantizar la integridad de los datos.
 * **Seguridad & Sanitización:** Los inputs (PLACA, montos, UUIDs, credenciales) son validados y sanitizados (XSS, SQLi). Se suprimen los stack traces en las respuestas de error.
+

@@ -57,3 +57,27 @@ spec:
   ports:
     - port: 5432
       targetPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vehiculos-db
+  namespace: floresguamanmoralesnarvaez
+spec:
+  selector:
+    app: vehiculos-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: asignaciones-db
+  namespace: floresguamanmoralesnarvaez
+spec:
+  selector:
+    app: asignaciones-db
+  ports:
+    - port: 5432
+      targetPort: 5432

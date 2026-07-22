@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: asignacion-service-config
+  namespace: floresguamanmoralesnarvaez
+data:
+  PORT: "3001"
+  DB_HOST: "asignaciones-db"
+  DB_PORT: "5432"
+  DB_USUARIO: "admin"
+  DB_NOMBRE: "asignaciones_db"
+  USUARIOS_API_URL: "http://auth-service:8000"
+  VEHICULOS_API_URL: "http://vehiculos-service:3000"
+  RABBITMQ_HOST: "rabbitmq"
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USER: "guest"
+  RABBITMQ_EXCHANGE: "audit_exchange"
+  RABBITMQ_QUEUE: "audit_queue"
+  RABBITMQ_ROUTING_KEY: "audit.#"

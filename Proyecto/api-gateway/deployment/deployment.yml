@@ -98,22 +98,260 @@ data:
       - name: auth-service
         url: http://auth-service:8000
         routes:
-          - name: auth-routes
+          - name: usuario-login
             paths:
-              - /usuario
+              - /usuario/login
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/login
+          - name: usuario-refresh
+            paths:
+              - /usuario/refresh
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/refresh
+          - name: usuario-me
+            paths:
+              - /usuario/me
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/me
+          - name: usuario-me-actualizar
+            paths:
+              - /usuario/me/actualizar
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/me/actualizar
+          - name: usuario-me-vehiculos
+            paths:
+              - /usuario/me/vehiculos
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/me/vehiculos
+          - name: usuario-crear
+            paths:
+              - /usuario/crear
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/crear
+          - name: usuario-listar
+            paths:
+              - /usuario/listar
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/listar
+          - name: usuario-buscar
+            paths:
+              - /usuario/buscar
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/buscar
+          - name: usuario-obtener
+            paths:
+              - ~/usuario/obtener/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/obtener/$(uri_captures[1])
+          - name: usuario-actualizar
+            paths:
+              - ~/usuario/actualizar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/actualizar/$(uri_captures[1])
+          - name: usuario-roles
+            paths:
+              - ~/usuario/roles/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/roles/$(uri_captures[1])
+          - name: usuario-eliminar
+            paths:
+              - ~/usuario/eliminar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /usuarios/eliminar/$(uri_captures[1])
+          - name: rol-crear
+            paths:
+              - /rol/crear
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /roles/crear
+          - name: rol-listar
+            paths:
+              - /rol/listar
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /roles/listar
+          - name: rol-obtener
+            paths:
+              - ~/rol/obtener/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /roles/obtener/$(uri_captures[1])
+          - name: rol-actualizar
+            paths:
+              - ~/rol/actualizar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /roles/actualizar/$(uri_captures[1])
+          - name: rol-eliminar
+            paths:
+              - ~/rol/eliminar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /roles/eliminar/$(uri_captures[1])
       - name: parking-service
         url: http://parking-service:8080
         routes:
-          - name: parking-routes
+          - name: zona-crear
             paths:
-              - /api/v1/espacios
-              - /api/v1/zonas
+              - /zona/crear
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/zonas/crear
+          - name: zona-listar
+            paths:
+              - /zona/listar
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/zonas/listar
+          - name: zona-actualizar
+            paths:
+              - ~/zona/actualizar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/zonas/actualizar/$(uri_captures[1])
+          - name: zona-eliminar
+            paths:
+              - ~/zona/eliminar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/zonas/eliminar/$(uri_captures[1])
+          - name: espacio-crear
+            paths:
+              - /espacio/crear
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/espacios/crear
+          - name: espacio-listar
+            paths:
+              - /espacio/listar
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/espacios/listar
+          - name: espacio-obtener
+            paths:
+              - ~/espacio/obtener/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/espacios/obtener/$(uri_captures[1])
+          - name: espacio-estado-cambiar
+            paths:
+              - ~/espacio/estado/([^/]+)/estado/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/espacios/actualizar/$(uri_captures[1])/estado/$(uri_captures[2])
+          - name: espacio-estado-listar
+            paths:
+              - ~/espacio/estado/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/espacios/estado/$(uri_captures[1])
+          - name: espacio-eliminar
+            paths:
+              - ~/espacio/eliminar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /api/v1/espacios/eliminar/$(uri_captures[1])
       - name: ticket-service
         url: http://ticket-service:8001
         routes:
-          - name: ticket-routes
+          - name: ticket-crear
             paths:
-              - /tickets
+              - /ticket/crear
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /tickets/crear
+          - name: ticket-listar-todos
+            paths:
+              - /ticket/listar-todos
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /tickets/listar-todos
+          - name: ticket-buscar
+            paths:
+              - /ticket/buscar
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /tickets/buscar
+          - name: ticket-pagar
+            paths:
+              - ~/ticket/pagar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /tickets/$(uri_captures[1])/pagar
       - name: billing-service
         url: http://billing-service:3002
         routes:
@@ -126,9 +364,116 @@ data:
           - name: notification-routes
             paths:
               - /notifications
+      - name: vehiculos-service
+        url: http://vehiculos-service:3000
+        routes:
+          - name: vehiculo-crear
+            paths:
+              - /vehiculo/crear
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /vehiculos/crear
+          - name: vehiculo-listar
+            paths:
+              - /vehiculo/listar
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /vehiculos/listar
+          - name: vehiculo-obtener
+            paths:
+              - ~/vehiculo/obtener/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /vehiculos/obtener/$(uri_captures[1])
+          - name: vehiculo-actualizar
+            paths:
+              - ~/vehiculo/actualizar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /vehiculos/actualizar/$(uri_captures[1])
+          - name: vehiculo-eliminar
+            paths:
+              - ~/vehiculo/eliminar/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /vehiculos/eliminar/$(uri_captures[1])
+      - name: asignaciones-service
+        url: http://asignacion-service:3001
+        routes:
+          - name: asignacion-crear
+            paths:
+              - /asignacion/crear
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /asignaciones
+          - name: asignacion-actualizar
+            paths:
+              - ~/asignacion/actualizar/([^/]+)/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /asignaciones/$(uri_captures[1])/$(uri_captures[2])
+          - name: asignacion-eliminar
+            paths:
+              - ~/asignacion/eliminar/([^/]+)/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /asignaciones/$(uri_captures[1])/$(uri_captures[2])
+          - name: asignacion-propietario
+            paths:
+              - ~/asignacion/propietario/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /asignaciones/propietario/$(uri_captures[1])
+          - name: asignacion-trazabilidad-general
+            paths:
+              - /asignacion/trazabilidad
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /asignaciones/trazabilidad
+          - name: asignacion-trazabilidad-vehiculo
+            paths:
+              - ~/asignacion/trazabilidad/vehiculo/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /asignaciones/trazabilidad/vehiculo/$(uri_captures[1])
+          - name: asignacion-trazabilidad-propietario
+            paths:
+              - ~/asignacion/trazabilidad/propietario/([^/]+)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /asignaciones/trazabilidad/propietario/$(uri_captures[1])
+          - name: sse-espacios
+            paths:
+              - /sse/espacios
       - name: frontend-service
         url: http://frontend-angular:80
         routes:
           - name: frontend-routes
             paths:
               - /
+
+

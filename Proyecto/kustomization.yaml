@@ -12,5 +12,7 @@ resources:
   - ticket-service/deployment
   - billing-service/deployment
   - notification-service/deployment
+  - vehiculos/deployment
+  - asignacion-trazabilidad/deployment
   - api-gateway/deployment
   - frontend-angular/deployment

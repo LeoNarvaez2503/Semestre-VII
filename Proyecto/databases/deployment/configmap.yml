@@ -14,3 +14,7 @@ data:
   BILLING_DB_USER: "billing_user"
   NOTIFICATION_DB_NAME: "notification_db"
   NOTIFICATION_DB_USER: "notification_user"
+  VEHICULOS_DB_NAME: "vehiculos_db"
+  VEHICULOS_DB_USER: "admin"
+  ASIGNACIONES_DB_NAME: "asignaciones_db"
+  ASIGNACIONES_DB_USER: "admin"

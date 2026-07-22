@@ -57,3 +57,28 @@ spec:
   resources:
     requests:
       storage: 512Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vehiculos-db-pvc
+  namespace: floresguamanmoralesnarvaez
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 512Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: asignaciones-db-pvc
+  namespace: floresguamanmoralesnarvaez
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 512Mi
+
