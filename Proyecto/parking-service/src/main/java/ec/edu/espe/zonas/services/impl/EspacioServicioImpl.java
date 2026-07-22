@@ -178,7 +178,11 @@ public class EspacioServicioImpl implements EspacioServicio {
             // Validar vehículo con contrato interno
             try {
                 org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
-                String url = "http://vehiculos-app:3000/vehiculos/internal/validar/" + vehiculoId;
+                String vehiculosHost = System.getenv("VEHICULOS_API_URL");
+                if (vehiculosHost == null || vehiculosHost.trim().isEmpty()) {
+                    vehiculosHost = "http://vehiculos-service:3000";
+                }
+                String url = vehiculosHost + "/vehiculos/internal/validar/" + vehiculoId;
                 java.util.Map<String, Object> response = restTemplate.getForObject(url, java.util.Map.class);
                 
                 if (response == null || !Boolean.TRUE.equals(response.get("exists"))) {

@@ -8,3 +8,5 @@ data:
   DB_URL: "jdbc:postgresql://parking-db:5432/zonas_db"
   DB_USERNAME: "zonas_user"
   RABBITMQ_HOST: "rabbitmq"
+  VEHICULOS_API_URL: "http://vehiculos-service:3000"
+
