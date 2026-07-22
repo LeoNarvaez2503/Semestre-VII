@@ -50,11 +50,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "25m"
+              memory: "32Mi"
+              cpu: "10m"
             limits:
-              memory: "256Mi"
-              cpu: "200m"
+              memory: "128Mi"
+              cpu: "100m"
           volumeMounts:
             - name: auth-db-data
               mountPath: /var/lib/postgresql/data
@@ -115,11 +115,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "25m"
+              memory: "32Mi"
+              cpu: "10m"
             limits:
-              memory: "256Mi"
-              cpu: "200m"
+              memory: "128Mi"
+              cpu: "100m"
           volumeMounts:
             - name: parking-db-data
               mountPath: /var/lib/postgresql/data
@@ -180,11 +180,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "25m"
+              memory: "32Mi"
+              cpu: "10m"
             limits:
-              memory: "256Mi"
-              cpu: "200m"
+              memory: "128Mi"
+              cpu: "100m"
           volumeMounts:
             - name: ticket-db-data
               mountPath: /var/lib/postgresql/data
@@ -245,11 +245,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "25m"
+              memory: "32Mi"
+              cpu: "10m"
             limits:
-              memory: "256Mi"
-              cpu: "200m"
+              memory: "128Mi"
+              cpu: "100m"
           volumeMounts:
             - name: billing-db-data
               mountPath: /var/lib/postgresql/data
@@ -310,11 +310,11 @@ spec:
             timeoutSeconds: 5
           resources:
             requests:
-              memory: "64Mi"
-              cpu: "25m"
+              memory: "32Mi"
+              cpu: "10m"
             limits:
-              memory: "256Mi"
-              cpu: "200m"
+              memory: "128Mi"
+              cpu: "100m"
           volumeMounts:
             - name: notification-db-data
               mountPath: /var/lib/postgresql/data
