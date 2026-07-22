@@ -20,7 +20,7 @@ services:
 
   usuarios-api:
     build:
-      context: ./usuarios-fast
+      context: ./auth-service
       dockerfile: Dockerfile
     container_name: usuarios_api
     restart: always
@@ -102,7 +102,7 @@ services:
 
   zonas-app:
     build:
-      context: ./zonas
+      context: ./parking-service
       dockerfile: Dockerfile
     container_name: zonas_app
     restart: always
@@ -219,7 +219,7 @@ services:
 
   tickets-api:
     build:
-      context: ./tickets
+      context: ./ticket-service
       dockerfile: Dockerfile
     container_name: tickets_api
     restart: always
@@ -261,7 +261,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- MICROSERVICIO AUDITORIA ---
+  # --- MICROSERVICIO AUDITORIA Y NOTIFICACIONES ---
   audit-db:
     image: postgres:15-alpine
     container_name: audit_db
@@ -282,7 +282,7 @@ services:
 
   audit-app:
     build:
-      context: ./ms-audit
+      context: ./notification-service
       dockerfile: Dockerfile
     container_name: audit_app
     restart: always
@@ -309,19 +309,6 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-
-  # --- FRONTEND DASHBOARD ---
-  dashboard-app:
-    build:
-      context: ./dashboard
-      dockerfile: Dockerfile
-    container_name: dashboard_app
-    restart: always
-    ports:
-      - "8070:80"
-    depends_on:
-      api-gateway:
-        condition: service_started
 
   # --- FRONTEND ANGULAR (CLEAN ARCHITECTURE) ---
   frontend-angular:
