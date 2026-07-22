@@ -364,6 +364,9 @@ data:
           - name: notification-routes
             paths:
               - /notifications
+          - name: audit-routes
+            paths:
+              - /audit
       - name: vehiculos-service
         url: http://vehiculos-service:3000
         routes:

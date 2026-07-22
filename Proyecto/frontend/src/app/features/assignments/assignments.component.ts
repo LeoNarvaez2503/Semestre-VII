@@ -101,11 +101,21 @@ export class AssignmentsComponent implements OnInit {
   refreshTraceability(): void {
     this.loading = true;
     this.errorMessage = '';
+    this.cdr.markForCheck();
     this.assignmentService.getTraceability().pipe(
-      finalize(() => this.loading = false)
+      finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();
+      })
     ).subscribe({
-      next: traces => this.traces = traces,
-      error: error => this.errorMessage = this.getErrorMessage(error, 'No se pudo actualizar la trazabilidad.')
+      next: traces => {
+        this.traces = traces;
+        this.cdr.markForCheck();
+      },
+      error: error => {
+        this.errorMessage = this.getErrorMessage(error, 'No se pudo actualizar la trazabilidad.');
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -118,15 +128,27 @@ export class AssignmentsComponent implements OnInit {
     const request = this.assignmentForm.getRawValue();
     this.saving = true;
     this.clearMessages();
+    this.cdr.markForCheck();
     this.assignmentService.createAssignment(request).pipe(
-      finalize(() => this.saving = false)
+      finalize(() => {
+        this.saving = false;
+        this.cdr.markForCheck();
+      })
     ).subscribe({
       next: assignment => {
         this.assignmentOverrides.set(this.assignmentKey(assignment.userId, assignment.vehicleId), assignment);
         this.successMessage = 'Asignación creada y activada correctamente.';
         this.refreshTraceabilitySilently();
+        this.cdr.markForCheck();
       },
-      error: error => this.errorMessage = this.getErrorMessage(error, 'No fue posible crear la asignación.')
+      error: error => {
+        if (error.status === 409) {
+          this.errorMessage = 'Ya existe una asignación registrada entre este usuario y vehículo.';
+        } else {
+          this.errorMessage = this.getErrorMessage(error, 'No fue posible crear la asignación.');
+        }
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -136,17 +158,25 @@ export class AssignmentsComponent implements OnInit {
 
     this.processingKey = key;
     this.clearMessages();
+    this.cdr.markForCheck();
     this.assignmentService.updateAssignment(
       assignment.userId,
       assignment.vehicleId,
       { active: !assignment.active }
-    ).pipe(finalize(() => this.processingKey = null)).subscribe({
+    ).pipe(finalize(() => {
+      this.processingKey = null;
+      this.cdr.markForCheck();
+    })).subscribe({
       next: updated => {
         this.assignmentOverrides.set(key, updated);
         this.successMessage = updated.active ? 'Asignación activada.' : 'Asignación desactivada.';
         this.refreshTraceabilitySilently();
+        this.cdr.markForCheck();
       },
-      error: error => this.errorMessage = this.getErrorMessage(error, 'No fue posible actualizar la asignación.')
+      error: error => {
+        this.errorMessage = this.getErrorMessage(error, 'No fue posible actualizar la asignación.');
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -156,15 +186,23 @@ export class AssignmentsComponent implements OnInit {
 
     this.processingKey = key;
     this.clearMessages();
+    this.cdr.markForCheck();
     this.assignmentService.deleteAssignment(assignment.userId, assignment.vehicleId).pipe(
-      finalize(() => this.processingKey = null)
+      finalize(() => {
+        this.processingKey = null;
+        this.cdr.markForCheck();
+      })
     ).subscribe({
       next: () => {
         this.assignmentOverrides.set(key, { ...assignment, active: false });
         this.successMessage = 'Asignación eliminada correctamente.';
         this.refreshTraceabilitySilently();
+        this.cdr.markForCheck();
       },
-      error: error => this.errorMessage = this.getErrorMessage(error, 'No fue posible eliminar la asignación.')
+      error: error => {
+        this.errorMessage = this.getErrorMessage(error, 'No fue posible eliminar la asignación.');
+        this.cdr.markForCheck();
+      }
     });
   }
 

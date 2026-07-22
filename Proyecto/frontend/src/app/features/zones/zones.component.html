@@ -44,8 +44,14 @@
             <label class="block text-gray-700 font-bold mb-1">Nombre</label>
             <input type="text" formControlName="name" maxlength="32" placeholder="Ej. Zona norte"
               class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:ring-2 focus:ring-amber-500 outline-none" />
-            <small *ngIf="zoneForm.controls.name.touched && zoneForm.controls.name.invalid" class="text-red-650 font-bold block mt-1">
+            <small *ngIf="zoneForm.controls.name.touched && zoneForm.controls.name.errors?.['required']" class="text-red-650 font-bold block mt-1">
               Ingresa un nombre de hasta 32 caracteres.
+            </small>
+            <small *ngIf="zoneForm.controls.name.touched && zoneForm.controls.name.errors?.['maxlength']" class="text-red-650 font-bold block mt-1">
+              El nombre no puede exceder los 32 caracteres.
+            </small>
+            <small *ngIf="zoneForm.controls.name.touched && zoneForm.controls.name.errors?.['duplicateName']" class="text-red-650 font-bold block mt-1">
+              Ya existe una zona con este nombre.
             </small>
           </div>
 

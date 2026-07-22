@@ -37,20 +37,20 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 5672
-            initialDelaySeconds: 20
+            initialDelaySeconds: 60
             periodSeconds: 10
           livenessProbe:
             tcpSocket:
               port: 5672
-            initialDelaySeconds: 45
+            initialDelaySeconds: 120
             periodSeconds: 15
           resources:
             requests:
               memory: "128Mi"
-              cpu: "50m"
+              cpu: "100m"
             limits:
               memory: "384Mi"
-              cpu: "200m"
+              cpu: "500m"
           volumeMounts:
             - name: rabbitmq-data
               mountPath: /var/lib/rabbitmq

@@ -10,6 +10,12 @@
       </button>
     </div>
 
+    <!-- Banner de error inline -->
+    <div *ngIf="errorMessage" class="p-3 rounded-xl bg-red-50 border border-red-300 text-red-900 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+      <i class="fa-solid fa-circle-exclamation text-red-600"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
     <form (ngSubmit)="onSubmit()" class="space-y-3 text-xs">
       
       <div>

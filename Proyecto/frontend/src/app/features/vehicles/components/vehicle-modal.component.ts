@@ -44,6 +44,8 @@ export class VehicleModalComponent {
   private assignmentService = inject(AssignmentService);
   private authService = inject(AuthService);
 
+  errorMessage = '';
+
   onTypeChange(): void {
     if (this.newVehicle.type === 'Moto') {
       this.newVehicle.data.motorcycleType = 'Scooter';
@@ -64,13 +66,15 @@ export class VehicleModalComponent {
   onSubmit(): void {
     if (!this.newVehicle.data.plate || !this.newVehicle.data.brand || this.submitting) return;
 
+    this.errorMessage = '';
+
     const maxAllowedYear = this.currentYear + 1;
     if (this.newVehicle.data.year > maxAllowedYear) {
-      alert(`Año inválido. El año del vehículo no puede ser superior a 1 año más del año actual (${maxAllowedYear}).`);
+      this.errorMessage = `Año inválido. El año del vehículo no puede ser superior a 1 año más del año actual (${maxAllowedYear}).`;
       return;
     }
     if (this.newVehicle.data.year < 1900) {
-      alert('Año inválido. El año del vehículo debe ser mayor o igual a 1900.');
+      this.errorMessage = 'Año inválido. El año del vehículo debe ser mayor o igual a 1900.';
       return;
     }
 
@@ -111,7 +115,11 @@ export class VehicleModalComponent {
       },
       error: err => {
         this.submitting = false;
-        alert('Error al registrar vehículo: ' + (err.error?.detail || err.message));
+        if (err.status === 409) {
+          this.errorMessage = 'Ya existe un vehículo registrado con la placa ingresada.';
+        } else {
+          this.errorMessage = 'Error al registrar vehículo: ' + (err.error?.detail || err.error?.message || err.message);
+        }
       }
     });
   }

@@ -64,14 +64,29 @@ export class ZonesComponent implements OnInit {
   }
 
   submit(): void {
+    const value = this.zoneForm.getRawValue();
+    const trimmedName = value.name.trim();
+
+    // Validar duplicado insensible a mayúsculas/minúsculas
+    const nameExists = this.zones.some(zone => 
+      zone.name.trim().toLowerCase() === trimmedName.toLowerCase() && 
+      (!this.editingZone || zone.zoneId !== this.editingZone.zoneId)
+    );
+
+    if (nameExists) {
+      this.zoneForm.controls.name.setErrors({ duplicateName: true });
+      this.errorMessage = 'Ya existe una zona con el nombre ingresado.';
+      this.zoneForm.controls.name.markAsTouched();
+      return;
+    }
+
     if (this.zoneForm.invalid || this.saving) {
       this.zoneForm.markAllAsTouched();
       return;
     }
 
-    const value = this.zoneForm.getRawValue();
     const request: ZoneRequest = {
-      name: value.name.trim(),
+      name: trimmedName,
       description: value.description.trim(),
       type: value.type,
       capacidad: Number(value.capacidad)
@@ -79,11 +94,17 @@ export class ZonesComponent implements OnInit {
 
     this.saving = true;
     this.clearMessages();
+    this.cdr.markForCheck();
     const operation = this.editingZone
       ? this.parkingService.updateZone(this.editingZone.zoneId, request)
       : this.parkingService.createZone(request);
 
-    operation.pipe(finalize(() => this.saving = false)).subscribe({
+    operation.pipe(
+      finalize(() => {
+        this.saving = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
       next: zone => {
         if (this.editingZone) {
           this.zones = this.zones.map(item => item.zoneId === zone.zoneId ? zone : item);
@@ -93,8 +114,16 @@ export class ZonesComponent implements OnInit {
           this.successMessage = 'Zona creada correctamente.';
         }
         this.cancelEdit();
+        this.cdr.markForCheck();
       },
-      error: error => this.errorMessage = this.getErrorMessage(error, 'No fue posible guardar la zona.')
+      error: error => {
+        if (error.status === 409) {
+          this.errorMessage = this.getErrorMessage(error, 'Conflicto: Ya existe una zona con ese nombre, o la capacidad elegida es menor a los espacios de parqueo ya registrados en la zona.');
+        } else {
+          this.errorMessage = this.getErrorMessage(error, 'No fue posible guardar la zona.');
+        }
+        this.cdr.markForCheck();
+      }
     });
   }
 
