@@ -32,6 +32,7 @@ public class ZoneServicioImpl implements ZonaServicio {
         return zonaRepository
             .findAll()
             .stream()
+            .filter(z -> z.getStatus() == 1)
             .map(this::toResponse)
             .collect(Collectors.toList());
     }

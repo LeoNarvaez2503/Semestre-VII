@@ -53,7 +53,7 @@ export class ZonesComponent implements OnInit {
       })
     ).subscribe({
       next: zones => {
-        this.zones = zones;
+        this.zones = zones.filter(z => z.status !== 0);
         this.cdr.markForCheck();
       },
       error: error => {
@@ -127,7 +127,10 @@ export class ZonesComponent implements OnInit {
     this.deletingId = zone.zoneId;
     this.clearMessages();
     this.parkingService.deleteZone(zone.zoneId).pipe(
-      finalize(() => this.deletingId = null)
+      finalize(() => {
+        this.deletingId = null;
+        this.cdr.markForCheck();
+      })
     ).subscribe({
       next: () => {
         this.zones = this.zones.filter(item => item.zoneId !== zone.zoneId);
@@ -135,8 +138,12 @@ export class ZonesComponent implements OnInit {
           this.cancelEdit();
         }
         this.successMessage = 'Zona eliminada correctamente.';
+        this.cdr.markForCheck();
       },
-      error: error => this.errorMessage = this.getErrorMessage(error, 'No fue posible eliminar la zona.')
+      error: error => {
+        this.errorMessage = this.getErrorMessage(error, 'No fue posible eliminar la zona.');
+        this.cdr.markForCheck();
+      }
     });
   }
 
