@@ -1,117 +1,158 @@
-<section class="zones-page" aria-labelledby="zones-title">
-  <header class="page-header">
-    <div>
-      <span class="eyebrow">Configuración del parqueadero</span>
-      <h1 id="zones-title">Zonas</h1>
-      <p>Organiza la capacidad y el tipo de cada sector del parqueadero.</p>
+<section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] space-y-6 font-sans">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Top Banner matching standard style -->
+    <div class="bg-slate-900 text-white rounded-xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-black flex items-center gap-2 tracking-tight">
+          <i class="fa-solid fa-layer-group text-amber-400"></i>
+          Configuración de Zonas de Parqueo
+        </h2>
+        <p class="text-xs text-slate-300 mt-1">
+          Organiza la capacidad y el tipo de cada sector del parqueadero.
+        </p>
+      </div>
+
+      <button (click)="loadZones()" [disabled]="loading"
+        class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-4 py-2.5 rounded-lg text-xs flex items-center gap-1.5 transition shadow-sm cursor-pointer disabled:opacity-50">
+        <i class="fa-solid fa-rotate"></i> Actualizar
+      </button>
     </div>
-    <button class="secondary-button" type="button" (click)="loadZones()" [disabled]="loading">
-      <span aria-hidden="true">↻</span> Actualizar
-    </button>
-  </header>
 
-  @if (errorMessage) {
-    <div class="alert alert-error" role="alert">{{ errorMessage }}</div>
-  }
-  @if (successMessage) {
-    <div class="alert alert-success" role="status">{{ successMessage }}</div>
-  }
+    <!-- Message Banners -->
+    <div *ngIf="errorMessage" class="p-4 rounded-xl bg-red-50 border border-red-300 text-red-900 text-xs font-bold flex items-center gap-2">
+      <i class="fa-solid fa-circle-exclamation text-red-650"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+    <div *ngIf="successMessage" class="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center gap-2">
+      <i class="fa-solid fa-circle-check text-emerald-600"></i>
+      <span>{{ successMessage }}</span>
+    </div>
 
-  <div class="content-grid">
-    <article class="panel form-panel">
-      <div class="panel-heading">
+    <!-- Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      
+      <!-- Left Column: Create/Edit Form Panel -->
+      <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4 lg:sticky lg:top-4">
         <div>
-          <span class="eyebrow">{{ editingZone ? 'Edición' : 'Nueva zona' }}</span>
-          <h2>{{ editingZone ? 'Actualizar zona' : 'Crear zona' }}</h2>
+          <span class="text-[10px] font-black text-amber-600 uppercase tracking-wider">{{ editingZone ? 'Edición' : 'Nueva zona' }}</span>
+          <h2 class="text-lg font-black text-gray-900 tracking-tight">{{ editingZone ? 'Actualizar zona' : 'Crear zona' }}</h2>
         </div>
-        @if (editingZone) {
-          <button class="text-button" type="button" (click)="cancelEdit()">Cancelar</button>
-        }
+
+        <form [formGroup]="zoneForm" (ngSubmit)="submit()" novalidate class="space-y-4 text-xs">
+          <div>
+            <label class="block text-gray-700 font-bold mb-1">Nombre</label>
+            <input type="text" formControlName="name" maxlength="32" placeholder="Ej. Zona norte"
+              class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:ring-2 focus:ring-amber-500 outline-none" />
+            <small *ngIf="zoneForm.controls.name.touched && zoneForm.controls.name.invalid" class="text-red-650 font-bold block mt-1">
+              Ingresa un nombre de hasta 32 caracteres.
+            </small>
+          </div>
+
+          <div>
+            <label class="block text-gray-700 font-bold mb-1">Descripción</label>
+            <textarea formControlName="description" rows="3" placeholder="Referencia o ubicación de la zona"
+              class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-gray-700 font-bold mb-1">Tipo</label>
+              <select formControlName="type"
+                class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:ring-2 focus:ring-amber-500 outline-none">
+                <option *ngFor="let type of zoneTypes" [value]="type">{{ type }}</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-gray-700 font-bold mb-1">Capacidad</label>
+              <input type="number" formControlName="capacidad" min="1" step="1"
+                class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:ring-2 focus:ring-amber-500 outline-none" />
+              <small *ngIf="zoneForm.controls.capacidad.touched && zoneForm.controls.capacidad.invalid" class="text-red-650 font-bold block mt-1">
+                La capacidad debe ser mayor que cero.
+              </small>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 pt-2">
+            <button type="submit" [disabled]="saving"
+              class="flex-1 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold rounded-lg text-xs transition shadow-sm cursor-pointer disabled:opacity-50">
+              {{ saving ? 'Guardando…' : (editingZone ? 'Guardar' : 'Crear zona') }}
+            </button>
+            <button *ngIf="editingZone" type="button" (click)="cancelEdit()"
+              class="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-lg text-xs transition cursor-pointer">
+              Cancelar
+            </button>
+          </div>
+        </form>
       </div>
 
-      <form [formGroup]="zoneForm" (ngSubmit)="submit()" novalidate>
-        <label>
-          <span>Nombre</span>
-          <input type="text" formControlName="name" maxlength="32" placeholder="Ej. Zona norte" />
-          @if (zoneForm.controls.name.touched && zoneForm.controls.name.invalid) {
-            <small>Ingresa un nombre de hasta 32 caracteres.</small>
-          }
-        </label>
-
-        <label>
-          <span>Descripción</span>
-          <textarea formControlName="description" rows="3" placeholder="Referencia o ubicación de la zona"></textarea>
-        </label>
-
-        <div class="form-row">
-          <label>
-            <span>Tipo</span>
-            <select formControlName="type">
-              @for (type of zoneTypes; track type) {
-                <option [value]="type">{{ type }}</option>
-              }
-            </select>
-          </label>
-
-          <label>
-            <span>Capacidad</span>
-            <input type="number" formControlName="capacidad" min="1" step="1" />
-            @if (zoneForm.controls.capacidad.touched && zoneForm.controls.capacidad.invalid) {
-              <small>La capacidad debe ser mayor que cero.</small>
-            }
-          </label>
+      <!-- Right Column: Zones list -->
+      <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Inventario</span>
+            <h2 class="text-lg font-black text-gray-900 tracking-tight">Zonas registradas</h2>
+          </div>
+          <span class="px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-full text-xs font-extrabold text-amber-800">
+            {{ zones.length }} zonas
+          </span>
         </div>
 
-        <button class="primary-button" type="submit" [disabled]="saving">
-          {{ saving ? 'Guardando…' : (editingZone ? 'Guardar cambios' : 'Crear zona') }}
-        </button>
-      </form>
-    </article>
-
-    <article class="panel list-panel">
-      <div class="panel-heading">
-        <div>
-          <span class="eyebrow">Inventario</span>
-          <h2>Zonas registradas</h2>
+        <div *ngIf="loading" class="text-center py-16 text-xs text-gray-500 font-mono">
+          <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-2xl mb-2"></i>
+          <p>Cargando zonas…</p>
         </div>
-        <span class="counter">{{ zones.length }}</span>
-      </div>
 
-      @if (loading) {
-        <div class="state-box" role="status">
-          <span class="spinner" aria-hidden="true"></span>
-          Cargando zonas…
+        <div *ngIf="!loading && zones.length === 0" class="p-12 text-center text-sm text-gray-400 font-medium">
+          Todavía no existen zonas registradas.
         </div>
-      } @else if (zones.length === 0) {
-        <div class="state-box">Todavía no existen zonas registradas.</div>
-      } @else {
-        <div class="zone-list">
+
+        <div *ngIf="!loading && zones.length > 0" class="p-6 grid gap-4">
+          
           @for (zone of zones; track trackZone($index, zone)) {
-            <article class="zone-card">
-              <div class="zone-main">
-                <div class="zone-icon" [attr.data-type]="zone.type">{{ zone.code || zone.name.charAt(0) }}</div>
-                <div>
-                  <div class="zone-title-line">
-                    <h3>{{ zone.name }}</h3>
-                    <span class="type-badge">{{ zone.type }}</span>
+            <article class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 rounded-xl bg-slate-50 hover:bg-slate-100/50 transition">
+              
+              <div class="flex items-center gap-3.5 min-w-0">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm"
+                  [class.bg-amber-100]="zone.type === 'VIP'" [class.text-amber-800]="zone.type === 'VIP'"
+                  [class.bg-purple-100]="zone.type === 'INTERNA'" [class.text-purple-800]="zone.type === 'INTERNA'"
+                  [class.bg-emerald-100]="zone.type === 'EXTERNA'" [class.text-emerald-800]="zone.type === 'EXTERNA'">
+                  {{ zone.code || zone.name.charAt(0) }}
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h3 class="font-extrabold text-gray-900 text-sm truncate">{{ zone.name }}</h3>
+                    <span class="px-2 py-0.5 bg-gray-200 text-gray-700 font-extrabold text-[9px] rounded-full uppercase tracking-wider">
+                      {{ zone.type }}
+                    </span>
                   </div>
-                  <p>{{ zone.description || 'Sin descripción' }}</p>
-                  <div class="zone-meta">
-                    <span><strong>{{ zone.capacidad }}</strong> espacios</span>
-                    <span class="uuid" [title]="zone.zoneId">ID {{ zone.zoneId.slice(0, 8) }}…</span>
+                  <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ zone.description || 'Sin descripción' }}</p>
+                  <div class="flex gap-4 text-[10px] text-gray-500 font-semibold mt-1">
+                    <span>Capacidad: <strong class="text-gray-900">{{ zone.capacidad }} espacios</strong></span>
+                    <span class="font-mono" [title]="zone.zoneId">ID: {{ zone.zoneId.slice(0, 8) }}…</span>
                   </div>
                 </div>
               </div>
-              <div class="card-actions">
-                <button type="button" class="edit-button" (click)="editZone(zone)">Editar</button>
-                <button type="button" class="delete-button" (click)="deleteZone(zone)" [disabled]="deletingId === zone.zoneId">
+
+              <div class="flex gap-2 self-end sm:self-center">
+                <button type="button" (click)="editZone(zone)"
+                  class="px-3 py-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition cursor-pointer">
+                  Editar
+                </button>
+                <button type="button" (click)="deleteZone(zone)" [disabled]="deletingId === zone.zoneId"
+                  class="px-3 py-1.5 text-xs font-bold text-red-700 hover:text-red-800 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition cursor-pointer disabled:opacity-50">
                   {{ deletingId === zone.zoneId ? 'Eliminando…' : 'Eliminar' }}
                 </button>
               </div>
+
             </article>
           }
+          
         </div>
-      }
-    </article>
+      </div>
+
+    </div>
+
   </div>
 </section>

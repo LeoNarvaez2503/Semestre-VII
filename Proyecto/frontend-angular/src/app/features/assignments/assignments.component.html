@@ -1,136 +1,149 @@
-<section class="assignments-page" aria-labelledby="assignments-title">
-  <header class="page-header">
-    <div>
-      <span class="eyebrow">Asignación y trazabilidad</span>
-      <h1 id="assignments-title">Propietarios y vehículos</h1>
-      <p>Administra asociaciones por UUID y consulta su historial de cambios.</p>
-    </div>
-    <button class="secondary-button" type="button" (click)="loadData()" [disabled]="loading">
-      <span aria-hidden="true">↻</span> Recargar datos
-    </button>
-  </header>
+<section class="p-4 sm:p-8 bg-[#f4f5f7] min-h-[calc(100vh-70px)] space-y-6 font-sans">
+  <div class="max-w-7xl mx-auto space-y-6">
 
-  @if (errorMessage) {
-    <div class="alert alert-error" role="alert">{{ errorMessage }}</div>
-  }
-  @if (successMessage) {
-    <div class="alert alert-success" role="status">{{ successMessage }}</div>
-  }
-
-  <article class="panel create-panel">
-    <div class="panel-title">
+    <!-- Top Banner matching standard style -->
+    <div class="bg-slate-900 text-white rounded-xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
-        <span class="eyebrow">Nueva relación</span>
-        <h2>Crear asignación</h2>
+        <h2 class="text-xl font-black flex items-center gap-2 tracking-tight">
+          <i class="fa-solid fa-link text-amber-400"></i>
+          Asignación de Vehículos a Propietarios
+        </h2>
+        <p class="text-xs text-slate-300 mt-1">
+          Administra asociaciones por UUID y consulta su historial de cambios.
+        </p>
       </div>
-      <span class="hint">Los identificadores se envían completos al API.</span>
-    </div>
 
-    <form [formGroup]="assignmentForm" (ngSubmit)="createAssignment()">
-      <label>
-        <span>Usuario</span>
-        <select formControlName="userId">
-          @if (users.length === 0) { <option value="">Sin usuarios disponibles</option> }
-          @for (user of users; track user.id_person) {
-            <option [value]="user.id_person">
-              {{ user.username }} · {{ user.person?.first_name }} {{ user.person?.last_name }} · {{ shortUuid(user.id_person) }}
-            </option>
-          }
-        </select>
-      </label>
-
-      <label>
-        <span>Vehículo</span>
-        <select formControlName="vehicleId">
-          @if (vehicles.length === 0) { <option value="">Sin vehículos disponibles</option> }
-          @for (vehicle of vehicles; track vehicle.id) {
-            <option [value]="vehicle.id">
-              {{ vehicle.data.plate }} · {{ vehicle.data.brand }} {{ vehicle.data.model }} · {{ shortUuid(vehicle.id) }}
-            </option>
-          }
-        </select>
-      </label>
-
-      <button class="primary-button" type="submit" [disabled]="saving || users.length === 0 || vehicles.length === 0">
-        {{ saving ? 'Asignando…' : 'Crear asignación' }}
+      <button (click)="loadData()" [disabled]="loading"
+        class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-4 py-2.5 rounded-lg text-xs flex items-center gap-1.5 transition shadow-sm cursor-pointer disabled:opacity-50">
+        <i class="fa-solid fa-rotate"></i> Recargar datos
       </button>
-    </form>
-  </article>
-
-  <article class="panel table-panel">
-    <div class="panel-title padded">
-      <div>
-        <span class="eyebrow">Estado actual reconstruido</span>
-        <h2>Asignaciones</h2>
-      </div>
-      <span class="counter">{{ assignments.length }}</span>
     </div>
 
-    @if (loading && assignments.length === 0) {
-      <div class="state-box"><span class="spinner" aria-hidden="true"></span>Cargando asignaciones…</div>
-    } @else if (assignments.length === 0) {
-      <div class="state-box">No hay asignaciones registradas en la trazabilidad.</div>
-    } @else {
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>Propietario</th><th>Vehículo</th><th>Estado</th><th>UUIDs</th><th>Acciones</th></tr></thead>
-          <tbody>
-            @for (assignment of assignments; track rowKey(assignment.userId, assignment.vehicleId)) {
-              <tr>
-                <td><strong>{{ getUserName(assignment.userId) }}</strong></td>
-                <td>{{ getVehicleLabel(assignment.vehicleId) }}</td>
-                <td><span class="status" [class.active]="assignment.active">{{ assignment.active ? 'Activa' : 'Inactiva' }}</span></td>
-                <td class="uuid-cell">
-                  <span [title]="assignment.userId">U: {{ shortUuid(assignment.userId) }}</span>
-                  <span [title]="assignment.vehicleId">V: {{ shortUuid(assignment.vehicleId) }}</span>
-                </td>
-                <td>
-                  <div class="actions">
-                    <button class="toggle-button" type="button" (click)="toggleAssignment(assignment)" [disabled]="processingKey === rowKey(assignment.userId, assignment.vehicleId)">
+    <!-- Message Banners -->
+    @if (errorMessage) {
+      <div class="p-4 rounded-xl bg-red-50 border border-red-300 text-red-900 text-xs font-bold flex items-center gap-2">
+        <i class="fa-solid fa-circle-exclamation text-red-650"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+    @if (successMessage) {
+      <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-emerald-600"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+    }
+
+    <!-- Create Assignment Form Panel -->
+    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-black text-amber-600 uppercase tracking-wider">Nueva relación</span>
+          <h2 class="text-lg font-black text-gray-900 tracking-tight">Crear asignación</h2>
+        </div>
+        <span class="text-xs text-gray-500 font-semibold">Los identificadores se envían completos al API.</span>
+      </div>
+
+      <form [formGroup]="assignmentForm" (ngSubmit)="createAssignment()"
+        class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end text-xs">
+        <div>
+          <label class="block text-gray-700 font-bold mb-1">Usuario / Propietario *</label>
+          <select formControlName="userId"
+            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:ring-2 focus:ring-amber-500 outline-none">
+            @if (users.length === 0) { <option value="">Sin usuarios disponibles</option> }
+            @for (user of users; track user.id_person) {
+              <option [value]="user.id_person">
+                {{ user.username }} · {{ user.person?.first_name }} {{ user.person?.last_name }} · {{ shortUuid(user.id_person) }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-bold mb-1">Vehículo *</label>
+          <select formControlName="vehicleId"
+            class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:ring-2 focus:ring-amber-500 outline-none">
+            @if (vehicles.length === 0) { <option value="">Sin vehículos disponibles</option> }
+            @for (vehicle of vehicles; track vehicle.id) {
+              <option [value]="vehicle.id">
+                {{ vehicle.data.plate }} · {{ vehicle.data.brand }} {{ vehicle.data.model }} · {{ shortUuid(vehicle.id) }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <button type="submit" [disabled]="saving || users.length === 0 || vehicles.length === 0"
+          class="w-full py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold rounded-lg text-xs transition shadow-sm cursor-pointer disabled:opacity-50">
+          {{ saving ? 'Asignando…' : 'Crear asignación' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Assignments List Panel -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Estado actual reconstruido</span>
+          <h2 class="text-lg font-black text-gray-900 tracking-tight">Asignaciones</h2>
+        </div>
+        <span class="px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-full text-xs font-extrabold text-amber-800">
+          {{ assignments.length }} asignaciones
+        </span>
+      </div>
+
+      @if (loading && assignments.length === 0) {
+        <div class="text-center py-16 text-xs text-gray-500 font-mono">
+          <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-2xl mb-2"></i>
+          <p>Cargando asignaciones…</p>
+        </div>
+      } @else if (assignments.length === 0) {
+        <div class="p-12 text-center text-sm text-gray-400 font-medium">
+          No hay asignaciones registradas en la trazabilidad.
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse text-left text-xs">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                <th class="py-3 px-4">Propietario</th>
+                <th class="py-3 px-4">Vehículo</th>
+                <th class="py-3 px-4">Estado</th>
+                <th class="py-3 px-4">UUIDs de Relación</th>
+                <th class="py-3 px-4 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-150">
+              @for (assignment of assignments; track rowKey(assignment.userId, assignment.vehicleId)) {
+                <tr class="hover:bg-slate-50/50 transition animate-fadeIn">
+                  <td class="py-3.5 px-4 font-bold text-gray-900">{{ getUserName(assignment.userId) }}</td>
+                  <td class="py-3.5 px-4 text-gray-700 font-semibold">{{ getVehicleLabel(assignment.vehicleId) }}</td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider"
+                      [class.bg-emerald-100]="assignment.active" [class.text-emerald-800]="assignment.active"
+                      [class.bg-red-100]="!assignment.active" [class.text-red-800]="!assignment.active">
+                      {{ assignment.active ? 'Activa' : 'Inactiva' }}
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono text-[10px] text-gray-500 space-y-0.5">
+                    <div [title]="assignment.userId">U: {{ shortUuid(assignment.userId) }}</div>
+                    <div [title]="assignment.vehicleId">V: {{ shortUuid(assignment.vehicleId) }}</div>
+                  </td>
+                  <td class="py-3.5 px-4 text-right space-x-2">
+                    <button type="button" (click)="toggleAssignment(assignment)" [disabled]="processingKey === rowKey(assignment.userId, assignment.vehicleId)"
+                      class="px-2.5 py-1.5 text-[11px] font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition cursor-pointer disabled:opacity-50">
                       {{ assignment.active ? 'Desactivar' : 'Activar' }}
                     </button>
-                    <button class="delete-button" type="button" (click)="deleteAssignment(assignment)" [disabled]="!assignment.active || processingKey === rowKey(assignment.userId, assignment.vehicleId)">Eliminar</button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
-  </article>
-
-  <article class="panel table-panel">
-    <div class="panel-title padded">
-      <div>
-        <span class="eyebrow">Auditoría general</span>
-        <h2>Trazabilidad</h2>
-      </div>
-      <button class="text-button" type="button" (click)="refreshTraceability()" [disabled]="loading">Actualizar historial</button>
+                    <button type="button" (click)="deleteAssignment(assignment)" [disabled]="!assignment.active || processingKey === rowKey(assignment.userId, assignment.vehicleId)"
+                      class="px-2.5 py-1.5 text-[11px] font-bold text-red-700 hover:text-red-800 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition cursor-pointer disabled:opacity-50">
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
     </div>
 
-    @if (loading && traces.length === 0) {
-      <div class="state-box"><span class="spinner" aria-hidden="true"></span>Cargando trazabilidad…</div>
-    } @else if (traces.length === 0) {
-      <div class="state-box">No existen eventos de trazabilidad.</div>
-    } @else {
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>Fecha</th><th>Acción</th><th>Propietario</th><th>Vehículo</th><th>Resultado</th><th>Evento</th></tr></thead>
-          <tbody>
-            @for (trace of traces; track trace.id) {
-              <tr>
-                <td class="date-cell">{{ trace.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-                <td><span class="action-badge" [attr.data-action]="trace.tipoAccion">{{ actionLabel(trace.tipoAccion) }}</span></td>
-                <td><strong>{{ getUserName(trace.userId) }}</strong><small [title]="trace.userId">{{ shortUuid(trace.userId) }}</small></td>
-                <td>{{ getVehicleLabel(trace.vehicleId) }}<small [title]="trace.vehicleId">{{ shortUuid(trace.vehicleId) }}</small></td>
-                <td><span class="status" [class.active]="traceState(trace) === 'Activa'">{{ traceState(trace) }}</span></td>
-                <td class="uuid-cell"><span [title]="trace.id">{{ shortUuid(trace.id) }}</span></td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
-  </article>
+  </div>
 </section>
