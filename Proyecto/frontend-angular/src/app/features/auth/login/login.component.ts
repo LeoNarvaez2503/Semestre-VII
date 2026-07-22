@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../infrastructure/api/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ export class LoginComponent implements OnInit {
 
   private authService = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
@@ -27,26 +29,37 @@ export class LoginComponent implements OnInit {
     }
   }
 
-
-
   onLogin(): void {
     if (!this.username || !this.password) {
       this.errorMessage = 'Por favor ingresa usuario/correo y contraseña.';
+      this.cdr.markForCheck();
       return;
     }
 
     this.loading = true;
     this.errorMessage = '';
+    this.cdr.markForCheck();
 
     this.authService.login(this.username, this.password).subscribe({
       next: () => {
         this.loading = false;
+        this.cdr.markForCheck();
         this.router.navigate(['/dashboard']);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.loading = false;
         console.error('Error de autenticación:', err);
-        this.errorMessage = err.error?.detail || 'Credenciales inválidas o servicio no disponible.';
+        
+        const detail = err.error?.detail;
+        if (typeof detail === 'string') {
+          this.errorMessage = detail;
+        } else if (Array.isArray(detail)) {
+          this.errorMessage = detail.map((d: any) => d.msg || d).join(', ');
+        } else {
+          this.errorMessage = 'Usuario o contraseña incorrectos.';
+        }
+        
+        this.cdr.markForCheck();
       }
     });
   }

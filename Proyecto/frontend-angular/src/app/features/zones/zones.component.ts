@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { Zone } from '../../core/models/zone.model';
@@ -11,7 +12,7 @@ type ZoneRequest = Omit<Zone, 'zoneId'>;
 @Component({
   selector: 'app-zones',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './zones.component.html',
   styleUrl: './zones.component.css'
 })
