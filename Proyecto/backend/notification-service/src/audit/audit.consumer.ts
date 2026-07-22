@@ -23,10 +23,10 @@ export class AuditConsumer implements OnModuleInit {
   }
 
   private async connect() {
-    const host = this.configService.get('RABBITMQ_HOST');
-    const port = this.configService.get('RABBITMQ_PORT');
-    const user = this.configService.get('RABBITMQ_USER');
-    const pass = this.configService.get('RABBITMQ_PASSWORD');
+    const host = this.configService.get('RABBITMQ_HOST') || 'rabbitmq';
+    const port = this.configService.get('RABBITMQ_PORT') || '5672';
+    const user = this.configService.get('RABBITMQ_USER') || 'guest';
+    const pass = this.configService.get('RABBITMQ_PASSWORD') || 'guest';
     const url = `amqp://${user}:${pass}@${host}:${port}`;
 
     try {
@@ -40,9 +40,9 @@ export class AuditConsumer implements OnModuleInit {
   }
 
   private async consume() {
-    const queue = this.configService.get('RABBITMQ_QUEUE');
-    const exchange = this.configService.get('RABBITMQ_EXCHANGE');
-    const routingKey = this.configService.get('RABBITMQ_ROUTING_KEY');
+    const queue = this.configService.get('RABBITMQ_QUEUE') || 'audit_queue';
+    const exchange = this.configService.get('RABBITMQ_EXCHANGE') || 'audit_exchange';
+    const routingKey = this.configService.get('RABBITMQ_ROUTING_KEY') || 'audit.#';
 
     try {
       await this.channel.assertExchange(exchange, 'topic', { durable: true });

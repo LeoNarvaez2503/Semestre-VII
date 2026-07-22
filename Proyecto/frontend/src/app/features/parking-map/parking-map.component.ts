@@ -102,12 +102,14 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
   }
 
   filterSpaces(): void {
+    const activeZoneIds = new Set(this.zones.map(z => z.zoneId));
     this.filteredSpaces = this.spaces.filter(s => {
+      if (!activeZoneIds.has(s.zoneId)) return false;
       if (this.selectedZoneId && s.zoneId !== this.selectedZoneId) return false;
       if (this.selectedStatus && s.estado !== this.selectedStatus) return false;
       if (this.searchQuery.trim()) {
         const q = this.searchQuery.toLowerCase();
-        const matchId = (s.numero || s.description || s.id).toLowerCase().includes(q);
+        const matchId = (s.description || s.numero || s.id).toLowerCase().includes(q);
         const matchPlate = s.vehiculoId?.toLowerCase().includes(q);
         if (!matchId && !matchPlate) return false;
       }
@@ -116,7 +118,7 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
   }
 
   get visibleZones(): Zone[] {
-    return this.zones.filter(zone => this.getSpacesByZone(zone.zoneId).length > 0);
+    return this.zones;
   }
 
   getSpacesByZone(zoneId: string): ParkingSpace[] {
@@ -143,14 +145,29 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
     });
   }
 
+  isSubmittingSpace = false;
+  createSpaceErrorMessage = '';
+
   onCreateSpace(): void {
-    if (!this.newSpace.description || !this.newSpace.zoneId) return;
+    if (this.isSubmittingSpace) return;
+    if (!this.newSpace.description?.trim() || !this.newSpace.zoneId) return;
+
+    this.isSubmittingSpace = true;
+    this.createSpaceErrorMessage = '';
+    this.cdr.markForCheck();
+
     this.parkingService.createSpace(this.newSpace).subscribe({
       next: () => {
+        this.isSubmittingSpace = false;
         this.showCreateModal = false;
+        this.newSpace.description = '';
         this.loadData();
       },
-      error: err => alert('Error al crear plaza: ' + (err.error?.detail || err.message))
+      error: err => {
+        this.isSubmittingSpace = false;
+        this.createSpaceErrorMessage = err.error?.detail || err.error?.message || 'Error al crear la plaza';
+        this.cdr.markForCheck();
+      }
     });
   }
 }

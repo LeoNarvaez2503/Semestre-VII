@@ -45,7 +45,7 @@ export class CreateAuditDto {
 
     @IsString()
     @IsOptional()
-    @MinLength(5) //ejemplo: "john.doe"
+    @MinLength(2) //ejemplo: "root", "john.doe"
     @MaxLength(25)
     @Matches(/^[a-zA-Z0-9._-]+$/, {
         message:

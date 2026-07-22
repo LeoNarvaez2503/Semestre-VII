@@ -34,6 +34,7 @@ public class EspacioServicioImpl implements EspacioServicio {
         return repositorioEspacio
             .findAll()
             .stream()
+            .filter(e -> e.isStatus() && e.getZone() != null && e.getZone().getStatus() == 1)
             .map(mapper::toResponseDTO)
             .collect(Collectors.toList());
     }
@@ -82,16 +83,20 @@ public class EspacioServicioImpl implements EspacioServicio {
                 "La zona ya alcanzó su capacidad máxima"
             );
         }
-        if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
-            String descClean = dto.getDescription().trim();
-            boolean existsDesc = repositorioEspacio.findByZoneId(objZona.getId()).stream()
-                .anyMatch(e -> e.getDescription() != null && e.getDescription().trim().equalsIgnoreCase(descClean));
-            if (existsDesc) {
-                throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Ya existe un espacio con esa descripción en esta zona"
-                );
-            }
+        if (dto.getDescription() == null || dto.getDescription().trim().isBlank()) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "El nombre o número del espacio es obligatorio (ej. E-101)"
+            );
+        }
+        String descClean = dto.getDescription().trim();
+        boolean existsDesc = repositorioEspacio.findByZoneId(objZona.getId()).stream()
+            .anyMatch(e -> e.getDescription() != null && e.getDescription().trim().equalsIgnoreCase(descClean));
+        if (existsDesc) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Ya existe un espacio con el nombre \"" + descClean + "\" en esta zona"
+            );
         }
 
         Espacio newSpace = mapper.toEntityEspacio(dto);
@@ -261,11 +266,7 @@ public class EspacioServicioImpl implements EspacioServicio {
     @Override
     public void desactivarEspaciosPorZona(UUID idZona) {
         List<Espacio> espacios = repositorioEspacio.findByZoneId(idZona);
-        espacios.forEach(espacio -> {
-            espacio.setStatus(false);
-            espacio.setDateModified(java.time.LocalDateTime.now());
-        });
-        repositorioEspacio.saveAll(espacios);
+        repositorioEspacio.deleteAll(espacios);
     }
 
     private String generarCodigoUnico() {

@@ -71,11 +71,13 @@ export class ParkingService {
   }
 
   private fromApi(space: ParkingSpaceApiResponse): ParkingSpace {
+    const spaceName = space.description || space.name || space.code || space.id;
     return {
       id: space.id,
       zoneId: space.idZona,
-      numero: space.code ?? space.name,
-      description: space.description ?? '',
+      numero: spaceName,
+      description: spaceName,
+      code: space.code,
       type: space.type,
       tipo: space.type,
       estado: space.estado,

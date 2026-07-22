@@ -5,6 +5,7 @@ export interface ParkingSpace {
   id: string;
   zoneId: string;
   numero?: string;
+  code?: string;
   description: string;
   type: SpaceVehicleType;
   tipo?: string;
