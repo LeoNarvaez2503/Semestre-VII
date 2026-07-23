@@ -363,10 +363,12 @@ data:
         routes:
           - name: notification-routes
             paths:
-              - /notifications
-          - name: audit-routes
-            paths:
-              - /audit
+              - ~/notifications/audit(.*)$
+            plugins:
+              - name: request-transformer
+                config:
+                  replace:
+                    uri: /audit$(uri_captures[1])
       - name: vehiculos-service
         url: http://vehiculos-service:3000
         routes:
@@ -472,6 +474,7 @@ data:
           - name: sse-espacios
             paths:
               - /sse/espacios
+            strip_path: false
       - name: frontend-service
         url: http://frontend-angular:80
         routes:

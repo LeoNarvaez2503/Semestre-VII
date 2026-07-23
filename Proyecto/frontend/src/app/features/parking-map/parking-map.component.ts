@@ -7,8 +7,15 @@ import { SpaceSlotComponent } from '../../shared/components/space-slot/space-slo
 import { ParkingService } from '../../infrastructure/api/parking.service';
 import { SpaceSseService } from '../../infrastructure/sse/space-sse.service';
 import { AuthService } from '../../infrastructure/api/auth.service';
+import { TicketService } from '../../infrastructure/api/ticket.service';
+import { VehicleService } from '../../infrastructure/api/vehicle.service';
+import { UserService } from '../../infrastructure/api/user.service';
+import { AssignmentService } from '../../infrastructure/api/assignment.service';
+
 import { ParkingSpace, SpaceStatus } from '../../core/models/space.model';
 import { Zone } from '../../core/models/zone.model';
+import { Vehicle } from '../../core/models/vehicle.model';
+import { User } from '../../core/models/user.model';
 
 @Component({
   selector: 'app-parking-map',
@@ -29,6 +36,18 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
   selectedSpace: ParkingSpace | null = null;
   showCreateModal = false;
 
+  // Occupancy modal properties
+  showOccupancyModal = false;
+  occupyTargetSpace: ParkingSpace | null = null;
+  occupyForm = {
+    userId: '',
+    vehicleId: ''
+  };
+  availableVehicles: Vehicle[] = [];
+  availableUsers: User[] = [];
+  isSubmittingOccupancy = false;
+  occupyErrorMessage = '';
+
   newSpace = {
     zoneId: '',
     description: '',
@@ -40,6 +59,10 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
 
   private parkingService = inject(ParkingService);
   private spaceSseService = inject(SpaceSseService);
+  private ticketService = inject(TicketService);
+  private vehicleService = inject(VehicleService);
+  private userService = inject(UserService);
+  private assignmentService = inject(AssignmentService);
   private cdr = inject(ChangeDetectorRef);
   authService = inject(AuthService);
 
@@ -54,17 +77,17 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
 
   loadData(): void {
     this.loading = true;
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
 
     this.parkingService.getZones().subscribe({
       next: data => {
         this.zones = data;
         if (data.length > 0) this.newSpace.zoneId = data[0].zoneId;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       },
       error: err => {
         console.error(err);
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       }
     });
 
@@ -73,12 +96,12 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
         this.spaces = data;
         this.filterSpaces();
         this.loading = false;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       },
       error: err => {
         console.error(err);
         this.loading = false;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       }
     });
   }
@@ -87,14 +110,25 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
     this.sseSub = this.spaceSseService.getSpaceStream().subscribe({
       next: msg => {
         console.log('⚡ SSE Event Received:', msg);
-        const idx = this.spaces.findIndex(s => s.id === msg.id);
-        if (idx !== -1) {
-          this.spaces[idx].estado = msg.estado;
-          if (msg.vehiculoId !== undefined) {
-            this.spaces[idx].vehiculoId = msg.vehiculoId;
-          }
+        if (!msg) return;
+
+        const targetId = msg.id || msg.idEspacio || msg.id_espacio || msg.spaceId;
+        const newStatus = (msg.estado || msg.estado_espacio || '').toUpperCase() as SpaceStatus;
+
+        const idx = this.spaces.findIndex(s => s.id === targetId);
+        if (idx !== -1 && newStatus) {
+          const updatedSpace: ParkingSpace = {
+            ...this.spaces[idx],
+            estado: newStatus,
+            vehiculoId: msg.vehiculoId !== undefined ? msg.vehiculoId : this.spaces[idx].vehiculoId
+          };
+
+          this.spaces[idx] = updatedSpace;
+          this.spaces = [...this.spaces];
           this.filterSpaces();
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+        } else {
+          this.loadData();
         }
       },
       error: err => console.warn('SSE warning:', err)
@@ -135,13 +169,145 @@ export class ParkingMapComponent implements OnInit, OnDestroy {
 
   updateState(newState: SpaceStatus): void {
     if (!this.selectedSpace) return;
+    if (newState === 'OCUPADO') {
+      const target = this.selectedSpace;
+      this.selectedSpace = null;
+      this.openOccupyModal(target);
+      return;
+    }
+
     this.parkingService.updateSpaceState(this.selectedSpace.id, newState).subscribe({
       next: () => {
-        if (this.selectedSpace) this.selectedSpace.estado = newState;
         this.selectedSpace = null;
         this.loadData();
       },
       error: err => alert('Error al actualizar estado: ' + (err.error?.detail || err.message))
+    });
+  }
+
+  // Open the modal to prompt for User and Vehicle when marking a space as OCUPADO
+  openOccupyModal(space: ParkingSpace): void {
+    this.occupyTargetSpace = space;
+    this.occupyErrorMessage = '';
+    this.showOccupancyModal = true;
+    this.occupyForm = { userId: '', vehicleId: '' };
+    this.availableVehicles = [];
+
+    const isAdmin = this.authService.hasRole('Administrador') || this.authService.hasRole('Root');
+
+    if (isAdmin) {
+      this.userService.getUsers().subscribe({
+        next: users => {
+          this.availableUsers = users;
+          const currentPersonId = this.authService.currentUser()?.id_person;
+          if (currentPersonId) {
+            this.occupyForm.userId = currentPersonId;
+          } else if (users.length > 0) {
+            this.occupyForm.userId = users[0].id_person;
+          }
+          this.onUserChange(this.occupyForm.userId);
+          this.cdr.detectChanges();
+        },
+        error: err => console.error(err)
+      });
+    } else {
+      const currentPersonId = this.authService.currentUser()?.id_person || '';
+      this.occupyForm.userId = currentPersonId;
+      this.onUserChange(currentPersonId);
+    }
+  }
+
+  onUserChange(userId: string): void {
+    if (!userId) {
+      this.availableVehicles = [];
+      this.occupyForm.vehicleId = '';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const currentPersonId = this.authService.currentUser()?.id_person;
+
+    // Fetch user fleet via AssignmentService or VehicleService
+    this.assignmentService.getFleetByOwner(userId).subscribe({
+      next: fleet => {
+        let mappedVehicles: Vehicle[] = (fleet || []).map(item => ({
+          id: item.vehicleId || item.id,
+          type: item.type || item.tipo || 'Auto',
+          data: {
+            plate: item.plate || item.data?.plate || 'SIN-PLACA',
+            brand: item.brand || item.data?.brand || '',
+            model: item.model || item.data?.model || '',
+            color: item.color || item.data?.color || ''
+          }
+        }));
+
+        if (mappedVehicles.length === 0 && userId === currentPersonId) {
+          // Fallback to getMyVehicles if user is self
+          this.vehicleService.getMyVehicles().subscribe({
+            next: myVehicles => {
+              this.availableVehicles = myVehicles;
+              this.occupyForm.vehicleId = myVehicles.length > 0 ? myVehicles[0].id : '';
+              this.cdr.detectChanges();
+            }
+          });
+          return;
+        }
+
+        this.availableVehicles = mappedVehicles;
+        this.occupyForm.vehicleId = mappedVehicles.length > 0 ? mappedVehicles[0].id : '';
+        this.cdr.detectChanges();
+      },
+      error: err => {
+        console.warn('Error fetching fleet by owner:', err);
+        if (userId === currentPersonId) {
+          this.vehicleService.getMyVehicles().subscribe({
+            next: myVehicles => {
+              this.availableVehicles = myVehicles;
+              this.occupyForm.vehicleId = myVehicles.length > 0 ? myVehicles[0].id : '';
+              this.cdr.detectChanges();
+            }
+          });
+        } else {
+          this.availableVehicles = [];
+          this.occupyForm.vehicleId = '';
+          this.cdr.detectChanges();
+        }
+      }
+    });
+  }
+
+  closeOccupyModal(): void {
+    this.showOccupancyModal = false;
+    this.occupyTargetSpace = null;
+    this.cdr.detectChanges();
+  }
+
+  onConfirmOccupancy(): void {
+    if (!this.occupyTargetSpace || !this.occupyForm.vehicleId || !this.occupyForm.userId) {
+      this.occupyErrorMessage = 'Por favor seleccione tanto el vehículo como el usuario responsable.';
+      return;
+    }
+
+    this.isSubmittingOccupancy = true;
+    this.occupyErrorMessage = '';
+    this.cdr.detectChanges();
+
+    this.ticketService.createTicket({
+      id_espacio: this.occupyTargetSpace.id,
+      id_vehiculo: this.occupyForm.vehicleId,
+      id_usuario: this.occupyForm.userId
+    }).subscribe({
+      next: () => {
+        this.isSubmittingOccupancy = false;
+        this.showOccupancyModal = false;
+        this.occupyTargetSpace = null;
+        this.loadData();
+      },
+      error: err => {
+        this.isSubmittingOccupancy = false;
+        this.occupyErrorMessage = err.error?.detail || err.error?.message || 'Error al ocupar la plaza y generar el ticket.';
+        this.cdr.detectChanges();
+      }
     });
   }
 

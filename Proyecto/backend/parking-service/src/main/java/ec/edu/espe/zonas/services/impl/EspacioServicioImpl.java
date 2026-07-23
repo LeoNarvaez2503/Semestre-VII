@@ -172,13 +172,7 @@ public class EspacioServicioImpl implements EspacioServicio {
         }
 
         // Reglas de negocio para vehículos
-        if (estado == EstadoEspacio.OCUPADO) {
-            if (vehiculoId == null) {
-                throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Debe proporcionar el ID del vehículo para ocupar el espacio"
-                );
-            }
+        if (estado == EstadoEspacio.OCUPADO && vehiculoId != null) {
             
             // Validar vehículo con contrato interno
             try {

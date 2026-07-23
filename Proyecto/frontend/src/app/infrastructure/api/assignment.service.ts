@@ -38,4 +38,8 @@ export class AssignmentService {
   getTraceability(): Observable<AssignmentTrace[]> {
     return this.http.get<AssignmentTrace[]>(`${this.gatewayUrl}/asignacion/trazabilidad`);
   }
+
+  getFleetByOwner(propietarioId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.gatewayUrl}/asignacion/propietario/${encodeURIComponent(propietarioId)}`);
+  }
 }

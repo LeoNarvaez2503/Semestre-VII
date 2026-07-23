@@ -36,8 +36,8 @@
           MIS VEHÍCULOS
         </a>
 
-        <!-- Admin Extra Menu Items -->
-        <ng-container *ngIf="authService.hasRole('Administrador') || authService.hasRole('Root')">
+        <!-- Admin & Audit Extra Menu Items -->
+        <ng-container *ngIf="authService.hasRole('Administrador') || authService.hasRole('Root') || authService.hasRole('Auditor')">
           <a routerLink="/zones" (click)="isUserMenuOpen = false" routerLinkActive="bg-amber-400 text-slate-950 font-black shadow-md"
             class="px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all text-slate-300 hover:text-white hover:bg-slate-800">
             ZONAS
@@ -49,6 +49,11 @@
           <a routerLink="/users-admin" (click)="isUserMenuOpen = false" routerLinkActive="bg-amber-400 text-slate-950 font-black shadow-md"
             class="px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all text-slate-300 hover:text-white hover:bg-slate-800">
             ROLES
+          </a>
+          <a routerLink="/audit" (click)="isUserMenuOpen = false" routerLinkActive="bg-amber-400 text-slate-950 font-black shadow-md"
+            class="px-3 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all font-sans text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5">
+            <i class="fa-solid fa-shield-halved text-amber-400 text-xs"></i>
+            AUDITORÍA (LOGS)
           </a>
         </ng-container>
       </nav>

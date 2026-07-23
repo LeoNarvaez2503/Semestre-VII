@@ -1,0 +1,281 @@
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 font-sans select-none">
+
+  <!-- Header & Title with Live Status and Log Export Button -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl shadow-xl border border-slate-800">
+    <div class="space-y-1">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black shadow-lg">
+          <i class="fa-solid fa-shield-halved text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+            Panel de Auditoría & Trazabilidad
+            <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-amber-400 border border-slate-700">
+              RabbitMQ Broker
+            </span>
+          </h1>
+          <p class="text-xs text-slate-400">
+            Supervisión y control de acciones ejecutadas por los usuarios en el clúster.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions: Refresh and Download .LOG file -->
+    <div class="flex items-center gap-3">
+      <button (click)="loadData()" title="Recargar eventos"
+        class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
+        <i class="fa-solid fa-rotate text-amber-400" [class.animate-spin]="loading"></i>
+        <span>Actualizar</span>
+      </button>
+
+      <button (click)="downloadLogsFile()" [disabled]="filteredEvents.length === 0"
+        class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-amber-400/20 flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+        <i class="fa-solid fa-download"></i>
+        <span>Descargar Registro (.log)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Metric Summary Cards -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <!-- Total Events -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+      <div>
+        <p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Total Eventos</p>
+        <p class="text-2xl font-black text-slate-900 mt-1">{{ totalEventsCount }}</p>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
+        <i class="fa-solid fa-list-check text-lg"></i>
+      </div>
+    </div>
+
+    <!-- Logins -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+      <div>
+        <p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Autenticaciones</p>
+        <p class="text-2xl font-black text-blue-600 mt-1">{{ loginsCount }}</p>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+        <i class="fa-solid fa-right-to-bracket text-lg"></i>
+      </div>
+    </div>
+
+    <!-- Modifications (Create/Update) -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+      <div>
+        <p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Creación / Edición</p>
+        <p class="text-2xl font-black text-emerald-600 mt-1">{{ modificationsCount }}</p>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+        <i class="fa-solid fa-pen-to-square text-lg"></i>
+      </div>
+    </div>
+
+    <!-- Deletions -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+      <div>
+        <p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Eliminaciones</p>
+        <p class="text-2xl font-black text-red-600 mt-1">{{ deletionsCount }}</p>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
+        <i class="fa-solid fa-trash-can text-lg"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Real-Time Filter Control Panel -->
+  <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 space-y-3">
+    <div class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+      
+      <!-- Text Search (User, IP, MAC, Entity) -->
+      <div class="flex-1 relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()"
+          placeholder="Buscar por usuario, IP, dirección MAC o contenido..."
+          class="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs font-semibold text-gray-900 focus:ring-2 focus:ring-amber-500 outline-none">
+      </div>
+
+      <!-- Service Filter -->
+      <select [(ngModel)]="selectedService" (change)="applyFilters()"
+        class="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 focus:ring-2 focus:ring-amber-500 outline-none">
+        <option value="">Todos los Servicios</option>
+        <option *ngFor="let s of availableServices" [value]="s">{{ s }}</option>
+      </select>
+
+      <!-- Action Filter -->
+      <select [(ngModel)]="selectedAction" (change)="applyFilters()"
+        class="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 focus:ring-2 focus:ring-amber-500 outline-none">
+        <option value="">Todas las Acciones</option>
+        <option *ngFor="let a of availableActions" [value]="a">{{ a }}</option>
+      </select>
+
+      <!-- Date Range -->
+      <div class="flex items-center gap-2">
+        <input type="date" [(ngModel)]="startDate" (change)="applyFilters()" title="Fecha Desde"
+          class="bg-gray-50 border border-gray-300 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-gray-700 outline-none">
+        <span class="text-xs font-bold text-gray-400">a</span>
+        <input type="date" [(ngModel)]="endDate" (change)="applyFilters()" title="Fecha Hasta"
+          class="bg-gray-50 border border-gray-300 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-gray-700 outline-none">
+      </div>
+
+      <!-- Reset Filter Button -->
+      <button (click)="resetFilters()" title="Limpiar Filtros"
+        class="px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition cursor-pointer">
+        Limpiar
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="bg-white p-12 rounded-2xl border border-gray-200 text-center text-gray-500 space-y-3">
+    <i class="fa-solid fa-spinner fa-spin text-3xl text-amber-500"></i>
+    <p class="text-xs font-bold">Cargando registros de auditoría desde RabbitMQ...</p>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="!loading && errorMessage" class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs font-semibold flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+    <button (click)="loadData()" class="px-3 py-1 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition cursor-pointer">
+      Reintentar
+    </button>
+  </div>
+
+  <!-- Empty Results -->
+  <div *ngIf="!loading && !errorMessage && filteredEvents.length === 0" class="bg-white p-12 rounded-2xl border border-gray-200 text-center text-gray-400 space-y-2">
+    <i class="fa-solid fa-folder-open text-4xl"></i>
+    <p class="text-sm font-extrabold text-slate-800">No se encontraron eventos de auditoría</p>
+    <p class="text-xs text-gray-500">Intenta ajustar los filtros de búsqueda o realiza acciones en el sistema.</p>
+  </div>
+
+  <!-- Audit Events Log Table -->
+  <div *ngIf="!loading && !errorMessage && filteredEvents.length > 0" class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs border-collapse">
+        <thead class="bg-slate-900 text-white font-mono uppercase text-[10px] tracking-wider border-b border-slate-800">
+          <tr>
+            <th class="py-3.5 px-4 font-bold">Fecha / Hora</th>
+            <th class="py-3.5 px-4 font-bold">Servicio</th>
+            <th class="py-3.5 px-4 font-bold">Acción</th>
+            <th class="py-3.5 px-4 font-bold">Entidad</th>
+            <th class="py-3.5 px-4 font-bold">Usuario</th>
+            <th class="py-3.5 px-4 font-bold">Dirección IP</th>
+            <th class="py-3.5 px-4 font-bold">MAC</th>
+            <th class="py-3.5 px-4 font-bold text-right">Detalles</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 font-sans">
+          <tr *ngFor="let event of filteredEvents" class="hover:bg-slate-50/80 transition">
+            
+            <!-- Timestamp -->
+            <td class="py-3 px-4 font-mono text-[11px] text-gray-600 whitespace-nowrap">
+              {{ event.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}
+            </td>
+
+            <!-- Service -->
+            <td class="py-3 px-4">
+              <span class="font-mono text-[11px] font-bold text-slate-800 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
+                {{ event.servicio }}
+              </span>
+            </td>
+
+            <!-- Action Badge -->
+            <td class="py-3 px-4">
+              <span class="font-black text-[10px] uppercase px-2 py-0.5 rounded-full"
+                [class.bg-blue-100]="event.accion === 'LOGIN'"
+                [class.text-blue-800]="event.accion === 'LOGIN'"
+                [class.bg-emerald-100]="event.accion === 'CREATE'"
+                [class.text-emerald-800]="event.accion === 'CREATE'"
+                [class.bg-amber-100]="event.accion === 'UPDATE'"
+                [class.text-amber-800]="event.accion === 'UPDATE'"
+                [class.bg-red-100]="event.accion === 'DELETE'"
+                [class.text-red-800]="event.accion === 'DELETE'"
+                [class.bg-gray-100]="event.accion !== 'LOGIN' && event.accion !== 'CREATE' && event.accion !== 'UPDATE' && event.accion !== 'DELETE'"
+                [class.text-gray-800]="event.accion !== 'LOGIN' && event.accion !== 'CREATE' && event.accion !== 'UPDATE' && event.accion !== 'DELETE'">
+                {{ event.accion }}
+              </span>
+            </td>
+
+            <!-- Entity -->
+            <td class="py-3 px-4 font-bold text-slate-900">
+              {{ event.entidad }}
+            </td>
+
+            <!-- Username -->
+            <td class="py-3 px-4 font-bold text-slate-800">
+              {{ event.username || 'invitado' }}
+            </td>
+
+            <!-- IP Address -->
+            <td class="py-3 px-4 font-mono text-gray-600">
+              {{ event.ip || 'N/A' }}
+            </td>
+
+            <!-- MAC Address -->
+            <td class="py-3 px-4 font-mono text-gray-500">
+              {{ event.mac || 'N/A' }}
+            </td>
+
+            <!-- Inspect JSON Action Button -->
+            <td class="py-3 px-4 text-right">
+              <button (click)="openEventDetail(event)" title="Ver Carga Útil JSON"
+                class="px-2.5 py-1 bg-slate-100 hover:bg-amber-400 hover:text-slate-950 text-slate-700 font-extrabold rounded-lg text-[11px] transition cursor-pointer shadow-xs">
+                JSON <i class="fa-solid fa-code text-[10px] ml-1"></i>
+              </button>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- JSON Inspection Modal -->
+  <div *ngIf="selectedEvent" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-fadeIn">
+    <div class="bg-white rounded-2xl shadow-2xl border border-gray-300 max-w-xl w-full p-6 space-y-4 text-gray-900 font-sans">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-lg bg-slate-900 text-amber-400 font-bold flex items-center justify-center text-xs">
+            <i class="fa-solid fa-code"></i>
+          </span>
+          <div>
+            <h3 class="text-sm font-extrabold text-slate-900">Inspección de Carga Útil (Payload)</h3>
+            <p class="text-[10px] font-mono text-gray-500">Evento ID: {{ selectedEvent.id }}</p>
+          </div>
+        </div>
+        <button (click)="closeEventDetail()" class="text-gray-400 hover:text-gray-900 transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Event Summary Metadata -->
+      <div class="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-3 rounded-xl border border-gray-200 font-mono">
+        <div><span class="text-gray-500 font-sans font-bold">Servicio:</span> {{ selectedEvent.servicio }}</div>
+        <div><span class="text-gray-500 font-sans font-bold">Acción:</span> {{ selectedEvent.accion }}</div>
+        <div><span class="text-gray-500 font-sans font-bold">Usuario:</span> {{ selectedEvent.username || 'invitado' }}</div>
+        <div><span class="text-gray-500 font-sans font-bold">IP:</span> {{ selectedEvent.ip }}</div>
+      </div>
+
+      <!-- Raw JSON Data Box -->
+      <div class="space-y-1">
+        <p class="text-[11px] font-bold text-gray-700 uppercase tracking-wider">Datos del Evento (`datos`):</p>
+        <pre class="bg-slate-950 text-amber-300 p-4 rounded-xl text-xs font-mono overflow-x-auto max-h-60 border border-slate-800 leading-relaxed">{{ formatJson(selectedEvent.datos || {}) }}</pre>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex justify-end pt-2">
+        <button (click)="closeEventDetail()" class="px-5 py-2 bg-slate-900 hover:bg-black text-white font-extrabold text-xs rounded-xl shadow transition cursor-pointer">
+          Cerrar Inspección
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</section>

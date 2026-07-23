@@ -227,4 +227,109 @@
         </div>
       </div>
 
+      <!-- Occupy Space & Assign Vehicle Modal -->
+      <div *ngIf="showOccupancyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 animate-fadeIn font-sans select-none">
+        <div class="bg-white rounded-2xl shadow-2xl border border-gray-300 max-w-md w-full p-6 space-y-4 text-gray-900">
+          
+          <!-- Modal Header -->
+          <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-red-100 text-red-600 font-bold flex items-center justify-center text-sm shadow-xs">
+                <i class="fa-solid fa-car-tunnel"></i>
+              </span>
+              <div>
+                <h3 class="text-sm font-extrabold text-slate-900">Ocupar Plaza: {{ occupyTargetSpace?.description || occupyTargetSpace?.numero }}</h3>
+                <p class="text-[10px] text-gray-500 font-mono">Generación e Ingreso de Ticket de Parqueo</p>
+              </div>
+            </div>
+            <button (click)="closeOccupyModal()" class="text-gray-400 hover:text-gray-900 transition">
+              <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+          </div>
+
+          <!-- Space Metadata Pill -->
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs flex justify-between items-center font-mono">
+            <div>
+              <span class="text-gray-500 font-sans font-bold">Tipo Espacio:</span> 
+              <span class="font-bold text-amber-600 ml-1">{{ occupyTargetSpace?.type }}</span>
+            </div>
+            <div>
+              <span class="text-gray-500 font-sans font-bold">Estado Actual:</span> 
+              <span class="font-bold text-emerald-600 ml-1">{{ occupyTargetSpace?.estado }}</span>
+            </div>
+          </div>
+
+          <!-- Occupy Form -->
+          <form (ngSubmit)="onConfirmOccupancy()" class="space-y-4 text-xs">
+            
+            <!-- User Selector First -->
+            <div>
+              <label class="block text-gray-700 font-bold mb-1">1. Usuario / Conductor Responsable *</label>
+              <select [(ngModel)]="occupyForm.userId" (change)="onUserChange(occupyForm.userId)" name="userId" required
+                class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:ring-2 focus:ring-amber-500 outline-none">
+                <ng-container *ngIf="authService.hasRole('Administrador') || authService.hasRole('Root')">
+                  <option *ngFor="let u of availableUsers" [value]="u.id_person">
+                    {{ u.username }} - {{ u.person?.first_name }} {{ u.person?.last_name }} ({{ u.person?.dni || 'Sin Cédula' }})
+                  </option>
+                </ng-container>
+                <ng-container *ngIf="!authService.hasRole('Administrador') && !authService.hasRole('Root')">
+                  <option [value]="authService.currentUser()?.id_person">
+                    {{ authService.currentUser()?.username }} (Mi Usuario)
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+
+            <!-- Vehicle Selector Second (Filtered to Owned Vehicles) -->
+            <div>
+              <label class="block text-gray-700 font-bold mb-1 flex justify-between items-center">
+                <span>2. Vehículo del Usuario Seleccionado *</span>
+                <span class="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                  {{ availableVehicles.length }} vehículo(s)
+                </span>
+              </label>
+
+              <select [(ngModel)]="occupyForm.vehicleId" name="vehicleId" required
+                [disabled]="availableVehicles.length === 0"
+                class="w-full p-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:ring-2 focus:ring-amber-500 outline-none disabled:bg-gray-100 disabled:text-gray-400">
+                <option *ngIf="availableVehicles.length === 0" value="">No posee vehículos asignados</option>
+                <option *ngFor="let v of availableVehicles" [value]="v.id">
+                  {{ v.data.plate }} - {{ v.data.brand }} {{ v.data.model }} ({{ v.type }})
+                </option>
+              </select>
+
+              <!-- Warning Banner if User Has No Vehicles -->
+              <div *ngIf="availableVehicles.length === 0 && occupyForm.userId"
+                class="mt-2 p-2.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-[11px] font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-amber-600"></i>
+                <span>Este usuario no posee vehículos asignados. Selecciona otro usuario o asigne un vehículo en Asignaciones.</span>
+              </div>
+            </div>
+
+            <!-- Error Banner -->
+            <div *ngIf="occupyErrorMessage" class="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-semibold flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-base"></i>
+              <span>{{ occupyErrorMessage }}</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end gap-2 pt-2">
+              <button type="button" (click)="closeOccupyModal()"
+                class="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold text-xs transition cursor-pointer">
+                Cancelar
+              </button>
+
+              <button type="submit"
+                [disabled]="isSubmittingOccupancy || !occupyForm.vehicleId || !occupyForm.userId"
+                class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs transition shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                <i *ngIf="isSubmittingOccupancy" class="fa-solid fa-spinner fa-spin text-xs"></i>
+                <span>{{ isSubmittingOccupancy ? 'Procesando...' : 'Confirmar Ocupación & Ticket' }}</span>
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
 </section>

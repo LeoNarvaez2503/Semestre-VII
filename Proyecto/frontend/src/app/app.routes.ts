@@ -42,6 +42,12 @@ export const routes: Routes = [
         ...adminOnly,
         loadComponent: () => import('./features/users-admin/users-admin.component').then(m => m.UsersAdminComponent)
       },
+      {
+        path: 'audit',
+        canActivate: [roleGuard],
+        data: { roles: ['Administrador', 'Root', 'Auditor', 'ADMIN', 'AUDITOR'] },
+        loadComponent: () => import('./features/audit/audit.component').then(m => m.AuditComponent)
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

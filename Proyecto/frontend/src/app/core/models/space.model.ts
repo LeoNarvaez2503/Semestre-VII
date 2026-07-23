@@ -27,8 +27,12 @@ export interface ParkingSpaceApiResponse {
 }
 
 export interface SpaceSSEMessage {
-  id: string;
-  estado: SpaceStatus;
+  id?: string;
+  idEspacio?: string;
+  id_espacio?: string;
+  spaceId?: string;
+  estado?: SpaceStatus;
+  estado_espacio?: string;
   vehiculoId?: string;
   zoneId?: string;
   timestamp?: string;
