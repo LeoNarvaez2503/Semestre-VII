@@ -27,6 +27,7 @@ export const CajeroDashboard: React.FC = () => {
     transactions,
     deposit,
     withdraw,
+    createAccount,
     errorMsg,
     successMsg,
     clearNotifications
@@ -42,6 +43,42 @@ export const CajeroDashboard: React.FC = () => {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [otpCode, setOtpCode] = useState(''); // Redención de código OTP
+
+  // Account creation states
+  const [newAccType, setNewAccType] = useState<'AHORROS' | 'CORRIENTE'>('AHORROS');
+  const [newAccBalance, setNewAccBalance] = useState('0');
+
+  const [sanitizeWarning, setSanitizeWarning] = useState<string | null>(null);
+
+  const handleAmountInputChange = (
+    val: string,
+    setVal: (v: string) => void
+  ) => {
+    if (val === '') {
+      setVal('');
+      setSanitizeWarning(null);
+      return;
+    }
+
+    const hasInvalidChars = /[^0-9.]/g.test(val);
+    let sanitized = val.replace(/[^0-9.]/g, '');
+
+    const parts = sanitized.split('.');
+    if (parts.length > 2) {
+      sanitized = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    if (parts.length > 1 && parts[1].length > 2) {
+      sanitized = parts[0] + '.' + parts[1].substring(0, 2);
+    }
+
+    if (hasInvalidChars || val !== sanitized) {
+      setSanitizeWarning('Carácter inválido bloqueado. Solo se permiten números positivos y hasta 2 decimales (sin signos +, - o letras).');
+      setTimeout(() => setSanitizeWarning(null), 3500);
+    }
+
+    setVal(sanitized);
+  };
 
   const filteredClients = React.useMemo(() => {
     const clients = allUsers.filter(u => u.role === 'CLIENTE');
@@ -68,6 +105,21 @@ export const CajeroDashboard: React.FC = () => {
       setSelectedAccount(userAccs[0]);
     } else {
       setSelectedAccount(null);
+    }
+  };
+
+  const handleCreateAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchedUser) return;
+    try {
+      const generatedAccountNumber = (newAccType === 'AHORROS' ? '100' : '200') + Math.floor(100000 + Math.random() * 900000).toString();
+      await createAccount(searchedUser.id, generatedAccountNumber, newAccType, parseFloat(newAccBalance));
+      setNewAccBalance('0');
+      // Refresh accounts list
+      const updatedAccounts = allAccounts.filter(acc => acc.userId === searchedUser.id);
+      setSearchedAccounts(updatedAccounts);
+    } catch (err) {
+      // Handled in context
     }
   };
 
@@ -253,6 +305,43 @@ export const CajeroDashboard: React.FC = () => {
                     })}
                   </div>
                 </div>
+
+                {/* Formulario de Apertura de Cuenta */}
+                <div className="mt-6 pt-6 border-t border-slate-100">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono mb-3">Aperturar Nueva Cuenta</p>
+                  <form onSubmit={handleCreateAccount} className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tipo de Cuenta</label>
+                      <select
+                        value={newAccType}
+                        onChange={(e) => setNewAccType(e.target.value as any)}
+                        className="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-emerald-600 bg-slate-50"
+                      >
+                        <option value="AHORROS">AHORROS</option>
+                        <option value="CORRIENTE">CORRIENTE</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">Monto Inicial ($ USD)</label>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        required
+                        value={newAccBalance}
+                        onChange={(e) => handleAmountInputChange(e.target.value, setNewAccBalance)}
+                        className="w-full border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-mono focus:outline-emerald-600 bg-slate-50"
+                      />
+                    </div>
+                    <div>
+                      <button
+                        type="submit"
+                        className="w-full bg-emerald-800 hover:bg-emerald-950 text-white font-bold py-2 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
+                      >
+                        Aperturar
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </motion.div>
           ) : (
@@ -345,15 +434,18 @@ export const CajeroDashboard: React.FC = () => {
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold font-mono text-sm">$</span>
                   <input
-                    type="number"
-                    step="0.01"
+                    type="text"
+                    inputMode="decimal"
                     placeholder="0.00"
                     required
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={(e) => handleAmountInputChange(e.target.value, setAmount)}
                     className="w-full border border-slate-200 rounded-xl pl-8 pr-4 py-2.5 text-sm font-mono focus:outline-emerald-600 bg-slate-50"
                   />
                 </div>
+                {sanitizeWarning && (
+                  <p className="text-[10px] font-bold text-red-655 mt-1.5 animate-pulse">{sanitizeWarning}</p>
+                )}
               </div>
 
               <div>

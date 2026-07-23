@@ -1,0 +1,466 @@
+{
+	"info": {
+		"_postman_id": "525eca15-f893-4930-832a-745dc857c9ca",
+		"name": "Mushuc Runa Banking API Tests",
+		"description": "Colección de pruebas para validar los endpoints del core bancario de Cooperativa Mushuc Runa, incluyendo casos de éxito y casos de error con validación de montos.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Casos de Éxito",
+			"item": [
+				{
+					"name": "Obtener Clientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Cuentas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/cuentas/cuentas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cuentas",
+								"cuentas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Transacciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Exitoso",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"AnthonyAlainMorales@gmail.com\",\n    \"password\": \"Demo2026!\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Depósito Exitoso (Monto Válido)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": 150.50,\n    \"description\": \"Deposito de prueba con monto limpio\",\n    \"executorId\": \"cashier-maria\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/depositos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"depositos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retiro Exitoso (Monto Válido)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": 100.00,\n    \"description\": \"Retiro en ventanilla exitoso\",\n    \"executorId\": \"cashier-maria\",\n    \"channel\": \"VENTANILLA\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/retiros",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"retiros"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transferencia Exitosa (Monto Válido)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sourceAccountId\": \"acc-savings-anthony\",\n    \"destinationAccountNumber\": \"100555666\",\n    \"amount\": 25.00,\n    \"description\": \"Transferencia interna exitosa\",\n    \"executorId\": \"client-anthony\",\n    \"isExternal\": false\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/transferencias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"transferencias"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Casos de Error (Sanitización y Negocio)",
+			"item": [
+				{
+					"name": "Depósito Error - Signo Operación (100+5)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": \"100+5\",\n    \"description\": \"Intento con caracteres especiales\",\n    \"executorId\": \"cashier-maria\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/depositos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"depositos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Depósito Error - Letras (150abc)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": \"150abc\",\n    \"description\": \"Intento con letras\",\n    \"executorId\": \"cashier-maria\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/depositos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"depositos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Depósito Error - Signo Positivo (+100)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": \"+100\",\n    \"description\": \"Intento con signo positivo\",\n    \"executorId\": \"cashier-maria\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/depositos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"depositos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Depósito Error - Signo Negativo (-100)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": -100,\n    \"description\": \"Intento con signo negativo\",\n    \"executorId\": \"cashier-maria\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/depositos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"depositos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Depósito Error - Exceso Decimales (100.555)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": 100.555,\n    \"description\": \"Intento con 3 decimales\",\n    \"executorId\": \"cashier-maria\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/depositos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"depositos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retiro Error - Fondos Insuficientes ($50000)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": 50000.00,\n    \"description\": \"Retiro que excede fondos\",\n    \"executorId\": \"cashier-maria\",\n    \"channel\": \"VENTANILLA\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/retiros",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"retiros"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transferencia Error - Cuenta Inexistente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sourceAccountId\": \"acc-savings-anthony\",\n    \"destinationAccountNumber\": \"999999999\",\n    \"amount\": 10.00,\n    \"description\": \"Intento de transferencia a destino invalido\",\n    \"executorId\": \"client-anthony\",\n    \"isExternal\": false\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/transferencias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"transferencias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Cuenta Error - Balance con Letras",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"client-anthony\",\n    \"accountNumber\": \"900123456\",\n    \"type\": \"AHORROS\",\n    \"balance\": \"200abc\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cuentas/cuentas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cuentas",
+								"cuentas"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

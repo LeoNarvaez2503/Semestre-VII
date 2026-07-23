@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { AccountEntity, AuditLogEntity, SystemConfigEntity, TransactionEntity, UserEntity } from '../../../libs/common/src/entities';
-import { generateId, generateRefCode, toNumber } from '../../../libs/common/src/utils';
+import { generateId, generateRefCode, toNumber, hashPassword } from '../../../libs/common/src/utils';
 
 @Injectable()
 export class TransaccionesService {
@@ -21,27 +21,37 @@ export class TransaccionesService {
   async onModuleInit() {
     const usersCount = await this.users.count();
     if (usersCount === 0) {
+      await this.users.save([
+        { id: 'client-anthony', name: 'Anthony Alain Morales', identityId: '1804294812', email: 'AnthonyAlainMorales@gmail.com', role: 'CLIENTE', status: 'ACTIVE', twoFactorEnabled: true, passwordHash: hashPassword('Demo2026!') },
+        { id: 'client-segundo', name: 'Segundo Intriago Chango', identityId: '1805556661', email: 'segundo.chango@mushucruna.ec', role: 'CLIENTE', status: 'ACTIVE', twoFactorEnabled: false, passwordHash: hashPassword('Demo2026!') },
+        { id: 'cashier-maria', name: 'Maria Juana Pilamunga', identityId: '1802345678', email: 'maria.juana@mushucruna.ec', role: 'CAJERO', status: 'ACTIVE', twoFactorEnabled: true, passwordHash: hashPassword('Demo2026!') },
+        { id: 'auditor-humberto', name: 'Humberto Calero Flores', identityId: '1803456789', email: 'humberto.calero@mushucruna.ec', role: 'AUDITOR', status: 'ACTIVE', twoFactorEnabled: true, passwordHash: hashPassword('Demo2026!') },
+        { id: 'admin-luis', name: 'Abg. Luis Alfonso Chango', identityId: '1801234567', email: 'luis.chango@mushucruna.ec', role: 'ADMIN', status: 'ACTIVE', twoFactorEnabled: true, passwordHash: hashPassword('Demo2026!') },
+      ]);
+    }
 
-    await this.users.save([
-      { id: 'client-anthony', name: 'Anthony Alain Morales', identityId: '1804294812', email: 'AnthonyAlainMorales@gmail.com', role: 'CLIENTE', status: 'ACTIVE', twoFactorEnabled: true },
-      { id: 'client-segundo', name: 'Segundo Intriago Chango', identityId: '1805556661', email: 'segundo.chango@mushucruna.ec', role: 'CLIENTE', status: 'ACTIVE', twoFactorEnabled: false },
-      { id: 'cashier-maria', name: 'Maria Juana Pilamunga', identityId: '1802345678', email: 'maria.juana@mushucruna.ec', role: 'CAJERO', status: 'ACTIVE', twoFactorEnabled: true },
-      { id: 'auditor-humberto', name: 'Humberto Calero Flores', identityId: '1803456789', email: 'humberto.calero@mushucruna.ec', role: 'AUDITOR', status: 'ACTIVE', twoFactorEnabled: true },
-      { id: 'admin-luis', name: 'Abg. Luis Alfonso Chango', identityId: '1801234567', email: 'luis.chango@mushucruna.ec', role: 'ADMIN', status: 'ACTIVE', twoFactorEnabled: true },
-    ]);
+    const accountsCount = await this.accounts.count();
+    if (accountsCount === 0) {
+      await this.accounts.save([
+        { id: 'acc-savings-anthony', userId: 'client-anthony', accountNumber: '100234567', type: 'AHORROS', balance: 12450.5, status: 'ACTIVE' },
+        { id: 'acc-checking-anthony', userId: 'client-anthony', accountNumber: '200456789', type: 'CORRIENTE', balance: 1500, status: 'ACTIVE' },
+        { id: 'acc-savings-segundo', userId: 'client-segundo', accountNumber: '100555666', type: 'AHORROS', balance: 850, status: 'ACTIVE' },
+      ]);
+    }
 
-    await this.accounts.save([
-      { id: 'acc-savings-anthony', userId: 'client-anthony', accountNumber: '100234567', type: 'AHORROS', balance: 12450.5, status: 'ACTIVE' },
-      { id: 'acc-checking-anthony', userId: 'client-anthony', accountNumber: '200456789', type: 'CORRIENTE', balance: 1500, status: 'ACTIVE' },
-      { id: 'acc-savings-segundo', userId: 'client-segundo', accountNumber: '100555666', type: 'AHORROS', balance: 850, status: 'ACTIVE' },
-    ]);
+    const txsCount = await this.transactions.count();
+    if (txsCount === 0) {
+      await this.transactions.save([
+        { id: 'tx-init-1', sourceAccountId: null, destinationAccountId: 'acc-savings-anthony', type: 'DEPOSIT', amount: 12500.5, description: 'Deposito Inicial de Apertura en Efectivo', ipAddress: '192.168.1.100', status: 'SUCCESS', fee: 0, refCode: 'DEP-773821' },
+        { id: 'tx-init-2', sourceAccountId: 'acc-savings-anthony', destinationAccountId: 'acc-savings-segundo', type: 'TRANSFER', amount: 50, description: 'Transferencia por Servicios Ambientales', ipAddress: '192.168.1.102', status: 'SUCCESS', fee: 0, refCode: 'TRF-552194' },
+        { id: 'tx-init-3', sourceAccountId: null, destinationAccountId: 'acc-savings-segundo', type: 'DEPOSIT', amount: 800, description: 'Deposito de Apertura en Efectivo', ipAddress: '192.168.1.101', status: 'SUCCESS', fee: 0, refCode: 'DEP-883921' },
+        { id: 'tx-init-4', sourceAccountId: null, destinationAccountId: 'acc-checking-anthony', type: 'DEPOSIT', amount: 1500, description: 'Deposito de Apertura en Efectivo', ipAddress: '192.168.1.100', status: 'SUCCESS', fee: 0, refCode: 'DEP-994021' },
+      ]);
+    }
 
-    await this.transactions.save([
-      { id: 'tx-init-1', sourceAccountId: null, destinationAccountId: 'acc-savings-anthony', type: 'DEPOSIT', amount: 10000, description: 'Deposito Inicial de Apertura en Efectivo', ipAddress: '192.168.1.100', status: 'SUCCESS', fee: 0, refCode: 'DEP-773821' },
-      { id: 'tx-init-2', sourceAccountId: 'acc-savings-anthony', destinationAccountId: 'acc-savings-segundo', type: 'TRANSFER', amount: 50, description: 'Transferencia por Servicios Ambientales', ipAddress: '192.168.1.102', status: 'SUCCESS', fee: 0, refCode: 'TRF-552194' },
-    ]);
-
-    await this.config.save({ id: 'default', dailyTransferLimit: 5000, commissionFee: 2.5, savingsInterestRate: 6.5 });
+    const configCount = await this.config.count();
+    if (configCount === 0) {
+      await this.config.save({ id: 'default', dailyTransferLimit: 5000, commissionFee: 2.5, savingsInterestRate: 6.5 });
     }
   }
 
@@ -243,6 +253,25 @@ export class TransaccionesService {
 
       return transaction;
     });
+  }
+
+  async verifyAccountOwner(accountId: string, userId: string): Promise<boolean> {
+    const account = await this.accounts.findOneBy({ id: accountId });
+    return account ? account.userId === userId : false;
+  }
+
+  async verifyTransactionOwner(transactionId: string, userId: string): Promise<boolean> {
+    const transaction = await this.transactions.findOneBy({ id: transactionId });
+    if (!transaction) return false;
+    
+    // Buscar si el userId es dueño de la cuenta de origen o destino
+    const conditions = [];
+    if (transaction.sourceAccountId) conditions.push({ id: transaction.sourceAccountId, userId });
+    if (transaction.destinationAccountId) conditions.push({ id: transaction.destinationAccountId, userId });
+    
+    if (conditions.length === 0) return false;
+    const accounts = await this.accounts.find({ where: conditions });
+    return accounts.length > 0;
   }
 
   private async getExecutor(executorId: string) {

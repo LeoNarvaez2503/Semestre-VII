@@ -5,6 +5,22 @@ import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 import helmet from 'helmet';
 
 export function configureHttpApp(app: INestApplication) {
+  // Logger HTTP integrado para todos los microservicios y Gateway
+  const { Logger } = require('@nestjs/common');
+  app.use((req: any, res: any, next: any) => {
+    const { ip, method, url } = req;
+    const userAgent = req.get('user-agent') || '';
+    const start = Date.now();
+
+    res.on('finish', () => {
+      const { statusCode } = res;
+      const duration = Date.now() - start;
+      const logger = new Logger('HTTP');
+      logger.log(`${method} ${url} ${statusCode} - ${duration}ms - IP: ${ip} - UA: ${userAgent}`);
+    });
+    next();
+  });
+
   const config = app.get(ConfigService);
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));

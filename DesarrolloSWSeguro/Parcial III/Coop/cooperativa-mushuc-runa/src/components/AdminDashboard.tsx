@@ -36,11 +36,11 @@ export const AdminDashboard: React.FC = () => {
     clearNotifications
   } = useBank();
 
-  // Employee creation states
+  // Employee/Client creation states
   const [empName, setEmpName] = useState('');
   const [empId, setEmpId] = useState('');
   const [empEmail, setEmpEmail] = useState('');
-  const [empRole, setEmpRole] = useState<'CAJERO' | 'AUDITOR'>('CAJERO');
+  const [empRole, setEmpRole] = useState<'CAJERO' | 'AUDITOR' | 'CLIENTE'>('CAJERO');
 
   // Config parameters states
   const [dailyLimit, setDailyLimit] = useState(systemConfig?.dailyTransferLimit.toString() || '5000');
@@ -209,10 +209,10 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Create Employee Form */}
+        {/* Create Employee/Client Form */}
         <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
           <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-4">
-            <UserPlus className="w-5 h-5 text-emerald-800" /> Registrar Nuevo Empleado
+            <UserPlus className="w-5 h-5 text-emerald-800" /> Registrar Nuevo Usuario (Empleado / Cliente)
           </h3>
 
           <form onSubmit={handleCreateEmployee} className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -241,10 +241,10 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider font-mono mb-1.5">Correo Electrónico Corporativo</label>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider font-mono mb-1.5">Correo Electrónico</label>
               <input
                 type="email"
-                placeholder="perez.juan@mushucruna.ec"
+                placeholder="perez.juan@gmail.com"
                 required
                 value={empEmail}
                 onChange={(e) => setEmpEmail(e.target.value)}
@@ -253,7 +253,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider font-mono mb-1.5">Asignar Perfil Operativo</label>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider font-mono mb-1.5">Asignar Perfil / Rol</label>
               <select
                 value={empRole}
                 onChange={(e) => setEmpRole(e.target.value as any)}
@@ -261,6 +261,7 @@ export const AdminDashboard: React.FC = () => {
               >
                 <option value="CAJERO">CAJERO EN SUCURSAL</option>
                 <option value="AUDITOR">AUDITOR INTERNO (AML/COMPLIANCE)</option>
+                <option value="CLIENTE">CLIENTE COOPERADO</option>
               </select>
             </div>
 
@@ -270,7 +271,7 @@ export const AdminDashboard: React.FC = () => {
                 id="btn-create-emp"
                 className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
               >
-                Registrar Empleado
+                Registrar Usuario
               </button>
             </div>
           </form>

@@ -1,0 +1,1030 @@
+{
+	"info": {
+		"_postman_id": "525eca15-f893-4930-832a-745dc857c9ca-complete",
+		"name": "Mushuc Runa Complete Banking API Tests",
+		"description": "Colección de pruebas completa para el sistema bancario Cooperativa Mushuc Runa. Incluye todos los endpoints de los microservicios (Clientes, Cuentas y Transacciones) pasando por el API Gateway con inyección automática de tokens JWT.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. Rutas Públicas y Salud",
+			"item": [
+				{
+					"name": "Gateway Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clientes Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cuentas Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/cuentas/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cuentas",
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Transacciones Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Autenticación y Sesiones",
+			"item": [
+				{
+					"name": "Login Cliente (Anthony)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+									"    pm.collectionVariables.set(\"clientId\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"AnthonyAlainMorales@gmail.com\",\n    \"password\": \"Demo2026!\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Cajero (Maria)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+									"    pm.collectionVariables.set(\"clientId\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"maria.juana@mushucruna.ec\",\n    \"password\": \"Demo2026!\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Auditor (Humberto)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+									"    pm.collectionVariables.set(\"clientId\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"humberto.calero@mushucruna.ec\",\n    \"password\": \"Demo2026!\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Administrador (Luis)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+									"    pm.collectionVariables.set(\"clientId\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"luis.chango@mushucruna.ec\",\n    \"password\": \"Demo2026!\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes/refresh",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Gestión de Usuarios",
+			"item": [
+				{
+					"name": "Obtener Todos los Usuarios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes/{{clientId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes",
+								"{{clientId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Empleado (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Nuevo Auditor Operativo\",\n    \"identityId\": \"1809999999\",\n    \"email\": \"auditor.nuevo@mushucruna.ec\",\n    \"role\": \"AUDITOR\",\n    \"adminId\": \"{{clientId}}\",\n    \"ipAddress\": \"192.168.1.50\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Estado Empleado (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"SUSPEND\",\n    \"adminId\": \"{{clientId}}\",\n    \"ipAddress\": \"192.168.1.50\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/clientes/auditor-humberto/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"clientes",
+								"auditor-humberto",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Logs de Auditoría BDD (Auditor/Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/auditoria",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"auditoria"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Configuración Core",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/configuracion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"configuracion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Configuración Core (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dailyTransferLimit\": 8000,\n    \"commissionFee\": 3.5,\n    \"savingsInterestRate\": 7.0,\n    \"adminId\": \"{{clientId}}\",\n    \"ipAddress\": \"192.168.1.50\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/clientes/configuracion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"clientes",
+								"configuracion"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Core de Cuentas",
+			"item": [
+				{
+					"name": "Obtener Todas las Cuentas",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/cuentas/cuentas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cuentas",
+								"cuentas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Cuenta por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/cuentas/cuentas/acc-savings-anthony",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cuentas",
+								"cuentas",
+								"acc-savings-anthony"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Nueva Cuenta (Cajero)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"client-segundo\",\n    \"accountNumber\": \"100999999\",\n    \"type\": \"AHORROS\",\n    \"balance\": 1000.50\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cuentas/cuentas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cuentas",
+								"cuentas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Congelar Cuenta (Auditor)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"FREEZE\",\n    \"auditorId\": \"{{clientId}}\",\n    \"reason\": \"Medida de seguridad preventiva por auditoría\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cuentas/cuentas/acc-savings-anthony/freeze",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cuentas",
+								"cuentas",
+								"acc-savings-anthony",
+								"freeze"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Core de Transacciones",
+			"item": [
+				{
+					"name": "Ver Historial Global",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Transacción por ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/tx-init-1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"tx-init-1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ejecutar Depósito (Cajero)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": 250.00,\n    \"description\": \"Deposito en efectivo por ventanilla\",\n    \"executorId\": \"{{clientId}}\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/depositos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"depositos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ejecutar Retiro Ventanilla (Cajero)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": 80.00,\n    \"description\": \"Retiro en efectivo por ventanilla\",\n    \"executorId\": \"{{clientId}}\",\n    \"channel\": \"VENTANILLA\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/retiros",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"retiros"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ejecutar Retiro ATM (Cliente)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountId\": \"acc-savings-anthony\",\n    \"amount\": 40.00,\n    \"description\": \"Retiro digital OTP para ATM\",\n    \"executorId\": \"{{clientId}}\",\n    \"channel\": \"ATM\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/retiros",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"retiros"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ejecutar Transferencia (Cliente)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sourceAccountId\": \"acc-savings-anthony\",\n    \"destinationAccountNumber\": \"100555666\",\n    \"amount\": 50.00,\n    \"description\": \"Transferencia interna a Segundo\",\n    \"executorId\": \"{{clientId}}\",\n    \"isExternal\": false\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/transacciones/transacciones/transferencias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"transacciones",
+								"transacciones",
+								"transferencias"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "clientId",
+			"value": ""
+		}
+	]
+}

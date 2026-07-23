@@ -27,6 +27,9 @@ export class UserEntity {
   @Column({ default: false })
   twoFactorEnabled: boolean;
 
+  @Column({ nullable: true })
+  passwordHash?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 }

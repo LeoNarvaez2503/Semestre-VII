@@ -25,6 +25,14 @@ const SESSION_KEY = 'mushucruna_active_session';
 export const DEMO_PASSWORD = 'Demo2026!';
 const USE_BACKEND = import.meta.env.VITE_USE_BACKEND === 'true';
 
+const HARDCODED_DEMO_USERS: User[] = [
+  { id: 'client-anthony', name: 'Anthony Alain Morales', identityId: '1804294812', email: 'AnthonyAlainMorales@gmail.com', role: 'CLIENTE', status: 'ACTIVE', twoFactorEnabled: true, createdAt: new Date() },
+  { id: 'client-segundo', name: 'Segundo Intriago Chango', identityId: '1805556661', email: 'segundo.chango@mushucruna.ec', role: 'CLIENTE', status: 'ACTIVE', twoFactorEnabled: false, createdAt: new Date() },
+  { id: 'cashier-maria', name: 'Maria Juana Pilamunga', identityId: '1802345678', email: 'maria.juana@mushucruna.ec', role: 'CAJERO', status: 'ACTIVE', twoFactorEnabled: true, createdAt: new Date() },
+  { id: 'auditor-humberto', name: 'Humberto Calero Flores', identityId: '1803456789', email: 'humberto.calero@mushucruna.ec', role: 'AUDITOR', status: 'ACTIVE', twoFactorEnabled: true, createdAt: new Date() },
+  { id: 'admin-luis', name: 'Abg. Luis Alfonso Chango', identityId: '1801234567', email: 'luis.chango@mushucruna.ec', role: 'ADMIN', status: 'ACTIVE', twoFactorEnabled: true, createdAt: new Date() },
+];
+
 const getSimulatedIP = () => '190.152.12.98';
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -58,7 +66,8 @@ interface BankContextType {
   withdraw: (accountId: string, amount: number, description: string, channel: 'ATM' | 'VENTANILLA') => Promise<{ transaction: Transaction; otpCode?: string }>;
   transfer: (sourceAccountId: string, destinationAccountNumber: string, amount: number, description: string, isExternal: boolean) => Promise<void>;
   toggleFreeze: (accountId: string, action: 'FREEZE' | 'UNFREEZE', reason: string) => Promise<void>;
-  createEmployee: (name: string, identityId: string, email: string, role: 'CAJERO' | 'AUDITOR') => Promise<void>;
+  createAccount: (userId: string, accountNumber: string, type: 'AHORROS' | 'CORRIENTE', initialBalance: number) => Promise<void>;
+  createEmployee: (name: string, identityId: string, email: string, role: 'CAJERO' | 'AUDITOR' | 'CLIENTE') => Promise<void>;
   toggleEmployeeStatus: (employeeId: string, action: 'ACTIVATE' | 'SUSPEND') => Promise<void>;
   updateConfig: (dailyLimit: number, commission: number, interest: number) => Promise<void>;
   clearNotifications: () => void;
@@ -74,7 +83,7 @@ const configRepository = new InMemorySystemConfigRepository();
 
 export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sessionUserId, setSessionUserId] = useState<string | null>(() => localStorage.getItem(SESSION_KEY));
-  const [activeRole, setActiveRole] = useState<UserRole>('CLIENTE');
+  const [activeRole, setActiveRole] = useState<UserRole>(() => (localStorage.getItem('mushucruna_active_role') as UserRole) || 'CLIENTE');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [allAccounts, setAllAccounts] = useState<Account[]>([]);
@@ -90,24 +99,59 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshState = async (userIdOverride = sessionUserId) => {
     setIsLoading(true);
     try {
-      const [users, accounts, txs, logs, conf] = USE_BACKEND
-        ? await Promise.all([
+      if (!userIdOverride) {
+        setAllUsers(HARDCODED_DEMO_USERS);
+        setAllAccounts([]);
+        setTransactions([]);
+        setAuditLogs([]);
+        setSystemConfig(null);
+        setCurrentUser(null);
+        setCurrentUserAccounts([]);
+        return;
+      }
+
+      const role = (localStorage.getItem('mushucruna_active_role') as UserRole) || 'CLIENTE';
+
+      let users: User[] = [];
+      let accounts: Account[] = [];
+      let txs: Transaction[] = [];
+      let logs: AuditLog[] = [];
+      let conf: SystemConfig | null = null;
+
+      if (USE_BACKEND) {
+        conf = await backendApi.getConfig();
+
+        if (role === 'ADMIN' || role === 'AUDITOR') {
+          [users, accounts, txs, logs] = await Promise.all([
             backendApi.getUsers(),
             backendApi.getAccounts(),
             backendApi.getTransactions(),
             backendApi.getAuditLogs(),
-            backendApi.getConfig(),
-          ])
-        : await Promise.all([
-            userRepository.getAll(),
-            accountRepository.getAll(),
-            transactionRepository.getAll(),
-            auditLogRepository.getAll(),
-            configRepository.getConfig(),
           ]);
-      const sessionUser = userIdOverride
-        ? users.find(user => user.id === userIdOverride && user.status === 'ACTIVE') || null
-        : null;
+        } else if (role === 'CAJERO') {
+          [users, accounts, txs] = await Promise.all([
+            backendApi.getUsers(),
+            backendApi.getAccounts(),
+            backendApi.getTransactions(),
+          ]);
+        } else if (role === 'CLIENTE') {
+          accounts = await backendApi.getAccounts(userIdOverride);
+          const txPromises = accounts.map(acc => backendApi.getTransactions(acc.id));
+          const txResults = await Promise.all(txPromises);
+          txs = txResults.flat();
+          users = HARDCODED_DEMO_USERS;
+        }
+      } else {
+        [users, accounts, txs, logs, conf] = await Promise.all([
+          userRepository.getAll(),
+          accountRepository.getAll(),
+          transactionRepository.getAll(),
+          auditLogRepository.getAll(),
+          configRepository.getConfig(),
+        ]);
+      }
+
+      const sessionUser = users.find(user => user.id === userIdOverride && user.status === 'ACTIVE') || null;
 
       const parsedConf = conf ? {
         ...conf,
@@ -140,8 +184,18 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setCurrentUserAccounts([]);
       }
-    } catch {
-      setErrorMsg(USE_BACKEND ? 'Error al sincronizar con los microservicios NestJS.' : 'Error al sincronizar datos bancarios localmente.');
+    } catch (err) {
+      console.error('Error synchronizing:', err);
+      // Limpiamos la sesión por seguridad ya que las credenciales/tokens almacenados son inválidos
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem('mushucruna_access_token');
+      localStorage.removeItem('mushucruna_refresh_token');
+      localStorage.removeItem('mushucruna_active_role');
+      setSessionUserId(null);
+      setCurrentUser(null);
+      setCurrentUserAccounts([]);
+      setAllUsers(HARDCODED_DEMO_USERS);
+      setErrorMsg(USE_BACKEND ? 'Sesión expirada o error al sincronizar con los microservicios NestJS.' : 'Error al sincronizar datos bancarios localmente.');
     } finally {
       setIsLoading(false);
     }
@@ -188,6 +242,15 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
       async () => {
         if (USE_BACKEND) {
           const matchedUser = await backendApi.login(identifier, password, getSimulatedIP());
+          
+          if ((matchedUser as any).accessToken) {
+            localStorage.setItem('mushucruna_access_token', (matchedUser as any).accessToken);
+          }
+          if ((matchedUser as any).refreshToken) {
+            localStorage.setItem('mushucruna_refresh_token', (matchedUser as any).refreshToken);
+          }
+
+          localStorage.setItem('mushucruna_active_role', matchedUser.role);
           localStorage.setItem(SESSION_KEY, matchedUser.id);
           setSessionUserId(matchedUser.id);
           setCurrentUser(matchedUser);
@@ -222,6 +285,7 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
           throw new Error('Usuario suspendido. El acceso al sistema esta bloqueado para este perfil.');
         }
 
+        localStorage.setItem('mushucruna_active_role', matchedUser.role);
         localStorage.setItem(SESSION_KEY, matchedUser.id);
         setSessionUserId(matchedUser.id);
         setCurrentUser(matchedUser);
@@ -260,6 +324,9 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem('mushucruna_access_token');
+    localStorage.removeItem('mushucruna_refresh_token');
+    localStorage.removeItem('mushucruna_active_role');
     setSessionUserId(null);
     setCurrentUser(null);
     setCurrentUserAccounts([]);
@@ -440,7 +507,43 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
 
-  const createEmployee = async (name: string, identityId: string, email: string, role: 'CAJERO' | 'AUDITOR') => {
+  const createAccount = async (userId: string, accountNumber: string, type: 'AHORROS' | 'CORRIENTE', initialBalance: number) => {
+    clearNotifications();
+    if (!currentUser) return;
+
+    await runSimulatedOperation(
+      'Aperturando cuenta bancaria',
+      ['Validando titular del cliente', 'Asignando numero de cuenta core', 'Estableciendo balance inicial'],
+      async () => {
+        if (!['ADMIN', 'CAJERO'].includes(currentUser.role)) {
+          throw new Error('Acceso denegado: solo el cajero o administrador puede crear cuentas.');
+        }
+
+        if (USE_BACKEND) {
+          await backendApi.createAccount(userId, accountNumber, type, initialBalance);
+        } else {
+          const newAccount = {
+            id: `acc-${type.toLowerCase()}-${Date.now().toString(36)}`,
+            userId,
+            accountNumber,
+            type,
+            balance: initialBalance,
+            status: 'ACTIVE' as const,
+            createdAt: new Date(),
+          };
+          await accountRepository.save(newAccount);
+        }
+
+        setSuccessMsg(`Cuenta #${accountNumber} (${type}) aperturada correctamente.`);
+        await refreshState();
+      }
+    ).catch(err => {
+      setErrorMsg(err instanceof Error ? err.message : 'Error al crear la cuenta.');
+      throw err;
+    });
+  };
+
+  const createEmployee = async (name: string, identityId: string, email: string, role: 'CAJERO' | 'AUDITOR' | 'CLIENTE') => {
     clearNotifications();
     if (!currentUser) return;
 
@@ -564,6 +667,7 @@ export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children
         withdraw,
         transfer,
         toggleFreeze,
+        createAccount,
         createEmployee,
         toggleEmployeeStatus,
         updateConfig,

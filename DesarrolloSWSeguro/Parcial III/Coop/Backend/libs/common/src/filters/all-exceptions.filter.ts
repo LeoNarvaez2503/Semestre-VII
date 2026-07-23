@@ -23,11 +23,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const request = ctx.getRequest();
+    const exceptionResponse = exception instanceof HttpException ? exception.getResponse() : null;
+    const errorDetails = exceptionResponse && typeof exceptionResponse === 'object'
+      ? (exceptionResponse as any).message || (exceptionResponse as any).error || (exception instanceof Error ? exception.message : String(exception))
+      : exception instanceof Error ? exception.message : String(exception);
+
     const responseBody = {
       statusCode: httpStatus,
       timestamp: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(request),
-      error: exception instanceof Error ? exception.message : exception,
+      error: errorDetails,
     };
 
     // Log the exception

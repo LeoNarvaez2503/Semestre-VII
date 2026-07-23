@@ -1,7 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Headers, UnauthorizedException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsIn, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { UserRole } from '../../../libs/common/src/entities';
 import { ClientesService } from './clientes.service';
+
+class RefreshDto {
+  @IsString()
+  refreshToken: string;
+}
 
 class LoginDto {
   @IsString()
@@ -84,17 +89,36 @@ export class ClientesController {
   }
 
   @Get('clientes')
-  findAll() {
+  findAll(@Headers('x-user-role') role: string) {
+    if (!['CAJERO', 'AUDITOR', 'ADMIN'].includes(role)) {
+      throw new UnauthorizedException('No autorizado: Rol insuficiente.');
+    }
     return this.clientesService.findAll();
   }
 
   @Get('clientes/:id')
-  findById(@Param('id') id: string) {
+  findById(
+    @Param('id') id: string,
+    @Headers('x-user-id') userId: string,
+    @Headers('x-user-role') role: string,
+  ) {
+    if (userId !== id && !['CAJERO', 'AUDITOR', 'ADMIN'].includes(role)) {
+      throw new UnauthorizedException('No autorizado: Acceso denegado.');
+    }
     return this.clientesService.findById(id);
   }
 
   @Post('clientes')
-  create(@Body() dto: CreateUserDto) {
+  create(
+    @Body() dto: CreateUserDto,
+    @Headers('x-user-id') userId: string,
+    @Headers('x-user-role') role: string,
+  ) {
+    if (dto.role !== 'CLIENTE') {
+      if (role !== 'ADMIN' || dto.adminId !== userId) {
+        throw new UnauthorizedException('No autorizado: Solo el administrador puede crear empleados.');
+      }
+    }
     return this.clientesService.create(dto);
   }
 
@@ -103,13 +127,35 @@ export class ClientesController {
     return this.clientesService.login(dto);
   }
 
+  @Post('clientes/refresh')
+  refresh(@Body() dto: RefreshDto) {
+    return this.clientesService.refresh(dto.refreshToken);
+  }
+
+  @Post('clientes/logout')
+  logout(@Headers('x-user-id') userId: string) {
+    if (!userId) throw new UnauthorizedException('No autorizado.');
+    return this.clientesService.logout(userId);
+  }
+
   @Patch('clientes/:id/status')
-  updateEmployeeStatus(@Param('id') id: string, @Body() dto: EmployeeStatusDto) {
+  updateEmployeeStatus(
+    @Param('id') id: string,
+    @Body() dto: EmployeeStatusDto,
+    @Headers('x-user-id') userId: string,
+    @Headers('x-user-role') role: string,
+  ) {
+    if (role !== 'ADMIN' || dto.adminId !== userId) {
+      throw new UnauthorizedException('No autorizado: Solo el administrador puede gestionar empleados.');
+    }
     return this.clientesService.updateEmployeeStatus(id, dto);
   }
 
   @Get('auditoria')
-  findAuditLogs() {
+  findAuditLogs(@Headers('x-user-role') role: string) {
+    if (!['AUDITOR', 'ADMIN'].includes(role)) {
+      throw new UnauthorizedException('No autorizado: Rol insuficiente.');
+    }
     return this.clientesService.findAuditLogs();
   }
 
@@ -119,7 +165,14 @@ export class ClientesController {
   }
 
   @Patch('configuracion')
-  updateConfig(@Body() dto: ConfigDto) {
+  updateConfig(
+    @Body() dto: ConfigDto,
+    @Headers('x-user-id') userId: string,
+    @Headers('x-user-role') role: string,
+  ) {
+    if (role !== 'ADMIN' || dto.adminId !== userId) {
+      throw new UnauthorizedException('No autorizado: Solo el administrador puede cambiar configuración.');
+    }
     return this.clientesService.updateConfig(dto);
   }
 }

@@ -53,6 +53,38 @@ export const ClienteDashboard: React.FC = () => {
 
   const [twoFactor, setTwoFactor] = useState(currentUser?.twoFactorEnabled || false);
 
+  const [sanitizeWarning, setSanitizeWarning] = useState<string | null>(null);
+
+  const handleAmountInputChange = (
+    val: string,
+    setVal: (v: string) => void
+  ) => {
+    if (val === '') {
+      setVal('');
+      setSanitizeWarning(null);
+      return;
+    }
+
+    const hasInvalidChars = /[^0-9.]/g.test(val);
+    let sanitized = val.replace(/[^0-9.]/g, '');
+
+    const parts = sanitized.split('.');
+    if (parts.length > 2) {
+      sanitized = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    if (parts.length > 1 && parts[1].length > 2) {
+      sanitized = parts[0] + '.' + parts[1].substring(0, 2);
+    }
+
+    if (hasInvalidChars || val !== sanitized) {
+      setSanitizeWarning('Carácter inválido bloqueado. Solo se permiten números positivos y hasta 2 decimales (sin signos +, - o letras).');
+      setTimeout(() => setSanitizeWarning(null), 3500);
+    }
+
+    setVal(sanitized);
+  };
+
   // Set default accounts on load
   React.useEffect(() => {
     if (currentUserAccounts.length > 0) {
@@ -357,14 +389,17 @@ export const ClienteDashboard: React.FC = () => {
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold font-mono text-sm">$</span>
                   <input
-                    type="number"
-                    step="0.01"
+                    type="text"
+                    inputMode="decimal"
                     placeholder="0.00"
                     required
                     value={depositAmount}
-                    onChange={(e) => setDepositAmount(e.target.value)}
+                    onChange={(e) => handleAmountInputChange(e.target.value, setDepositAmount)}
                     className="w-full border border-slate-200 rounded-xl pl-8 pr-4 py-3 text-sm font-mono focus:outline-emerald-600 bg-slate-50"
                   />
+                  {sanitizeWarning && (
+                    <p className="text-[10px] font-bold text-red-650 mt-1.5 animate-pulse">{sanitizeWarning}</p>
+                  )}
                 </div>
               </div>
 
@@ -419,15 +454,18 @@ export const ClienteDashboard: React.FC = () => {
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold font-mono text-sm">$</span>
                     <input
-                      type="number"
-                      step="10"
+                      type="text"
+                      inputMode="decimal"
                       placeholder="Múltiplos de $10"
                       required
                       value={withdrawAmount}
-                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                      onChange={(e) => handleAmountInputChange(e.target.value, setWithdrawAmount)}
                       className="w-full border border-slate-200 rounded-xl pl-8 pr-4 py-3 text-sm font-mono focus:outline-emerald-600 bg-slate-50"
                     />
                   </div>
+                  {sanitizeWarning && (
+                    <p className="text-[10px] font-bold text-red-650 mt-1.5 animate-pulse">{sanitizeWarning}</p>
+                  )}
                   <span className="text-[10px] text-slate-400 mt-1.5 block">Límite ATM por transacción: $500.00</span>
                 </div>
 
@@ -561,15 +599,18 @@ export const ClienteDashboard: React.FC = () => {
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold font-mono text-sm">$</span>
                     <input
-                      type="number"
-                      step="0.01"
+                      type="text"
+                      inputMode="decimal"
                       placeholder="0.00"
                       required
                       value={transferAmount}
-                      onChange={(e) => setTransferAmount(e.target.value)}
+                      onChange={(e) => handleAmountInputChange(e.target.value, setTransferAmount)}
                       className="w-full border border-slate-200 rounded-xl pl-8 pr-4 py-3 text-sm font-mono focus:outline-emerald-600 bg-slate-50"
                     />
                   </div>
+                  {sanitizeWarning && (
+                    <p className="text-[10px] font-bold text-red-650 mt-1.5 animate-pulse">{sanitizeWarning}</p>
+                  )}
                 </div>
 
                 <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-center">
