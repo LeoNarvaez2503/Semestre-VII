@@ -42,8 +42,7 @@ services:
   redis-insight:
     image: redis/redisinsight:latest
     container_name: redis_insight_ui
-    env_file:
-      - ./Backend/.env
+    user: "0:0"
     ports:
       - "8001:5540"
     restart: unless-stopped
@@ -52,6 +51,8 @@ services:
         condition: service_healthy
     security_opt:
       - no-new-privileges:true
+    volumes:
+      - redisinsight:/data
 
   # --- Microservicio A (Transacciones) ---
   svc-transacciones:
@@ -66,7 +67,7 @@ services:
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      DB_DATABASE: coopbdd
+      DB_DATABASE: TransaccionesBDD
       DB_SYNCHRONIZE: "true"
       DB_LOGGING: "true"
       REDIS_HOST: redis
@@ -100,7 +101,7 @@ services:
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      DB_DATABASE: coopbdd
+      DB_DATABASE: CuentasBDD
       DB_SYNCHRONIZE: "true"
       DB_LOGGING: "true"
       REDIS_HOST: redis
@@ -134,7 +135,7 @@ services:
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      DB_DATABASE: coopbdd
+      DB_DATABASE: UsuariosBDD
       DB_SYNCHRONIZE: "true"
       DB_LOGGING: "true"
       REDIS_HOST: redis
@@ -205,3 +206,5 @@ services:
 volumes:
   pgdata:
   redisdata:
+  redisinsight:
+
