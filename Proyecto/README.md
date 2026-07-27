@@ -1,10 +1,27 @@
-# 🚀 Despliegue en Kubernetes (Minikube & Kong API Gateway) - UrbanFlow
+# Despliegue en Kubernetes (Minikube & Kong API Gateway) - UrbanFlow
 
 Sistema distribuido de gestión de parqueadero con arquitectura de microservicios, API Gateway con Kong como único punto de entrada, bases de datos independientes por microservicio, comunicación asíncrona mediante RabbitMQ, autenticación centralizada JWT con control de acceso basado en roles (RBAC) y actualización en tiempo real con Server-Sent Events (SSE).
 
 ---
 
-## 📌 1. Prerrequisitos
+## Requisitos del Proyecto y Componentes Incluidos
+
+El repositorio incluye la Aplicación de Parqueaderos terminada con todos sus entregables:
+
+* **Carpetas con el código fuente de los microservicios:** Microservicios independientes en `./backend/` (`auth-service`, `parking-service`, `ticket-service`, `billing-service`, `notification-service`, `vehiculos`, `asignacion-trazabilidad`).
+* **Dockerfile's de cada microservicio:** Dockerfiles optimizados en cada uno de los microservicios y en el gateway.
+* **Frontend del proyecto (implementado SSE):** Aplicación Angular en `./frontend/` con actualización en tiempo real mediante Server-Sent Events (SSE).
+* **Implementación de RabbitMQ:** Mensajería asíncrona y eventos desacoplados entre microservicios.
+* **API Gateway (Kong):** Punto de entrada único configurado en `./gateway/`.
+* **Carpeta k8s (manifiestos .yml):** Manifiestos de Kubernetes y `kustomization.yaml` para despliegue automatizado.
+* **Archivo README.md:** Documentación completa de arquitectura y guía de despliegue.
+* **Informe de pruebas:** Pruebas funcionales, RBAC, SSE e integración documentadas.
+
+> **Nota:** El proyecto es totalmente replicable en cualquier escenario mediante Docker Compose (`docker-compose up -d`) o Kubernetes (`kubectl apply -f .`).
+
+---
+
+## 1. Prerrequisitos
 
 Asegúrate de contar con los siguientes componentes instalados en tu sistema:
 
@@ -14,7 +31,7 @@ Asegúrate de contar con los siguientes componentes instalados en tu sistema:
 
 ---
 
-## 🛠️ 2. Flujo de Despliegue Completo (Un solo comando `kubectl apply -f .`)
+## 2. Flujo de Despliegue Completo (Un solo comando `kubectl apply -f .`)
 
 ### Paso 1: Iniciar Minikube y configurar el entorno de Docker
 ```bash
@@ -80,7 +97,7 @@ http://parqueo-espe.local
 
 ---
 
-## 🌐 3. Acceso al Sistema
+## 3. Acceso al Sistema
 
 Toda la comunicación externa ingresa a través del recurso **Ingress** de Kubernetes, que enruta al **API Gateway Kong** como único punto de entrada.
 
@@ -91,13 +108,13 @@ Navegador → http://parqueo-espe.local → NGINX Ingress Controller → Kong AP
 
 | Componente | Dirección / URL | Descripción |
 | :--- | :--- | :--- |
-| 📱 **Frontend SPA Angular** | `http://parqueo-espe.local/` | Interfaz Web Adaptativa por Roles (Clean Architecture) |
-| 🌐 **Kong API Gateway** | `http://parqueo-espe.local` | Único Punto de Entrada para APIs y Frontend (vía Ingress) |
-| 🐇 **RabbitMQ Management** | `http://localhost:15672` | Panel de Control de Eventos (User: `guest` / Pass: `guest`) |
+| **Frontend SPA Angular** | `http://parqueo-espe.local/` | Interfaz Web Adaptativa por Roles (Clean Architecture) |
+| **Kong API Gateway** | `http://parqueo-espe.local` | Único Punto de Entrada para APIs y Frontend (vía Ingress) |
+| **RabbitMQ Management** | `http://localhost:15672` | Panel de Control de Eventos (User: `guest` / Pass: `guest`) |
 
 ---
 
-## 🔐 4. Credenciales de Prueba por Rol (Control de Acceso RBAC)
+## 4. Credenciales de Prueba por Rol (Control de Acceso RBAC)
 
 El JWT incluye el rol del usuario en su payload (`role`). El Frontend Angular y el API Gateway adaptan la interfaz y permisos dinámicamente según el rol:
 
@@ -110,7 +127,7 @@ El JWT incluye el rol del usuario en su payload (`role`). El Frontend Angular y 
 
 ---
 
-## ⚡ 5. Verificación de SSE (Server-Sent Events) en Tiempo Real
+## 5. Verificación de SSE (Server-Sent Events) en Tiempo Real
 
 El sistema utiliza **Server-Sent Events (SSE)** en lugar de polling HTTP para la actualización de plazas y tickets en el mapa del parqueadero.
 
@@ -141,7 +158,7 @@ El Frontend Angular escucha directamente este endpoint a través de `SpaceSseSer
 
 ---
 
-## 🛡️ 6. Arquitectura y Restricciones Cumplidas
+## 6. Arquitectura y Restricciones Cumplidas
 
 * **Ingress con Dominio Local:** El sistema es accesible desde `http://parqueo-espe.local` mediante un recurso Ingress de Kubernetes con NGINX Ingress Controller.
 * **Namespace Unificado:** Todos los recursos se despliegan bajo el namespace `FloresGuamanMoralesNarvaez`.
